@@ -21,6 +21,9 @@
                     <x-nav-link :href="route('about')" :active="request()->routeIs('about')">
                         {{ __('About') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('store.index')" :active="request()->routeIs('store.*')">
+                        {{ __('Store') }}
+                    </x-nav-link>
                     @auth
                         <x-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">
                             {{ __('My Bookings') }}
@@ -95,6 +98,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')">
                 {{ __('About') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('store.index')" :active="request()->routeIs('store.*')">
+                {{ __('Store') }}
             </x-responsive-nav-link>
             @auth
                 <x-responsive-nav-link :href="route('bookings.index')" :active="request()->routeIs('bookings.*')">

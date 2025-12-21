@@ -5,8 +5,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ClassController as AdminClassController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\HomeController;
@@ -18,6 +21,11 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/classes', [ClassController::class, 'index'])->name('classes.index');
 Route::get('/classes/{slug}', [ClassController::class, 'show'])->name('classes.show');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// Store Routes
+Route::get('/store', [StoreController::class, 'index'])->name('store.index');
+Route::get('/store/category/{slug}', [StoreController::class, 'category'])->name('store.category');
+Route::get('/store/{slug}', [StoreController::class, 'show'])->name('store.show');
 
 // Dashboard (Auth Required)
 Route::get('/dashboard', function () {
@@ -66,6 +74,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/calendar/data', [CalendarController::class, 'getData'])->name('calendar.data');
     Route::get('/calendar/class/{class}', [CalendarController::class, 'quickView'])->name('calendar.quick-view');
+
+    // Product Management
+    Route::resource('products', ProductController::class);
+    Route::resource('categories', ProductCategoryController::class);
 });
 
 require __DIR__.'/auth.php';

@@ -11,6 +11,7 @@ class Payment extends Model
 
     protected $fillable = [
         'booking_id',
+        'order_id',
         'stripe_payment_intent_id',
         'stripe_charge_id',
         'stripe_customer_id',
@@ -39,6 +40,11 @@ class Payment extends Model
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
     // Helper methods
@@ -71,7 +77,16 @@ class Payment extends Model
     public function markAsSucceeded()
     {
         $this->update(['status' => 'succeeded']);
-        $this->booking->update(['payment_status' => 'completed']);
+
+        // Update booking if this payment is for a booking
+        if ($this->booking_id && $this->booking) {
+            $this->booking->update(['payment_status' => 'completed']);
+        }
+
+        // Update order if this payment is for an order
+        if ($this->order_id && $this->order) {
+            $this->order->update(['payment_status' => 'completed']);
+        }
     }
 
     public function markAsFailed($reason = null)
@@ -80,7 +95,16 @@ class Payment extends Model
             'status' => 'failed',
             'failure_reason' => $reason,
         ]);
-        $this->booking->update(['payment_status' => 'failed']);
+
+        // Update booking if this payment is for a booking
+        if ($this->booking_id && $this->booking) {
+            $this->booking->update(['payment_status' => 'failed']);
+        }
+
+        // Update order if this payment is for an order
+        if ($this->order_id && $this->order) {
+            $this->order->update(['payment_status' => 'failed']);
+        }
     }
 
     public function scopeSucceeded($query)

@@ -39,6 +39,9 @@
                                 <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.bookings.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
                                     Bookings
                                 </a>
+                                <a href="{{ route('admin.calendar.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                    Calendar
+                                </a>
                             </div>
                         </div>
 
@@ -92,6 +95,9 @@
                         </a>
                         <a href="{{ route('admin.bookings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.bookings.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
                             Bookings
+                        </a>
+                        <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                            Calendar
                         </a>
                     </div>
 

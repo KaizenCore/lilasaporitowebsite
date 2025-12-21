@@ -52,10 +52,16 @@ class DashboardController extends Controller
             ->get();
 
         // Revenue by month (last 6 months)
+        // Database-agnostic date formatting
+        $driver = DB::connection()->getDriverName();
+        $dateFormat = $driver === 'sqlite'
+            ? "strftime('%Y-%m', created_at)"
+            : "DATE_FORMAT(created_at, '%Y-%m')";
+
         $revenueByMonth = Payment::where('status', 'succeeded')
             ->where('created_at', '>=', now()->subMonths(6))
             ->select(
-                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw("{$dateFormat} as month"),
                 DB::raw('SUM(amount_cents) as total')
             )
             ->groupBy('month')

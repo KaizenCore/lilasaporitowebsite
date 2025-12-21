@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ClassController as AdminClassController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CheckoutController;
@@ -60,6 +61,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/bookings/{booking}/manual-check-in', [AdminBookingController::class, 'manualCheckIn'])->name('bookings.manual-check-in');
     Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
     Route::get('/classes/{class}/check-in', [AdminBookingController::class, 'checkInForm'])->name('classes.check-in-form');
+
+    // Calendar View
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/calendar/data', [CalendarController::class, 'getData'])->name('calendar.data');
+    Route::get('/calendar/class/{class}', [CalendarController::class, 'quickView'])->name('calendar.quick-view');
 });
 
 require __DIR__.'/auth.php';

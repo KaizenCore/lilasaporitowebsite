@@ -9,6 +9,9 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ClassController;
@@ -43,6 +46,28 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.payment-intent');
     Route::get('/checkout/success/{booking}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
+
+// Cart Routes (Auth Required)
+Route::middleware('auth')->group(function () {
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove/{productId}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+});
+
+// Order Checkout Routes (Auth Required)
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout/order', [OrderController::class, 'checkout'])->name('checkout.order');
+    Route::post('/checkout/order/payment-intent', [OrderController::class, 'createPaymentIntent'])->name('checkout.order.payment-intent');
+    Route::get('/checkout/order/success/{order}', [OrderController::class, 'success'])->name('checkout.order.success');
+});
+
+// Digital Download Route (Auth Required)
+Route::middleware('auth')->get('/download/{token}', [DownloadController::class, 'download'])->name('download');
+
+// API Routes for Order Status (Auth Required)
+Route::middleware('auth')->get('/api/check-order/{paymentIntentId}', [OrderController::class, 'checkOrderStatus'])->name('api.check-order');
 
 // Stripe Webhook (No Auth, No CSRF)
 Route::post('/webhook/stripe', [PaymentController::class, 'webhook'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);

@@ -85,17 +85,32 @@
                             <p class="text-lg text-gray-700 mb-6">{{ $product->short_description }}</p>
                         @endif
 
-                        <!-- Add to Cart Button (Placeholder) -->
+                        <!-- Add to Cart Button -->
                         <div class="mb-6">
                             @if($product->is_out_of_stock)
                                 <button disabled class="w-full bg-gray-300 text-gray-500 px-6 py-3 rounded-lg font-semibold cursor-not-allowed">
                                     Out of Stock
                                 </button>
                             @else
-                                <button class="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                                    Add to Cart - {{ $product->formatted_price }}
-                                </button>
-                                <p class="text-sm text-gray-500 mt-2 text-center">Shopping cart coming soon!</p>
+                                <form action="{{ route('cart.add') }}" method="POST" class="space-y-4">
+                                    @csrf
+                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+
+                                    @if($product->product_type === 'physical' && !is_null($product->stock_quantity))
+                                        <div>
+                                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                                            <select name="quantity" id="quantity" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                @for($i = 1; $i <= min(10, $product->stock_quantity); $i++)
+                                                    <option value="{{ $i }}">{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    @endif
+
+                                    <button type="submit" class="w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                                        Add to Cart - {{ $product->formatted_price }}
+                                    </button>
+                                </form>
                             @endif
                         </div>
                     </div>

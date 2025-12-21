@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\ArtClass;
 use App\Models\Booking;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Payment;
+use App\Models\Product;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -69,72 +72,184 @@ class PaymentController extends Controller
         try {
             $metadata = $paymentIntent->metadata;
 
-            // Get the art class
-            $artClass = ArtClass::findOrFail($metadata->art_class_id);
-
-            // Check if booking already exists (prevent duplicates)
-            $existingBooking = Booking::whereHas('payment', function ($query) use ($paymentIntent) {
-                $query->where('stripe_payment_intent_id', $paymentIntent->id);
-            })->first();
-
-            if ($existingBooking) {
-                Log::info('Booking already exists for payment intent', [
-                    'payment_intent_id' => $paymentIntent->id,
-                    'booking_id' => $existingBooking->id,
-                ]);
-                DB::commit();
-                return;
+            // Check if this is a store order or class booking
+            if (isset($metadata->order_type) && $metadata->order_type === 'store') {
+                $this->createStoreOrder($paymentIntent);
+            } else {
+                $this->createClassBooking($paymentIntent);
             }
 
-            // Create the booking
-            $booking = Booking::create([
-                'user_id' => $metadata->user_id,
-                'art_class_id' => $metadata->art_class_id,
-                'payment_status' => 'completed',
-                'attendance_status' => 'booked',
-            ]);
-
-            // Create the payment record
-            $payment = Payment::create([
-                'booking_id' => $booking->id,
-                'stripe_payment_intent_id' => $paymentIntent->id,
-                'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
-                'stripe_customer_id' => $paymentIntent->customer ?? null,
-                'amount_cents' => $paymentIntent->amount,
-                'currency' => $paymentIntent->currency,
-                'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
-                'status' => 'succeeded',
-                'metadata' => [
-                    'class_title' => $metadata->class_title,
-                    'class_date' => $metadata->class_date,
-                    'user_email' => $metadata->user_email,
-                ],
-            ]);
-
-            // Calculate Stripe fees
-            $payment->calculateStripeFee();
-            $payment->save();
-
-            Log::info('Booking and payment created successfully', [
-                'booking_id' => $booking->id,
-                'payment_id' => $payment->id,
-                'ticket_code' => $booking->ticket_code,
-            ]);
-
             DB::commit();
-
-            // Here you could dispatch an event to send confirmation email
-            // event(new BookingConfirmed($booking));
 
         } catch (\Exception $e) {
             DB::rollBack();
 
-            Log::error('Failed to create booking from webhook', [
+            Log::error('Failed to process payment from webhook', [
                 'payment_intent_id' => $paymentIntent->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
         }
+    }
+
+    /**
+     * Create a class booking from payment intent
+     */
+    protected function createClassBooking($paymentIntent)
+    {
+        $metadata = $paymentIntent->metadata;
+
+        // Get the art class
+        $artClass = ArtClass::findOrFail($metadata->art_class_id);
+
+        // Check if booking already exists (prevent duplicates)
+        $existingBooking = Booking::whereHas('payment', function ($query) use ($paymentIntent) {
+            $query->where('stripe_payment_intent_id', $paymentIntent->id);
+        })->first();
+
+        if ($existingBooking) {
+            Log::info('Booking already exists for payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+                'booking_id' => $existingBooking->id,
+            ]);
+            return;
+        }
+
+        // Create the booking
+        $booking = Booking::create([
+            'user_id' => $metadata->user_id,
+            'art_class_id' => $metadata->art_class_id,
+            'payment_status' => 'completed',
+            'attendance_status' => 'booked',
+        ]);
+
+        // Create the payment record
+        $payment = Payment::create([
+            'booking_id' => $booking->id,
+            'stripe_payment_intent_id' => $paymentIntent->id,
+            'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
+            'stripe_customer_id' => $paymentIntent->customer ?? null,
+            'amount_cents' => $paymentIntent->amount,
+            'currency' => $paymentIntent->currency,
+            'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
+            'status' => 'succeeded',
+            'metadata' => [
+                'class_title' => $metadata->class_title,
+                'class_date' => $metadata->class_date,
+                'user_email' => $metadata->user_email,
+            ],
+        ]);
+
+        // Calculate Stripe fees
+        $payment->calculateStripeFee();
+        $payment->save();
+
+        Log::info('Booking and payment created successfully', [
+            'booking_id' => $booking->id,
+            'payment_id' => $payment->id,
+            'ticket_code' => $booking->ticket_code,
+        ]);
+
+        // Here you could dispatch an event to send confirmation email
+        // event(new BookingConfirmed($booking));
+    }
+
+    /**
+     * Create a store order from payment intent
+     */
+    protected function createStoreOrder($paymentIntent)
+    {
+        $metadata = $paymentIntent->metadata;
+
+        // Check if order already exists (prevent duplicates)
+        $existingOrder = Order::whereHas('payment', function ($query) use ($paymentIntent) {
+            $query->where('stripe_payment_intent_id', $paymentIntent->id);
+        })->first();
+
+        if ($existingOrder) {
+            Log::info('Order already exists for payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+                'order_id' => $existingOrder->id,
+            ]);
+            return;
+        }
+
+        // Parse cart items from metadata
+        $cartItems = json_decode($metadata->cart_items, true);
+
+        // Create the order
+        $order = Order::create([
+            'user_id' => $metadata->user_id,
+            'email' => $metadata->user_email,
+            'total_amount_cents' => $paymentIntent->amount,
+            'subtotal_cents' => $paymentIntent->amount,
+            'payment_status' => 'completed',
+            'fulfillment_status' => 'unfulfilled',
+        ]);
+
+        // Create order items and process stock
+        foreach ($cartItems as $item) {
+            $product = Product::find($item['product_id']);
+
+            if (!$product) {
+                Log::warning('Product not found for order item', [
+                    'product_id' => $item['product_id'],
+                    'order_id' => $order->id,
+                ]);
+                continue;
+            }
+
+            // Create order item
+            $orderItem = OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'product_title' => $item['title'],
+                'product_type' => $product->product_type,
+                'quantity' => $item['quantity'],
+                'price_cents' => $item['price_cents'],
+                'total_cents' => $item['price_cents'] * $item['quantity'],
+            ]);
+
+            // Decrement stock for physical products
+            if ($product->product_type === 'physical' && !is_null($product->stock_quantity)) {
+                $product->decrementStock($item['quantity']);
+            }
+
+            // Generate download URL for digital products
+            if ($product->product_type === 'digital') {
+                $token = \Illuminate\Support\Str::random(64);
+                $orderItem->update(['digital_download_url' => $token]);
+            }
+        }
+
+        // Create the payment record
+        $payment = Payment::create([
+            'order_id' => $order->id,
+            'stripe_payment_intent_id' => $paymentIntent->id,
+            'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
+            'stripe_customer_id' => $paymentIntent->customer ?? null,
+            'amount_cents' => $paymentIntent->amount,
+            'currency' => $paymentIntent->currency,
+            'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
+            'status' => 'succeeded',
+            'metadata' => [
+                'order_number' => $order->order_number,
+                'item_count' => $metadata->item_count,
+            ],
+        ]);
+
+        // Calculate Stripe fees
+        $payment->calculateStripeFee();
+        $payment->save();
+
+        Log::info('Order and payment created successfully', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'payment_id' => $payment->id,
+        ]);
+
+        // Here you could dispatch an event to send confirmation email
+        // event(new OrderConfirmed($order));
     }
 
     /**

@@ -14,10 +14,10 @@ php artisan view:clear
 # Run migrations (only if database is configured)
 php artisan migrate --force 2>/dev/null && echo "✅ Migrations completed" || echo "⚠️  Migrations skipped (database not configured)"
 
-# Optimize for production
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+# Optimize for production (skip config:cache to allow bootstrap overrides)
+php artisan route:cache 2>/dev/null || true
+php artisan view:cache 2>/dev/null || true
+php artisan event:cache 2>/dev/null || true
 
 # Set permissions
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true

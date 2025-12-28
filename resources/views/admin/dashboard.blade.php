@@ -12,7 +12,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                        <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
                             <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                             </svg>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="mt-4">
-                        <a href="{{ route('admin.classes.create') }}" class="text-sm text-indigo-600 hover:text-indigo-900">Create new class</a>
+                        <a href="{{ route('admin.classes.create') }}" class="text-sm text-purple-600 hover:text-purple-900">Create new class</a>
                     </div>
                 </div>
             </div>
@@ -95,13 +95,13 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-900">Upcoming Classes</h3>
-                        <a href="{{ route('admin.classes.index') }}" class="text-sm text-indigo-600 hover:text-indigo-900">View all</a>
+                        <a href="{{ route('admin.classes.index') }}" class="text-sm text-purple-600 hover:text-purple-900">View all</a>
                     </div>
 
                     @if($upcomingClasses->count() > 0)
                         <div class="space-y-4">
                             @foreach($upcomingClasses as $class)
-                                <div class="border-l-4 border-indigo-500 pl-4 py-2">
+                                <div class="border-l-4 border-purple-500 pl-4 py-2">
                                     <div class="flex justify-between items-start">
                                         <div>
                                             <h4 class="font-medium text-gray-900">{{ $class->title }}</h4>
@@ -114,7 +114,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-2">
-                                        <a href="{{ route('admin.classes.edit', $class) }}" class="text-sm text-indigo-600 hover:text-indigo-900">Edit</a>
+                                        <a href="{{ route('admin.classes.edit', $class) }}" class="text-sm text-purple-600 hover:text-purple-900">Edit</a>
                                     </div>
                                 </div>
                             @endforeach
@@ -130,7 +130,7 @@
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
-                        <a href="{{ route('admin.bookings.index') }}" class="text-sm text-indigo-600 hover:text-indigo-900">View all</a>
+                        <a href="{{ route('admin.bookings.index') }}" class="text-sm text-purple-600 hover:text-purple-900">View all</a>
                     </div>
 
                     @if($recentBookings->count() > 0)
@@ -178,7 +178,7 @@
                                 </div>
                                 <div class="flex items-center">
                                     <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                                        <div class="bg-indigo-600 h-2 rounded-full" style="width: {{ ($class->bookings_count / $class->capacity) * 100 }}%"></div>
+                                        <div class="bg-purple-600 h-2 rounded-full" style="width: {{ ($class->bookings_count / $class->capacity) * 100 }}%"></div>
                                     </div>
                                     <span class="text-sm font-medium text-gray-900">{{ $class->bookings_count }}/{{ $class->capacity }}</span>
                                 </div>

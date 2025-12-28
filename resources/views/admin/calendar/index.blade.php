@@ -12,13 +12,13 @@
                 <nav class="-mb-px flex space-x-8">
                     <a href="{{ route('admin.calendar.index', ['view' => 'month', 'date' => $date]) }}"
                        @click="activeView = 'month'"
-                       :class="activeView === 'month' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                       :class="activeView === 'month' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                         Month View
                     </a>
                     <a href="{{ route('admin.calendar.index', ['view' => 'week', 'date' => $date]) }}"
                        @click="activeView = 'week'"
-                       :class="activeView === 'week' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                       :class="activeView === 'week' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                         Week View
                     </a>
@@ -40,7 +40,7 @@
                 </a>
             </div>
             <a href="{{ route('admin.calendar.index', ['view' => $view, 'date' => now()->format('Y-m-d')]) }}"
-               class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-sm font-medium">
+               class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 text-sm font-medium">
                 Today
             </a>
         </div>

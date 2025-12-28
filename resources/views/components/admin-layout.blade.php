@@ -17,7 +17,7 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             <!-- Admin Navigation -->
-            <nav class="bg-indigo-600 border-b border-indigo-700">
+            <nav class="bg-purple-600 border-b border-purple-700">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex">
@@ -30,22 +30,22 @@
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.dashboard') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.dashboard') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Dashboard
                                 </a>
-                                <a href="{{ route('admin.classes.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.classes.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                <a href="{{ route('admin.classes.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.classes.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Classes
                                 </a>
-                                <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.bookings.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.bookings.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Bookings
                                 </a>
-                                <a href="{{ route('admin.calendar.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                <a href="{{ route('admin.calendar.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Calendar
                                 </a>
-                                <a href="{{ route('admin.products.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.products.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                <a href="{{ route('admin.products.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.products.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Products
                                 </a>
-                                <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.categories.*') ? 'border-white text-white' : 'border-transparent text-indigo-100 hover:text-white hover:border-indigo-300' }} text-sm font-medium">
+                                <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.categories.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Categories
                                 </a>
                             </div>
@@ -54,7 +54,7 @@
                         <!-- Settings Dropdown -->
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
                             <div class="ml-3 relative">
-                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none transition ease-in-out duration-150" onclick="document.getElementById('user-dropdown').classList.toggle('hidden')">
+                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-500 focus:outline-none transition ease-in-out duration-150" onclick="document.getElementById('user-dropdown').classList.toggle('hidden')">
                                     <div>{{ Auth::user()->name }}</div>
                                     <div class="ml-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -81,7 +81,7 @@
 
                         <!-- Hamburger -->
                         <div class="-mr-2 flex items-center sm:hidden">
-                            <button onclick="document.getElementById('responsive-nav').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-indigo-100 hover:text-white hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500 focus:text-white transition duration-150 ease-in-out">
+                            <button onclick="document.getElementById('responsive-nav').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-purple-100 hover:text-white hover:bg-purple-500 focus:outline-none focus:bg-purple-500 focus:text-white transition duration-150 ease-in-out">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
@@ -93,40 +93,40 @@
                 <!-- Responsive Navigation Menu -->
                 <div id="responsive-nav" class="hidden sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.dashboard') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                        <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.dashboard') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Dashboard
                         </a>
-                        <a href="{{ route('admin.classes.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.classes.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                        <a href="{{ route('admin.classes.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.classes.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Classes
                         </a>
-                        <a href="{{ route('admin.bookings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.bookings.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                        <a href="{{ route('admin.bookings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.bookings.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Bookings
                         </a>
-                        <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                        <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Calendar
                         </a>
-                        <a href="{{ route('admin.products.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.products.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                        <a href="{{ route('admin.products.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.products.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Products
                         </a>
-                        <a href="{{ route('admin.categories.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.categories.*') ? 'border-white bg-indigo-700 text-white' : 'border-transparent text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300' }} text-base font-medium">
+                        <a href="{{ route('admin.categories.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.categories.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Categories
                         </a>
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-indigo-700">
+                    <div class="pt-4 pb-1 border-t border-purple-700">
                         <div class="px-4">
                             <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                            <div class="font-medium text-sm text-indigo-200">{{ Auth::user()->email }}</div>
+                            <div class="font-medium text-sm text-purple-200">{{ Auth::user()->email }}</div>
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <a href="{{ route('home') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300">Public Site</a>
-                            <a href="{{ route('dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300">User Dashboard</a>
-                            <a href="{{ route('profile.edit') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300">Profile</a>
+                            <a href="{{ route('home') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300">Public Site</a>
+                            <a href="{{ route('dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300">User Dashboard</a>
+                            <a href="{{ route('profile.edit') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300">Profile</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-indigo-100 hover:text-white hover:bg-indigo-500 hover:border-indigo-300">
+                                <button type="submit" class="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300">
                                     Log Out
                                 </button>
                             </form>

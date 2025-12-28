@@ -7,7 +7,7 @@
         @foreach($weekDays as $weekDay)
             <div class="px-2 py-3 text-center border-r">
                 <div class="text-xs font-semibold text-gray-700 uppercase">{{ $weekDay->date->format('D') }}</div>
-                <div class="mt-1 {{ $weekDay->date->isToday() ? 'bg-indigo-600 text-white rounded-full w-8 h-8 mx-auto flex items-center justify-center font-bold' : 'text-lg text-gray-900' }}">
+                <div class="mt-1 {{ $weekDay->date->isToday() ? 'bg-purple-600 text-white rounded-full w-8 h-8 mx-auto flex items-center justify-center font-bold' : 'text-lg text-gray-900' }}">
                     {{ $weekDay->date->format('j') }}
                 </div>
             </div>

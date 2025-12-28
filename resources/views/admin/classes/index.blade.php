@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Manage Classes
             </h2>
-            <a href="{{ route('admin.classes.create') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('admin.classes.create') }}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                 Create New Class
             </a>
         </div>
@@ -54,7 +54,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ $class->bookings_count }}/{{ $class->capacity }}</div>
                                             <div class="w-full bg-gray-200 rounded-full h-1.5 mt-1">
-                                                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: {{ ($class->bookings_count / $class->capacity) * 100 }}%"></div>
+                                                <div class="bg-purple-600 h-1.5 rounded-full" style="width: {{ ($class->bookings_count / $class->capacity) * 100 }}%"></div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
@@ -73,7 +73,7 @@
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <a href="{{ route('admin.classes.edit', $class) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
+                                            <a href="{{ route('admin.classes.edit', $class) }}" class="text-purple-600 hover:text-purple-900 mr-3">Edit</a>
                                             <form action="{{ route('admin.classes.destroy', $class) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this class?')">
                                                 @csrf
                                                 @method('DELETE')
@@ -97,7 +97,7 @@
                         <h3 class="mt-2 text-sm font-medium text-gray-900">No classes</h3>
                         <p class="mt-1 text-sm text-gray-500">Get started by creating a new art class.</p>
                         <div class="mt-6">
-                            <a href="{{ route('admin.classes.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            <a href="{{ route('admin.classes.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                                 Create New Class
                             </a>
                         </div>

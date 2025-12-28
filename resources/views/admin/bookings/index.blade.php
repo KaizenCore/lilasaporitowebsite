@@ -15,14 +15,14 @@
                         <div class="lg:col-span-2">
                             <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
                             <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ticket code, name, or email"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                         </div>
 
                         <!-- Payment Status -->
                         <div>
                             <label for="payment_status" class="block text-sm font-medium text-gray-700">Payment Status</label>
                             <select name="payment_status" id="payment_status"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                                 <option value="">All</option>
                                 <option value="pending" {{ request('payment_status') === 'pending' ? 'selected' : '' }}>Pending</option>
                                 <option value="completed" {{ request('payment_status') === 'completed' ? 'selected' : '' }}>Completed</option>
@@ -34,7 +34,7 @@
                         <div>
                             <label for="attendance_status" class="block text-sm font-medium text-gray-700">Attendance</label>
                             <select name="attendance_status" id="attendance_status"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                                 <option value="">All</option>
                                 <option value="booked" {{ request('attendance_status') === 'booked' ? 'selected' : '' }}>Booked</option>
                                 <option value="attended" {{ request('attendance_status') === 'attended' ? 'selected' : '' }}>Attended</option>
@@ -46,7 +46,7 @@
                         <div>
                             <label for="class_id" class="block text-sm font-medium text-gray-700">Class</label>
                             <select name="class_id" id="class_id"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                                 <option value="">All Classes</option>
                                 @foreach($classes as $class)
                                     <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
@@ -59,7 +59,7 @@
 
                     <div class="mt-4 flex items-center justify-between">
                         <div class="flex space-x-2">
-                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+                            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
                                 Apply Filters
                             </button>
                             <a href="{{ route('admin.bookings.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded">
@@ -80,7 +80,7 @@
                     <div class="flex-1">
                         <label for="ticket_code" class="block text-sm font-medium text-gray-700">Ticket Code</label>
                         <input type="text" name="ticket_code" id="ticket_code" placeholder="FB-1234" required
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
                     </div>
                     <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
                         Check In
@@ -175,7 +175,7 @@
                                                 @csrf
                                                 <h4 class="font-medium text-gray-900 mb-2">Cancel Booking</h4>
                                                 <textarea name="cancellation_reason" rows="2" placeholder="Reason for cancellation (optional)"
-                                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-2"></textarea>
+                                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 mb-2"></textarea>
                                                 <div class="flex space-x-2">
                                                     <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm">
                                                         Confirm Cancel

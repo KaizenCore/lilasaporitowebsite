@@ -1,33 +1,10 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Checkout - {{ $class->title }} - FrizzBoss</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/checkout.js'])
-    <script src="https://js.stripe.com/v3/"></script>
-</head>
-<body class="font-sans antialiased bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-    <!-- Navigation -->
-    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/" class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        FrizzBoss
-                    </a>
-                </div>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
-                    <a href="{{ route('classes.index') }}" class="text-gray-700 hover:text-purple-600 font-medium transition">Classes</a>
-                    <a href="{{ route('bookings.index') }}" class="text-gray-700 hover:text-purple-600 font-medium transition">My Bookings</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+<x-public-layout>
+    <x-slot name="title">Checkout - {{ $class->title }} - FrizzBoss</x-slot>
+
+    <x-slot name="head">
+        @vite(['resources/js/checkout.js'])
+        <script src="https://js.stripe.com/v3/"></script>
+    </x-slot>
 
     <!-- Back Button -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -176,5 +153,4 @@
         window.createPaymentIntentUrl = '{{ route('checkout.payment-intent') }}';
         window.csrfToken = '{{ csrf_token() }}';
     </script>
-</body>
-</html>
+</x-public-layout>

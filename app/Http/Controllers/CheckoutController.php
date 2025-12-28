@@ -15,7 +15,6 @@ class CheckoutController extends Controller
 
     public function __construct(StripeService $stripeService)
     {
-        $this->middleware('auth');
         $this->stripeService = $stripeService;
     }
 

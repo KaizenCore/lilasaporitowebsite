@@ -17,7 +17,7 @@
                 <!-- Day Number -->
                 <div class="mb-2">
                     @if($day->isToday)
-                        <span class="bg-indigo-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
+                        <span class="bg-purple-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold">
                             {{ $day->day }}
                         </span>
                     @else

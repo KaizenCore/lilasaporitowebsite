@@ -1,31 +1,5 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Booking Confirmed - FrizzBoss</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="font-sans antialiased bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-    <!-- Navigation -->
-    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="/" class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        FrizzBoss
-                    </a>
-                </div>
-                <div class="flex items-center space-x-8">
-                    <a href="/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
-                    <a href="{{ route('classes.index') }}" class="text-gray-700 hover:text-purple-600 font-medium transition">Classes</a>
-                    <a href="{{ route('bookings.index') }}" class="text-gray-700 hover:text-purple-600 font-medium transition">My Bookings</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+<x-public-layout>
+    <x-slot name="title">Booking Confirmed - FrizzBoss</x-slot>
 
     <!-- Success Content -->
     <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -186,18 +160,4 @@
             <p class="mt-2">Contact us and we'll be happy to help!</p>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12 px-4">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center">
-                <h3 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">FrizzBoss</h3>
-                <p class="text-gray-400 mb-8">Inspiring creativity, one class at a time.</p>
-            </div>
-            <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
-                <p>&copy; {{ date('Y') }} FrizzBoss. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+</x-public-layout>

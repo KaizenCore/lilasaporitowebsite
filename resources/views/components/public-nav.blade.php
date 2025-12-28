@@ -1,0 +1,81 @@
+<nav x-data="{ open: false }" class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <a href="/" class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    FrizzBoss
+                </a>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden sm:flex items-center space-x-8">
+                <a href="/" class="{{ request()->routeIs('home') ? 'text-purple-600 font-semibold' : 'text-gray-700 hover:text-purple-600' }} font-medium transition">Home</a>
+                <a href="{{ route('classes.index') }}" class="{{ request()->routeIs('classes.*') ? 'text-purple-600 font-semibold' : 'text-gray-700 hover:text-purple-600' }} font-medium transition">Classes</a>
+                <a href="{{ route('store.index') }}" class="{{ request()->routeIs('store.*') ? 'text-purple-600 font-semibold' : 'text-gray-700 hover:text-purple-600' }} font-medium transition">Store</a>
+                <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'text-purple-600 font-semibold' : 'text-gray-700 hover:text-purple-600' }} font-medium transition">About</a>
+                @auth
+                    <a href="{{ route('bookings.index') }}" class="{{ request()->routeIs('bookings.*') ? 'text-purple-600 font-semibold' : 'text-gray-700 hover:text-purple-600' }} font-medium transition">My Bookings</a>
+                    @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="text-pink-600 hover:text-pink-700 font-semibold transition">Admin</a>
+                    @endif
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center text-gray-700 hover:text-purple-600 font-medium transition">
+                            {{ Auth::user()->name }}
+                            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600">Dashboard</a>
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600">Profile</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                                    Log Out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-purple-600 font-medium transition">Login</a>
+                    <a href="{{ route('register') }}" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
+                @endauth
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <div class="flex items-center sm:hidden">
+                <button @click="open = !open" class="text-gray-700 hover:text-purple-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path :class="{'hidden': open, 'inline-flex': !open}" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path :class="{'hidden': !open, 'inline-flex': open}" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden bg-white/95 backdrop-blur-md border-t border-gray-100">
+        <div class="px-4 py-3 space-y-2">
+            <a href="/" class="block py-2 {{ request()->routeIs('home') ? 'text-purple-600 font-semibold' : 'text-gray-700' }}">Home</a>
+            <a href="{{ route('classes.index') }}" class="block py-2 {{ request()->routeIs('classes.*') ? 'text-purple-600 font-semibold' : 'text-gray-700' }}">Classes</a>
+            <a href="{{ route('store.index') }}" class="block py-2 {{ request()->routeIs('store.*') ? 'text-purple-600 font-semibold' : 'text-gray-700' }}">Store</a>
+            <a href="{{ route('about') }}" class="block py-2 {{ request()->routeIs('about') ? 'text-purple-600 font-semibold' : 'text-gray-700' }}">About</a>
+            @auth
+                <a href="{{ route('bookings.index') }}" class="block py-2 {{ request()->routeIs('bookings.*') ? 'text-purple-600 font-semibold' : 'text-gray-700' }}">My Bookings</a>
+                <a href="{{ route('dashboard') }}" class="block py-2 text-gray-700">Dashboard</a>
+                @if(Auth::user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="block py-2 text-pink-600 font-semibold">Admin</a>
+                @endif
+                <a href="{{ route('profile.edit') }}" class="block py-2 text-gray-700">Profile</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="block w-full text-left py-2 text-gray-700">Log Out</button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="block py-2 text-gray-700">Login</a>
+                <a href="{{ route('register') }}" class="block py-2 text-purple-600 font-semibold">Sign Up</a>
+            @endauth
+        </div>
+    </div>
+</nav>

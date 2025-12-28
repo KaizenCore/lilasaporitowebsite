@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DownloadController;
@@ -29,6 +31,18 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/store', [StoreController::class, 'index'])->name('store.index');
 Route::get('/store/category/{slug}', [StoreController::class, 'category'])->name('store.category');
 Route::get('/store/{slug}', [StoreController::class, 'show'])->name('store.show');
+
+// Google OAuth Routes (Guest only)
+Route::middleware('guest')->group(function () {
+    Route::get('/auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('auth.google');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+});
+
+// Admin Login Routes (Separate password-based authentication)
+Route::middleware('guest')->group(function () {
+    Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login');
+    Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
+});
 
 // Dashboard (Auth Required)
 Route::get('/dashboard', function () {

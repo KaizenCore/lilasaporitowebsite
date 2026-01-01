@@ -54,7 +54,7 @@
                 {{ __('Create account') }}
             </a>
         </div>
-    @endif
+    </form>
 
     <!-- Google Sign In Button -->
     <div class="space-y-4">

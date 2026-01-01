@@ -7,6 +7,13 @@
 
         <title>{{ config('app.name', 'Lila Saporito') }}</title>
 
+        <!-- Dark mode script - must be first to prevent flash -->
+        <script>
+            if (localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        </script>
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
@@ -14,8 +21,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <body class="font-sans text-gray-900 dark:text-white antialiased">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
             <div>
                 <a href="/" class="flex flex-col items-center group">
                     <div class="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow">
@@ -29,12 +36,12 @@
                 </a>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white/80 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-2xl border border-white/20">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-xl overflow-hidden sm:rounded-2xl border border-white/20 dark:border-gray-700/50">
                 {{ $slot }}
             </div>
 
-            <p class="mt-8 text-center text-sm text-gray-500">
-                <a href="/" class="text-purple-600 hover:text-purple-700 font-medium">
+            <p class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                <a href="/" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium">
                     &larr; Back to site
                 </a>
             </p>

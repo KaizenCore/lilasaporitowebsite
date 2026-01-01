@@ -14,55 +14,55 @@
         <div class="max-w-7xl mx-auto">
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- My Bookings Card -->
-                <a href="{{ route('bookings.index') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
+                <a href="{{ route('bookings.index') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
                     <div class="flex items-center mb-4">
-                        <div class="bg-purple-100 p-3 rounded-lg">
-                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-purple-100 dark:bg-purple-900/50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition">My Bookings</h3>
-                    <p class="text-gray-600">View and manage your class bookings</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">My Bookings</h3>
+                    <p class="text-gray-600 dark:text-gray-400">View and manage your class bookings</p>
                 </a>
 
                 <!-- Browse Classes Card -->
-                <a href="{{ route('classes.index') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
+                <a href="{{ route('classes.index') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
                     <div class="flex items-center mb-4">
-                        <div class="bg-pink-100 p-3 rounded-lg">
-                            <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-pink-100 dark:bg-pink-900/50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-pink-600 transition">Browse Classes</h3>
-                    <p class="text-gray-600">Discover new art classes to join</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition">Browse Classes</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Discover new art classes to join</p>
                 </a>
 
                 <!-- Shop Card -->
-                <a href="{{ route('store.index') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
+                <a href="{{ route('store.index') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
                     <div class="flex items-center mb-4">
-                        <div class="bg-orange-100 p-3 rounded-lg">
-                            <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-orange-100 dark:bg-orange-900/50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 transition">Shop</h3>
-                    <p class="text-gray-600">Browse art supplies and products</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition">Shop</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Browse art supplies and products</p>
                 </a>
 
                 <!-- Profile Card -->
-                <a href="{{ route('profile.edit') }}" class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
+                <a href="{{ route('profile.edit') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
                     <div class="flex items-center mb-4">
-                        <div class="bg-purple-100 p-3 rounded-lg">
-                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-purple-100 dark:bg-purple-900/50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                         </div>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition">My Profile</h3>
-                    <p class="text-gray-600">Update your account information</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition">My Profile</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Update your account information</p>
                 </a>
 
                 @if(Auth::user()->isAdmin())

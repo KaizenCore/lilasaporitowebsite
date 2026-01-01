@@ -15,7 +15,7 @@
             <div class="grid lg:grid-cols-2 gap-12 items-center mb-16">
                 <!-- Image -->
                 <div class="order-2 lg:order-1">
-                    <div class="rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-purple-200 to-pink-200 aspect-square flex items-center justify-center">
+                    <div class="rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-purple-200 to-pink-200 dark:from-purple-900 dark:to-pink-900 aspect-square flex items-center justify-center">
                         <svg class="w-48 h-48 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
@@ -24,8 +24,8 @@
 
                 <!-- Bio -->
                 <div class="order-1 lg:order-2">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-6">Hello, I'm Lila!</h2>
-                    <div class="prose prose-lg text-gray-600 space-y-4">
+                    <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">Hello, I'm Lila!</h2>
+                    <div class="prose prose-lg dark:prose-invert text-gray-600 dark:text-gray-400 space-y-4">
                         <p>
                             I'm an artist and creative educator passionate about helping others discover their artistic voice.
                             For over a decade, I've been teaching art classes that blend technique with creative freedom,
@@ -46,54 +46,54 @@
             </div>
 
             <!-- What Makes Classes Special -->
-            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-16">
-                <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Why Take Classes with Me?</h2>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 mb-16">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Why Take Classes with Me?</h2>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="flex items-start">
-                        <div class="bg-purple-100 rounded-full p-3 mr-4 flex-shrink-0">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-purple-100 dark:bg-purple-900/50 rounded-full p-3 mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Personalized Attention</h3>
-                            <p class="text-gray-600">Small class sizes mean I can work with each student individually, adapting to your skill level and creative goals.</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Personalized Attention</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Small class sizes mean I can work with each student individually, adapting to your skill level and creative goals.</p>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="bg-pink-100 rounded-full p-3 mr-4 flex-shrink-0">
-                            <svg class="w-6 h-6 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-pink-100 dark:bg-pink-900/50 rounded-full p-3 mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">All Materials Provided</h3>
-                            <p class="text-gray-600">I provide all the art supplies you need - canvases, paints, brushes, and more. Just bring yourself!</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">All Materials Provided</h3>
+                            <p class="text-gray-600 dark:text-gray-400">I provide all the art supplies you need - canvases, paints, brushes, and more. Just bring yourself!</p>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="bg-orange-100 rounded-full p-3 mr-4 flex-shrink-0">
-                            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-orange-100 dark:bg-orange-900/50 rounded-full p-3 mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Beginner-Friendly</h3>
-                            <p class="text-gray-600">No experience needed! My classes are designed to be accessible and enjoyable for artists of all levels.</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Beginner-Friendly</h3>
+                            <p class="text-gray-600 dark:text-gray-400">No experience needed! My classes are designed to be accessible and enjoyable for artists of all levels.</p>
                         </div>
                     </div>
 
                     <div class="flex items-start">
-                        <div class="bg-purple-100 rounded-full p-3 mr-4 flex-shrink-0">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-purple-100 dark:bg-purple-900/50 rounded-full p-3 mr-4 flex-shrink-0">
+                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-2">Creative Community</h3>
-                            <p class="text-gray-600">Join a supportive community of fellow artists where we celebrate creativity and encourage each other.</p>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Creative Community</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Join a supportive community of fellow artists where we celebrate creativity and encourage each other.</p>
                         </div>
                     </div>
                 </div>
@@ -118,8 +118,8 @@
 
             <!-- Call to Action -->
             <div class="text-center">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Ready to Create Together?</h2>
-                <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Ready to Create Together?</h2>
+                <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
                     Browse my upcoming classes and find the perfect creative experience for you!
                 </p>
                 <a href="{{ route('classes.index') }}" class="inline-block bg-purple-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-purple-700 transition shadow-xl">

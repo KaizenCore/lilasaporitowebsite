@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Create Account</h1>
-        <p class="mt-2 text-sm text-gray-600">Join us to book your art classes.</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create Account</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Join us to book your art classes.</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}">
@@ -51,8 +51,8 @@
         </div>
 
         <div class="text-center mt-4">
-            <span class="text-sm text-gray-600">Already have an account?</span>
-            <a class="text-sm text-purple-600 hover:text-purple-700 font-medium ms-1" href="{{ route('login') }}">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Already have an account?</span>
+            <a class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium ms-1" href="{{ route('login') }}">
                 {{ __('Sign In') }}
             </a>
         </div>

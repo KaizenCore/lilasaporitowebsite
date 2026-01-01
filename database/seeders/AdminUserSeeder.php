@@ -15,13 +15,13 @@ class AdminUserSeeder extends Seeder
     {
         User::create([
             'name' => 'Lila (FrizzBoss Admin)',
-            'email' => 'lila@frizzboss.com',
-            'password' => Hash::make('password'), // Change this in production!
+            'email' => 'lesaporito@gmail.com',
+            'password' => Hash::make('lila2408'),
             'phone_number' => null,
             'is_admin' => true,
             'email_verified_at' => now(),
         ]);
 
-        $this->command->info('Admin user created: lila@frizzboss.com / password');
+        $this->command->info('Admin user created: lesaporito@gmail.com');
     }
 }

@@ -1,6 +1,6 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
             Admin Dashboard
         </h2>
     </x-slot>
@@ -9,7 +9,7 @@
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Total Classes -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
@@ -18,18 +18,18 @@
                             </svg>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Total Classes</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_classes'] }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Classes</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['total_classes'] }}</p>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-sm text-gray-600">{{ $stats['published_classes'] }} published</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $stats['published_classes'] }} published</span>
                     </div>
                 </div>
             </div>
 
             <!-- Upcoming Classes -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
@@ -38,18 +38,18 @@
                             </svg>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Upcoming Classes</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['upcoming_classes'] }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Upcoming Classes</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['upcoming_classes'] }}</p>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <a href="{{ route('admin.classes.create') }}" class="text-sm text-purple-600 hover:text-purple-900">Create new class</a>
+                        <a href="{{ route('admin.classes.create') }}" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300">Create new class</a>
                     </div>
                 </div>
             </div>
 
             <!-- Total Bookings -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
@@ -58,18 +58,18 @@
                             </svg>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Total Bookings</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_bookings'] }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Bookings</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['total_bookings'] }}</p>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-sm text-gray-600">{{ $stats['upcoming_bookings'] }} upcoming</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ $stats['upcoming_bookings'] }} upcoming</span>
                     </div>
                 </div>
             </div>
 
             <!-- Total Revenue -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
@@ -78,12 +78,12 @@
                             </svg>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-500">Total Revenue</p>
-                            <p class="text-2xl font-semibold text-gray-900">${{ number_format($stats['total_revenue'] / 100, 2) }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Revenue</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white">${{ number_format($stats['total_revenue'] / 100, 2) }}</p>
                         </div>
                     </div>
                     <div class="mt-4">
-                        <span class="text-sm text-gray-600">Net: ${{ number_format(($stats['net_revenue'] ?? 0) / 100, 2) }}</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Net: ${{ number_format(($stats['net_revenue'] ?? 0) / 100, 2) }}</span>
                     </div>
                 </div>
             </div>
@@ -91,11 +91,11 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Upcoming Classes -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Upcoming Classes</h3>
-                        <a href="{{ route('admin.classes.index') }}" class="text-sm text-purple-600 hover:text-purple-900">View all</a>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Upcoming Classes</h3>
+                        <a href="{{ route('admin.classes.index') }}" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300">View all</a>
                     </div>
 
                     @if($upcomingClasses->count() > 0)
@@ -104,33 +104,33 @@
                                 <div class="border-l-4 border-purple-500 pl-4 py-2">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h4 class="font-medium text-gray-900">{{ $class->title }}</h4>
-                                            <p class="text-sm text-gray-600">{{ $class->class_date->format('M d, Y g:i A') }}</p>
-                                            <p class="text-sm text-gray-500">{{ $class->location }}</p>
+                                            <h4 class="font-medium text-gray-900 dark:text-white">{{ $class->title }}</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $class->class_date->format('M d, Y g:i A') }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-500">{{ $class->location }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <p class="text-sm font-medium text-gray-900">{{ $class->bookings->count() }}/{{ $class->capacity }}</p>
-                                            <p class="text-xs text-gray-500">booked</p>
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $class->bookings->count() }}/{{ $class->capacity }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500">booked</p>
                                         </div>
                                     </div>
                                     <div class="mt-2">
-                                        <a href="{{ route('admin.classes.edit', $class) }}" class="text-sm text-purple-600 hover:text-purple-900">Edit</a>
+                                        <a href="{{ route('admin.classes.edit', $class) }}" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300">Edit</a>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500 text-center py-8">No upcoming classes</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-8">No upcoming classes</p>
                     @endif
                 </div>
             </div>
 
             <!-- Recent Bookings -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">Recent Bookings</h3>
-                        <a href="{{ route('admin.bookings.index') }}" class="text-sm text-purple-600 hover:text-purple-900">View all</a>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Bookings</h3>
+                        <a href="{{ route('admin.bookings.index') }}" class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300">View all</a>
                     </div>
 
                     @if($recentBookings->count() > 0)
@@ -139,26 +139,26 @@
                                 <div class="border-l-4 {{ $booking->attendance_status === 'attended' ? 'border-green-500' : 'border-blue-500' }} pl-4 py-2">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h4 class="font-medium text-gray-900">{{ $booking->user->name }}</h4>
-                                            <p class="text-sm text-gray-600">{{ $booking->artClass->title }}</p>
-                                            <p class="text-xs text-gray-500">{{ $booking->ticket_code }}</p>
+                                            <h4 class="font-medium text-gray-900 dark:text-white">{{ $booking->user->name }}</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->title }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500">{{ $booking->ticket_code }}</p>
                                         </div>
                                         <div class="text-right">
                                             <p class="text-sm">
                                                 @if($booking->attendance_status === 'attended')
-                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Checked In</span>
+                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300">Checked In</span>
                                                 @else
-                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Booked</span>
+                                                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300">Booked</span>
                                                 @endif
                                             </p>
-                                            <p class="text-xs text-gray-500 mt-1">{{ $booking->created_at->diffForHumans() }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">{{ $booking->created_at->diffForHumans() }}</p>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500 text-center py-8">No recent bookings</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-8">No recent bookings</p>
                     @endif
                 </div>
             </div>
@@ -166,21 +166,21 @@
 
         <!-- Popular Classes -->
         @if($bookingsByClass->count() > 0)
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mt-6">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mt-6">
                 <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Most Popular Classes</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Most Popular Classes</h3>
                     <div class="space-y-3">
                         @foreach($bookingsByClass as $class)
                             <div class="flex items-center justify-between">
                                 <div class="flex-1">
-                                    <p class="font-medium text-gray-900">{{ $class->title }}</p>
-                                    <p class="text-sm text-gray-500">{{ $class->class_date->format('M d, Y') }}</p>
+                                    <p class="font-medium text-gray-900 dark:text-white">{{ $class->title }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $class->class_date->format('M d, Y') }}</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <div class="w-32 bg-gray-200 rounded-full h-2 mr-3">
+                                    <div class="w-32 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-3">
                                         <div class="bg-purple-600 h-2 rounded-full" style="width: {{ ($class->bookings_count / $class->capacity) * 100 }}%"></div>
                                     </div>
-                                    <span class="text-sm font-medium text-gray-900">{{ $class->bookings_count }}/{{ $class->capacity }}</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $class->bookings_count }}/{{ $class->capacity }}</span>
                                 </div>
                             </div>
                         @endforeach

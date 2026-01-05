@@ -54,9 +54,13 @@ class DashboardController extends Controller
         // Revenue by month (last 6 months)
         // Database-agnostic date formatting
         $driver = DB::connection()->getDriverName();
-        $dateFormat = $driver === 'sqlite'
-            ? "strftime('%Y-%m', created_at)"
-            : "DATE_FORMAT(created_at, '%Y-%m')";
+        if ($driver === 'sqlite') {
+            $dateFormat = "strftime('%Y-%m', created_at)";
+        } elseif ($driver === 'pgsql') {
+            $dateFormat = "TO_CHAR(created_at, 'YYYY-MM')";
+        } else {
+            $dateFormat = "DATE_FORMAT(created_at, '%Y-%m')";
+        }
 
         $revenueByMonth = Payment::where('status', 'succeeded')
             ->where('created_at', '>=', now()->subMonths(6))

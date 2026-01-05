@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        <!-- Dark mode script - must be first to prevent flash -->
+        <script>
+            if (localStorage.getItem('darkMode') === 'true' || (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        </script>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -15,9 +21,9 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
             <!-- Admin Navigation -->
-            <nav class="bg-purple-600 border-b border-purple-700">
+            <nav class="bg-purple-600 dark:bg-purple-900 border-b border-purple-700 dark:border-purple-950">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex">
@@ -52,9 +58,10 @@
                         </div>
 
                         <!-- Settings Dropdown -->
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
-                            <div class="ml-3 relative">
-                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 hover:bg-purple-500 focus:outline-none transition ease-in-out duration-150" onclick="document.getElementById('user-dropdown').classList.toggle('hidden')">
+                        <div class="hidden sm:flex sm:items-center sm:ml-6 space-x-4">
+                            <x-theme-toggle class="text-white hover:bg-purple-500 dark:hover:bg-purple-800" />
+                            <div class="relative">
+                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-purple-600 dark:bg-purple-800 hover:bg-purple-500 dark:hover:bg-purple-700 focus:outline-none transition ease-in-out duration-150" onclick="document.getElementById('user-dropdown').classList.toggle('hidden')">
                                     <div>{{ Auth::user()->name }}</div>
                                     <div class="ml-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -63,14 +70,14 @@
                                     </div>
                                 </button>
 
-                                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5">
                                     <div class="py-1">
-                                        <a href="{{ route('home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Public Site</a>
-                                        <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">User Dashboard</a>
-                                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                                        <a href="{{ route('home') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Public Site</a>
+                                        <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">User Dashboard</a>
+                                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
                                         <form method="POST" action="{{ route('logout') }}">
                                             @csrf
-                                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                                                 Log Out
                                             </button>
                                         </form>
@@ -80,7 +87,8 @@
                         </div>
 
                         <!-- Hamburger -->
-                        <div class="-mr-2 flex items-center sm:hidden">
+                        <div class="-mr-2 flex items-center space-x-2 sm:hidden">
+                            <x-theme-toggle class="text-white hover:bg-purple-500 dark:hover:bg-purple-800" />
                             <button onclick="document.getElementById('responsive-nav').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-purple-100 hover:text-white hover:bg-purple-500 focus:outline-none focus:bg-purple-500 focus:text-white transition duration-150 ease-in-out">
                                 <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -93,28 +101,28 @@
                 <!-- Responsive Navigation Menu -->
                 <div id="responsive-nav" class="hidden sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
-                        <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.dashboard') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                        <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.dashboard') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Dashboard
                         </a>
-                        <a href="{{ route('admin.classes.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.classes.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                        <a href="{{ route('admin.classes.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.classes.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Classes
                         </a>
-                        <a href="{{ route('admin.bookings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.bookings.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                        <a href="{{ route('admin.bookings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.bookings.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Bookings
                         </a>
-                        <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                        <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Calendar
                         </a>
-                        <a href="{{ route('admin.products.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.products.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                        <a href="{{ route('admin.products.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.products.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Products
                         </a>
-                        <a href="{{ route('admin.categories.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.categories.*') ? 'border-white bg-purple-700 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                        <a href="{{ route('admin.categories.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.categories.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Categories
                         </a>
                     </div>
 
                     <!-- Responsive Settings Options -->
-                    <div class="pt-4 pb-1 border-t border-purple-700">
+                    <div class="pt-4 pb-1 border-t border-purple-700 dark:border-purple-800">
                         <div class="px-4">
                             <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
                             <div class="font-medium text-sm text-purple-200">{{ Auth::user()->email }}</div>
@@ -137,7 +145,7 @@
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
+                <header class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900/50">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -147,7 +155,7 @@
             <!-- Flash Messages -->
             @if (session('success'))
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="bg-green-100 dark:bg-green-900/50 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline">{{ session('success') }}</span>
                     </div>
                 </div>
@@ -155,7 +163,7 @@
 
             @if (session('error'))
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline">{{ session('error') }}</span>
                     </div>
                 </div>
@@ -163,7 +171,7 @@
 
             @if (session('warning'))
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-                    <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="bg-yellow-100 dark:bg-yellow-900/50 border border-yellow-400 dark:border-yellow-700 text-yellow-700 dark:text-yellow-300 px-4 py-3 rounded relative" role="alert">
                         <span class="block sm:inline">{{ session('warning') }}</span>
                     </div>
                 </div>

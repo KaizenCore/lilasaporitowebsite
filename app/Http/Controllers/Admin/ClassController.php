@@ -42,6 +42,7 @@ class ClassController extends Controller
             'short_description' => 'nullable|string|max:500',
             'materials_included' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'class_date' => 'required|date|after:now',
             'duration_minutes' => 'required|integer|min:30|max:480',
             'price_cents' => 'required|integer|min:0',
@@ -56,6 +57,16 @@ class ClassController extends Controller
             $imagePath = $request->file('image')->store('class-images', 'public');
         }
 
+        // Handle gallery images upload
+        $galleryImages = null;
+        if ($request->hasFile('gallery_images')) {
+            $galleryPaths = [];
+            foreach ($request->file('gallery_images') as $image) {
+                $galleryPaths[] = $image->store('class-images/gallery', 'public');
+            }
+            $galleryImages = json_encode($galleryPaths);
+        }
+
         // Convert price from dollars to cents if needed
         $priceCents = $validated['price_cents'];
 
@@ -67,6 +78,7 @@ class ClassController extends Controller
             'short_description' => $validated['short_description'] ?? null,
             'materials_included' => $validated['materials_included'] ?? null,
             'image_path' => $imagePath,
+            'gallery_images' => $galleryImages,
             'class_date' => $validated['class_date'],
             'duration_minutes' => $validated['duration_minutes'],
             'price_cents' => $priceCents,
@@ -110,6 +122,8 @@ class ClassController extends Controller
             'short_description' => 'nullable|string|max:500',
             'materials_included' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_gallery_images' => 'nullable|array',
             'class_date' => 'required|date',
             'duration_minutes' => 'required|integer|min:30|max:480',
             'price_cents' => 'required|integer|min:0',
@@ -127,6 +141,26 @@ class ClassController extends Controller
 
             $validated['image_path'] = $request->file('image')->store('class-images', 'public');
         }
+
+        // Handle gallery images
+        $currentGallery = $class->gallery_images ? json_decode($class->gallery_images, true) : [];
+
+        // Remove selected gallery images
+        if ($request->has('remove_gallery_images')) {
+            foreach ($request->remove_gallery_images as $path) {
+                Storage::disk('public')->delete($path);
+                $currentGallery = array_filter($currentGallery, fn($img) => $img !== $path);
+            }
+        }
+
+        // Add new gallery images
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $image) {
+                $currentGallery[] = $image->store('class-images/gallery', 'public');
+            }
+        }
+
+        $validated['gallery_images'] = !empty($currentGallery) ? json_encode(array_values($currentGallery)) : null;
 
         // Update slug if title changed
         if ($validated['title'] !== $class->title) {

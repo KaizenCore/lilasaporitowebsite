@@ -18,6 +18,7 @@ class ArtClass extends Model
         'short_description',
         'materials_included',
         'image_path',
+        'gallery_images',
         'class_date',
         'duration_minutes',
         'price_cents',

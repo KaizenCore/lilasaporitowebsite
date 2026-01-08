@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Node
+node_modules
+
+# Testing
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Development files
+.env
+.env.local
+.env.*.local
+docker-compose*.yml
+
+# Documentation
+*.md
+!README.md
+
+# Storage (will be created at runtime)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+!storage/logs/.gitkeep
+!storage/framework/cache/.gitkeep
+!storage/framework/sessions/.gitkeep
+!storage/framework/views/.gitkeep
+
+# Other
+.editorconfig
+.styleci.yml
+Makefile

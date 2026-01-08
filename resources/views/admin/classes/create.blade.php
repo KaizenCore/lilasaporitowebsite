@@ -53,13 +53,24 @@
                         @enderror
                     </div>
 
-                    <!-- Image -->
+                    <!-- Main Image -->
                     <div class="mb-4">
-                        <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Class Image</label>
+                        <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Main Class Image</label>
                         <input type="file" name="image" id="image" accept="image/*"
                             class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 dark:file:bg-purple-900/50 file:text-purple-700 dark:file:text-purple-300 hover:file:bg-purple-100 dark:hover:file:bg-purple-900 @error('image') border-red-500 @enderror">
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">JPG, PNG, or GIF (max 2MB)</p>
                         @error('image')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Gallery Images -->
+                    <div class="mb-4">
+                        <label for="gallery_images" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gallery Images</label>
+                        <input type="file" name="gallery_images[]" id="gallery_images" accept="image/*" multiple
+                            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 dark:file:bg-purple-900/50 file:text-purple-700 dark:file:text-purple-300 hover:file:bg-purple-100 dark:hover:file:bg-purple-900 @error('gallery_images.*') border-red-500 @enderror">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Select multiple images to create a gallery (max 2MB each)</p>
+                        @error('gallery_images.*')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>

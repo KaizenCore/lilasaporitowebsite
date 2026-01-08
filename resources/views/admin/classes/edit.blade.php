@@ -54,23 +54,53 @@
                         @enderror
                     </div>
 
-                    <!-- Current Image -->
-                    @if($class->image_path)
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Current Image</label>
-                            <img src="{{ asset('storage/' . $class->image_path) }}" alt="{{ $class->title }}" class="mt-2 h-48 w-auto rounded-lg">
-                        </div>
-                    @endif
-
-                    <!-- Image -->
+                    <!-- Main Image -->
                     <div class="mb-4">
-                        <label for="image" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {{ $class->image_path ? 'Replace Image' : 'Class Image' }}
-                        </label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Main Class Image</label>
+                        @if($class->image_path)
+                            <div class="mb-4">
+                                <img src="{{ Storage::url($class->image_path) }}" alt="{{ $class->title }}" class="h-48 w-auto rounded-lg shadow">
+                            </div>
+                        @endif
                         <input type="file" name="image" id="image" accept="image/*"
-                            class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 dark:file:bg-purple-900/50 file:text-purple-700 dark:file:text-purple-300 hover:file:bg-purple-100 dark:hover:file:bg-purple-900 @error('image') border-red-500 @enderror">
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">JPG, PNG, or GIF (max 2MB)</p>
+                            class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 dark:file:bg-purple-900/50 file:text-purple-700 dark:file:text-purple-300 hover:file:bg-purple-100 dark:hover:file:bg-purple-900 @error('image') border-red-500 @enderror">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ $class->image_path ? 'Upload to replace current image.' : '' }} JPG, PNG, or GIF (max 2MB)</p>
                         @error('image')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Gallery Images -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gallery Images</label>
+
+                        @php
+                            $galleryImages = $class->gallery_images ? json_decode($class->gallery_images, true) : [];
+                        @endphp
+
+                        @if(count($galleryImages) > 0)
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                @foreach($galleryImages as $image)
+                                    <div class="relative group">
+                                        <img src="{{ Storage::url($image) }}" alt="Gallery image" class="h-32 w-full object-cover rounded shadow">
+                                        <label class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                                            <input type="checkbox" name="remove_gallery_images[]" value="{{ $image }}" class="sr-only peer">
+                                            <span class="text-white text-sm peer-checked:text-red-400">
+                                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Hover and click to mark images for removal.</p>
+                        @endif
+
+                        <input type="file" name="gallery_images[]" id="gallery_images" accept="image/*" multiple
+                            class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 dark:file:bg-purple-900/50 file:text-purple-700 dark:file:text-purple-300 hover:file:bg-purple-100 dark:hover:file:bg-purple-900 @error('gallery_images.*') border-red-500 @enderror">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add more gallery images (max 2MB each)</p>
+                        @error('gallery_images.*')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>

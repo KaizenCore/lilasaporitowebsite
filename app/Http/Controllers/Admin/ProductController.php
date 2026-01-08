@@ -70,6 +70,7 @@ class ProductController extends Controller
             'compare_at_price_cents' => 'nullable|integer|min:0',
             'product_type' => 'required|in:physical,digital,class_package',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'digital_file' => 'required_if:product_type,digital|file|max:51200', // 50MB max
             'stock_quantity' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:50|unique:products,sku',
@@ -88,6 +89,15 @@ class ProductController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             $validated['image_path'] = $request->file('image')->store('products', 'public');
+        }
+
+        // Handle gallery images upload
+        if ($request->hasFile('gallery_images')) {
+            $galleryPaths = [];
+            foreach ($request->file('gallery_images') as $image) {
+                $galleryPaths[] = $image->store('products/gallery', 'public');
+            }
+            $validated['gallery_images'] = json_encode($galleryPaths);
         }
 
         // Handle digital file upload
@@ -145,6 +155,8 @@ class ProductController extends Controller
             'compare_at_price_cents' => 'nullable|integer|min:0',
             'product_type' => 'required|in:physical,digital,class_package',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'remove_gallery_images' => 'nullable|array',
             'digital_file' => 'nullable|file|max:51200',
             'stock_quantity' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:50|unique:products,sku,' . $product->id,
@@ -168,6 +180,26 @@ class ProductController extends Controller
             }
             $validated['image_path'] = $request->file('image')->store('products', 'public');
         }
+
+        // Handle gallery images
+        $currentGallery = $product->gallery_images ? json_decode($product->gallery_images, true) : [];
+
+        // Remove selected gallery images
+        if ($request->has('remove_gallery_images')) {
+            foreach ($request->remove_gallery_images as $path) {
+                Storage::disk('public')->delete($path);
+                $currentGallery = array_filter($currentGallery, fn($img) => $img !== $path);
+            }
+        }
+
+        // Add new gallery images
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $image) {
+                $currentGallery[] = $image->store('products/gallery', 'public');
+            }
+        }
+
+        $validated['gallery_images'] = !empty($currentGallery) ? json_encode(array_values($currentGallery)) : null;
 
         // Handle digital file upload
         if ($request->hasFile('digital_file')) {

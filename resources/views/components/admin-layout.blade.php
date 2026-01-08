@@ -54,6 +54,9 @@
                                 <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.categories.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Categories
                                 </a>
+                                <a href="{{ route('admin.settings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.settings.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
+                                    Settings
+                                </a>
                             </div>
                         </div>
 
@@ -118,6 +121,9 @@
                         </a>
                         <a href="{{ route('admin.categories.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.categories.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Categories
+                        </a>
+                        <a href="{{ route('admin.settings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.settings.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
+                            Settings
                         </a>
                     </div>
 

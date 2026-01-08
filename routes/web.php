@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductCategoryController;
+use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -117,6 +118,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Product Management
     Route::resource('products', ProductController::class);
     Route::resource('categories', ProductCategoryController::class);
+
+    // Site Settings
+    Route::get('/settings', [SiteSettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SiteSettingsController::class, 'update'])->name('settings.update');
+    Route::delete('/settings/photo', [SiteSettingsController::class, 'deletePhoto'])->name('settings.delete-photo');
 });
 
 require __DIR__.'/auth.php';

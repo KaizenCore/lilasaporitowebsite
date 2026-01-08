@@ -5,7 +5,21 @@
       "Bash(php artisan:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "mcp__vibe_kanban__list_projects",
+      "Bash(git pull:*)",
+      "Bash(cat:*)",
+      "Bash(cmd.exe /c \"cd C:\\\\Users\\\\ezraj\\\\lilaapp && php artisan serve\")",
+      "Bash(where:*)",
+      "Bash(cmd.exe /c \"where php\")",
+      "Bash(cmd.exe /c \"if exist C:\\\\laragon\\\\bin\\\\php\\\\php-8.3*\\\\php.exe echo Laragon PHP found\")",
+      "Bash(ls:*)",
+      "Bash(printenv:*)",
+      "Bash(tr:*)",
+      "Bash(echo:*)",
+      "Bash(env)",
+      "Bash(cmd.exe /c \"mklink /D C:\\\\Users\\\\ezraj\\\\lilaapp\\\\public\\\\storage C:\\\\Users\\\\ezraj\\\\lilaapp\\\\storage\\\\app\\\\public\")"
     ]
   }
 }

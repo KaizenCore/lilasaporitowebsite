@@ -2,7 +2,6 @@
     <x-slot name="title">Checkout - {{ $class->title }} - FrizzBoss</x-slot>
 
     <x-slot name="head">
-        @vite(['resources/js/checkout.js'])
         <script src="https://js.stripe.com/v3/"></script>
     </x-slot>
 
@@ -153,4 +152,5 @@
         window.createPaymentIntentUrl = '{{ route('checkout.payment-intent') }}';
         window.csrfToken = '{{ csrf_token() }}';
     </script>
+    @vite(['resources/js/checkout.js'])
 </x-public-layout>

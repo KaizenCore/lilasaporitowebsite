@@ -15,18 +15,68 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div class="grid lg:grid-cols-2 gap-12">
             <!-- Image Section -->
-            <div>
-                @if($class->image_path)
-                <div class="rounded-2xl overflow-hidden shadow-2xl">
-                    <img src="{{ Storage::url($class->image_path) }}" alt="{{ $class->title }}" class="w-full h-auto object-cover">
+            <div x-data="{
+                activeImage: '{{ $class->image_path ? Storage::url($class->image_path) : '' }}',
+                showLightbox: false,
+                lightboxImage: ''
+            }">
+                <!-- Main Image -->
+                <div class="rounded-2xl overflow-hidden shadow-2xl cursor-pointer" @click="if(activeImage) { lightboxImage = activeImage; showLightbox = true; }">
+                    @if($class->image_path)
+                    <img :src="activeImage" alt="{{ $class->title }}" class="w-full h-auto object-cover">
+                    @else
+                    <div class="bg-gradient-to-br from-purple-200 to-pink-200 dark:from-purple-900 dark:to-pink-900 aspect-square flex items-center justify-center">
+                        <svg class="w-32 h-32 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                        </svg>
+                    </div>
+                    @endif
                 </div>
-                @else
-                <div class="rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-purple-200 to-pink-200 dark:from-purple-900 dark:to-pink-900 aspect-square flex items-center justify-center">
-                    <svg class="w-32 h-32 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                    </svg>
+
+                <!-- Gallery Thumbnails -->
+                @php
+                    $galleryImages = $class->gallery_images ? json_decode($class->gallery_images, true) : [];
+                @endphp
+
+                @if($class->image_path || count($galleryImages) > 0)
+                <div class="mt-4 grid grid-cols-4 gap-2">
+                    @if($class->image_path)
+                    <div class="cursor-pointer rounded-lg overflow-hidden border-2 transition-all"
+                         :class="activeImage === '{{ Storage::url($class->image_path) }}' ? 'border-purple-500' : 'border-transparent hover:border-purple-300'"
+                         @click="activeImage = '{{ Storage::url($class->image_path) }}'">
+                        <img src="{{ Storage::url($class->image_path) }}" alt="{{ $class->title }}" class="w-full h-20 object-cover">
+                    </div>
+                    @endif
+
+                    @foreach($galleryImages as $image)
+                    <div class="cursor-pointer rounded-lg overflow-hidden border-2 transition-all"
+                         :class="activeImage === '{{ Storage::url($image) }}' ? 'border-purple-500' : 'border-transparent hover:border-purple-300'"
+                         @click="activeImage = '{{ Storage::url($image) }}'">
+                        <img src="{{ Storage::url($image) }}" alt="Gallery image" class="w-full h-20 object-cover">
+                    </div>
+                    @endforeach
                 </div>
                 @endif
+
+                <!-- Lightbox Modal -->
+                <div x-show="showLightbox"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     @click="showLightbox = false"
+                     @keydown.escape.window="showLightbox = false"
+                     class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+                     style="display: none;">
+                    <button @click="showLightbox = false" class="absolute top-4 right-4 text-white hover:text-gray-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                    <img :src="lightboxImage" class="max-w-full max-h-full object-contain rounded-lg" @click.stop>
+                </div>
             </div>
 
             <!-- Details Section -->

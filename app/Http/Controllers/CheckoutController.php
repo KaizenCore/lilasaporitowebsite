@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingConfirmation;
 use App\Models\ArtClass;
 use App\Models\Booking;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -196,6 +198,19 @@ class CheckoutController extends Controller
                 'payment_id' => $payment->id,
                 'ticket_code' => $booking->ticket_code,
             ]);
+
+            // Send confirmation email
+            try {
+                $booking->load('artClass', 'user');
+                Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
+                Log::info('Booking confirmation email sent', ['booking_id' => $booking->id]);
+            } catch (\Exception $e) {
+                Log::error('Failed to send booking confirmation email', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+                // Don't fail the booking if email fails
+            }
 
             return response()->json([
                 'success' => true,

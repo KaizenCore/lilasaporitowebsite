@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingConfirmation;
 use App\Models\ArtClass;
 use App\Models\Booking;
 use App\Models\Order;
@@ -12,6 +13,7 @@ use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -150,8 +152,17 @@ class PaymentController extends Controller
             'ticket_code' => $booking->ticket_code,
         ]);
 
-        // Here you could dispatch an event to send confirmation email
-        // event(new BookingConfirmed($booking));
+        // Send confirmation email
+        try {
+            $booking->load('artClass', 'user');
+            Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
+            Log::info('Booking confirmation email sent via webhook', ['booking_id' => $booking->id]);
+        } catch (\Exception $e) {
+            Log::error('Failed to send booking confirmation email via webhook', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

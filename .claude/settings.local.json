@@ -19,7 +19,11 @@
       "Bash(tr:*)",
       "Bash(echo:*)",
       "Bash(env)",
-      "Bash(cmd.exe /c \"mklink /D C:\\\\Users\\\\ezraj\\\\lilaapp\\\\public\\\\storage C:\\\\Users\\\\ezraj\\\\lilaapp\\\\storage\\\\app\\\\public\")"
+      "Bash(cmd.exe /c \"mklink /D C:\\\\Users\\\\ezraj\\\\lilaapp\\\\public\\\\storage C:\\\\Users\\\\ezraj\\\\lilaapp\\\\storage\\\\app\\\\public\")",
+      "Bash(composer require:*)",
+      "Bash(php -v:*)",
+      "Bash(\"/c/Users/ezraj/.config/herd/bin/composer\" --version)",
+      "Bash(\"/c/Users/ezraj/.config/herd/bin/php\" -v)"
     ]
   }
 }

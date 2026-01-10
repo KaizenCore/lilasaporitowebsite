@@ -119,6 +119,104 @@ class CheckoutController extends Controller
     }
 
     /**
+     * Confirm payment and create booking (called after Stripe payment succeeds)
+     */
+    public function confirmPayment(Request $request)
+    {
+        $request->validate([
+            'payment_intent_id' => 'required|string',
+            'art_class_id' => 'required|exists:art_classes,id',
+        ]);
+
+        try {
+            // Retrieve the payment intent from Stripe to verify it succeeded
+            $paymentIntent = $this->stripeService->retrievePaymentIntent($request->payment_intent_id);
+
+            if ($paymentIntent->status !== 'succeeded') {
+                return response()->json([
+                    'error' => 'Payment has not been completed.'
+                ], 400);
+            }
+
+            // Check the metadata matches
+            if ($paymentIntent->metadata->art_class_id != $request->art_class_id ||
+                $paymentIntent->metadata->user_id != Auth::id()) {
+                return response()->json([
+                    'error' => 'Payment verification failed.'
+                ], 400);
+            }
+
+            $class = ArtClass::findOrFail($request->art_class_id);
+
+            // Check if booking already exists (prevent duplicates)
+            $existingBooking = Booking::where('user_id', Auth::id())
+                ->where('art_class_id', $class->id)
+                ->whereIn('payment_status', ['completed'])
+                ->first();
+
+            if ($existingBooking) {
+                return response()->json([
+                    'success' => true,
+                    'booking_id' => $existingBooking->id,
+                    'message' => 'Booking already exists.'
+                ]);
+            }
+
+            // Create the booking
+            $booking = Booking::create([
+                'user_id' => Auth::id(),
+                'art_class_id' => $class->id,
+                'payment_status' => 'completed',
+                'attendance_status' => 'booked',
+            ]);
+
+            // Create the payment record
+            $payment = \App\Models\Payment::create([
+                'booking_id' => $booking->id,
+                'stripe_payment_intent_id' => $paymentIntent->id,
+                'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
+                'stripe_customer_id' => $paymentIntent->customer ?? null,
+                'amount_cents' => $paymentIntent->amount,
+                'currency' => $paymentIntent->currency,
+                'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
+                'status' => 'succeeded',
+                'metadata' => [
+                    'class_title' => $class->title,
+                    'class_date' => $class->class_date->toDateTimeString(),
+                    'user_email' => Auth::user()->email,
+                ],
+            ]);
+
+            // Calculate Stripe fees
+            $payment->calculateStripeFee();
+            $payment->save();
+
+            Log::info('Booking created via confirm endpoint', [
+                'booking_id' => $booking->id,
+                'payment_id' => $payment->id,
+                'ticket_code' => $booking->ticket_code,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'booking_id' => $booking->id,
+                'ticket_code' => $booking->ticket_code,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Payment confirmation failed', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'payment_intent_id' => $request->payment_intent_id,
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to confirm payment. Please contact support.'
+            ], 500);
+        }
+    }
+
+    /**
      * Payment success page
      */
     public function success(Booking $booking)

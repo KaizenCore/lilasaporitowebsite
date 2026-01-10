@@ -150,6 +150,7 @@
         window.stripePublicKey = '{{ config('services.stripe.key') }}';
         window.artClassId = {{ $class->id }};
         window.createPaymentIntentUrl = '{{ route('checkout.payment-intent') }}';
+        window.confirmPaymentUrl = '{{ route('checkout.confirm-payment') }}';
         window.csrfToken = '{{ csrf_token() }}';
     </script>
     @vite(['resources/js/checkout.js'])

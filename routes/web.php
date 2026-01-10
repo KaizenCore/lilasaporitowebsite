@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/{class:slug}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.payment-intent');
+    Route::post('/checkout/confirm-payment', [CheckoutController::class, 'confirmPayment'])->name('checkout.confirm-payment');
     Route::get('/checkout/success/{booking}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
 

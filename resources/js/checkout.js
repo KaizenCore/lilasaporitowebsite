@@ -81,11 +81,8 @@ form.addEventListener('submit', async (event) => {
             showError(error.message);
             setLoading(false);
         } else if (paymentIntent.status === 'succeeded') {
-            // Payment successful - wait a moment for webhook to process
-            // Then redirect or poll for booking creation
-            setTimeout(() => {
-                pollForBooking(paymentIntent.id);
-            }, 2000);
+            // Payment successful - confirm and create booking
+            await confirmPaymentAndCreateBooking(paymentIntent.id);
         }
     } catch (error) {
         showError(error.message || 'An unexpected error occurred');
@@ -93,48 +90,36 @@ form.addEventListener('submit', async (event) => {
     }
 });
 
-// Poll for booking creation (after webhook processes)
-async function pollForBooking(paymentIntentId, attempts = 0) {
-    const maxAttempts = 10;
-
+// Confirm payment and create booking
+async function confirmPaymentAndCreateBooking(paymentIntentId) {
     try {
-        // Try to find the booking by checking user's bookings
-        const response = await fetch(`/my-bookings?check_payment=${paymentIntentId}`, {
+        const response = await fetch(window.confirmPaymentUrl, {
+            method: 'POST',
             headers: {
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': window.csrfToken
-            }
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': window.csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                payment_intent_id: paymentIntentId,
+                art_class_id: window.artClassId
+            })
         });
 
-        if (response.ok) {
-            const data = await response.json();
+        const data = await response.json();
 
-            if (data.booking_id) {
-                // Booking found, redirect to success page
-                window.location.href = `/checkout/success/${data.booking_id}`;
-                return;
-            }
-        }
-
-        // If not found and haven't exceeded attempts, try again
-        if (attempts < maxAttempts) {
-            setTimeout(() => {
-                pollForBooking(paymentIntentId, attempts + 1);
-            }, 1000);
+        if (response.ok && data.success) {
+            // Booking created, redirect to success page
+            window.location.href = `/checkout/success/${data.booking_id}`;
         } else {
-            // Fallback: redirect to bookings page with success message
-            window.location.href = '/my-bookings?payment_success=1';
+            // Show error but payment was successful
+            showError(data.error || 'Payment succeeded but booking creation failed. Please contact support.');
+            setLoading(false);
         }
     } catch (error) {
-        console.error('Error polling for booking:', error);
-
-        if (attempts < maxAttempts) {
-            setTimeout(() => {
-                pollForBooking(paymentIntentId, attempts + 1);
-            }, 1000);
-        } else {
-            window.location.href = '/my-bookings?payment_success=1';
-        }
+        console.error('Error confirming payment:', error);
+        showError('Payment succeeded but we could not confirm your booking. Please contact support.');
+        setLoading(false);
     }
 }
 

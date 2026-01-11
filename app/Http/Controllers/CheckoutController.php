@@ -211,7 +211,7 @@ class CheckoutController extends Controller
                 $booking->load('artClass', 'user');
                 Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
                 Log::info('Booking confirmation email sent', ['booking_id' => $booking->id]);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Log::error('Failed to send booking confirmation email', [
                     'booking_id' => $booking->id,
                     'error' => $e->getMessage(),

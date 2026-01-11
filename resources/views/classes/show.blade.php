@@ -147,6 +147,118 @@
                 </div>
 
                 <!-- Price and Book Button -->
+                @if($class->is_party_event)
+                <!-- Party Event Pricing -->
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white"
+                     x-data="{
+                         package: 'small',
+                         guestCount: {{ $class->small_party_size ?? 6 }},
+                         smallPrice: {{ $class->small_party_price_cents ?? 15000 }},
+                         smallSize: {{ $class->small_party_size ?? 6 }},
+                         largePrice: {{ $class->large_party_price_cents ?? 25000 }},
+                         largeSize: {{ $class->large_party_size ?? 12 }},
+                         additionalPrice: {{ $class->additional_guest_price_cents ?? 2000 }},
+                         maxGuests: {{ $class->max_party_size ?? 20 }},
+                         get basePrice() {
+                             return this.package === 'small' ? this.smallPrice : this.largePrice;
+                         },
+                         get includedGuests() {
+                             return this.package === 'small' ? this.smallSize : this.largeSize;
+                         },
+                         get extraGuests() {
+                             return Math.max(0, this.guestCount - this.includedGuests);
+                         },
+                         get totalPrice() {
+                             return this.basePrice + (this.extraGuests * this.additionalPrice);
+                         },
+                         get formattedTotal() {
+                             return '$' + (this.totalPrice / 100).toFixed(2);
+                         },
+                         get minGuests() {
+                             return this.package === 'small' ? 1 : this.smallSize + 1;
+                         },
+                         updateGuestCount() {
+                             if (this.package === 'large' && this.guestCount < this.largeSize) {
+                                 this.guestCount = this.largeSize;
+                             }
+                         }
+                     }"
+                     x-init="$watch('package', () => updateGuestCount())">
+
+                    <p class="text-purple-100 mb-4 text-center font-medium">Party / Event Booking</p>
+
+                    <!-- Package Selection -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <button type="button"
+                                @click="package = 'small'"
+                                :class="package === 'small' ? 'bg-white text-purple-600' : 'bg-white/20 text-white hover:bg-white/30'"
+                                class="p-4 rounded-lg transition font-semibold text-center">
+                            <span class="block text-lg">Small Party</span>
+                            <span class="block text-sm opacity-80">{{ $class->formatted_small_party_price }} for {{ $class->small_party_size ?? 6 }} kids</span>
+                        </button>
+                        <button type="button"
+                                @click="package = 'large'"
+                                :class="package === 'large' ? 'bg-white text-purple-600' : 'bg-white/20 text-white hover:bg-white/30'"
+                                class="p-4 rounded-lg transition font-semibold text-center">
+                            <span class="block text-lg">Large Party</span>
+                            <span class="block text-sm opacity-80">{{ $class->formatted_large_party_price }} for {{ $class->large_party_size ?? 12 }} kids</span>
+                        </button>
+                    </div>
+
+                    <!-- Guest Count -->
+                    <div class="mb-6">
+                        <label class="block text-purple-100 mb-2 text-sm">Number of Kids</label>
+                        <div class="flex items-center gap-3">
+                            <button type="button"
+                                    @click="if(guestCount > minGuests) guestCount--"
+                                    :disabled="guestCount <= minGuests"
+                                    class="bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold">
+                                -
+                            </button>
+                            <input type="number" x-model.number="guestCount" :min="minGuests" :max="maxGuests"
+                                   class="flex-1 bg-white/20 border-0 rounded-lg text-center text-2xl font-bold py-3 text-white placeholder-white/50 focus:ring-2 focus:ring-white">
+                            <button type="button"
+                                    @click="if(guestCount < maxGuests) guestCount++"
+                                    :disabled="guestCount >= maxGuests"
+                                    class="bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold">
+                                +
+                            </button>
+                        </div>
+                        <p class="text-purple-200 text-xs mt-2 text-center">
+                            <span x-show="extraGuests > 0">
+                                +<span x-text="extraGuests"></span> extra kid<span x-show="extraGuests > 1">s</span> @ {{ $class->formatted_additional_guest_price }} each
+                            </span>
+                            <span x-show="extraGuests === 0">Included in package</span>
+                        </p>
+                    </div>
+
+                    <!-- Total Price -->
+                    <div class="text-center mb-6 py-4 bg-white/10 rounded-lg">
+                        <p class="text-purple-100 text-sm">Total Price</p>
+                        <p class="text-4xl font-bold" x-text="formattedTotal"></p>
+                    </div>
+
+                    @if($class->is_full)
+                    <button disabled class="w-full bg-gray-400 text-white px-8 py-4 rounded-lg text-lg font-semibold cursor-not-allowed">
+                        Fully Booked
+                    </button>
+                    @else
+                    @auth
+                    <a :href="'{{ route('checkout.show', $class->slug) }}?package=' + package + '&guests=' + guestCount"
+                       class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
+                        Book This Party
+                    </a>
+                    @else
+                    <a href="{{ route('login') }}" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
+                        Login to Book
+                    </a>
+                    @endauth
+                    @endif
+
+                    <p class="text-sm text-purple-100 mt-4 text-center">All materials included</p>
+                </div>
+                @else
+                <!-- Standard Class Pricing -->
                 <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white">
                     <div class="flex items-center justify-between mb-6">
                         <div>
@@ -229,6 +341,7 @@
 
                     <p class="text-sm text-purple-100 mt-4 text-center">All materials included</p>
                 </div>
+                @endif
             </div>
         </div>
 

@@ -156,6 +156,69 @@
                         </div>
                     </div>
 
+                    <!-- Party Event Section -->
+                    <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg" x-data="{ isParty: {{ old('is_party_event') ? 'true' : 'false' }} }">
+                        <div class="flex items-center mb-4">
+                            <input type="checkbox" name="is_party_event" id="is_party_event" value="1" x-model="isParty"
+                                {{ old('is_party_event') ? 'checked' : '' }}
+                                class="rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500">
+                            <label for="is_party_event" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                This is a Party/Event (tiered pricing)
+                            </label>
+                        </div>
+
+                        <div x-show="isParty" x-cloak class="space-y-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Set up package pricing for birthday parties and events. The regular price above will be ignored for party events.
+                            </p>
+
+                            <!-- Small Party -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="small_party_price_cents" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Small Party Price (cents)</label>
+                                    <input type="number" name="small_party_price_cents" id="small_party_price_cents" value="{{ old('small_party_price_cents', 15000) }}" min="0"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">e.g., 15000 = $150.00</p>
+                                </div>
+                                <div>
+                                    <label for="small_party_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kids Included in Small</label>
+                                    <input type="number" name="small_party_size" id="small_party_size" value="{{ old('small_party_size', 6) }}" min="1"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                </div>
+                            </div>
+
+                            <!-- Large Party -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="large_party_price_cents" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Large Party Price (cents)</label>
+                                    <input type="number" name="large_party_price_cents" id="large_party_price_cents" value="{{ old('large_party_price_cents', 25000) }}" min="0"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">e.g., 25000 = $250.00</p>
+                                </div>
+                                <div>
+                                    <label for="large_party_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kids Included in Large</label>
+                                    <input type="number" name="large_party_size" id="large_party_size" value="{{ old('large_party_size', 12) }}" min="1"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                </div>
+                            </div>
+
+                            <!-- Additional & Max -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="additional_guest_price_cents" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Additional Kid Price (cents)</label>
+                                    <input type="number" name="additional_guest_price_cents" id="additional_guest_price_cents" value="{{ old('additional_guest_price_cents', 2000) }}" min="0"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">e.g., 2000 = $20.00 per extra kid</p>
+                                </div>
+                                <div>
+                                    <label for="max_party_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maximum Kids</label>
+                                    <input type="number" name="max_party_size" id="max_party_size" value="{{ old('max_party_size', 20) }}" min="1"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Buttons -->
                     <div class="flex items-center justify-end space-x-4 mt-6">
                         <a href="{{ route('admin.classes.index') }}" class="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 font-bold py-2 px-4 rounded">

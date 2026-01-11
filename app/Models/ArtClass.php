@@ -26,6 +26,13 @@ class ArtClass extends Model
         'location',
         'location_public',
         'status',
+        'is_party_event',
+        'small_party_price_cents',
+        'small_party_size',
+        'large_party_price_cents',
+        'large_party_size',
+        'additional_guest_price_cents',
+        'max_party_size',
         'created_by',
     ];
 
@@ -34,6 +41,13 @@ class ArtClass extends Model
         'price_cents' => 'integer',
         'capacity' => 'integer',
         'duration_minutes' => 'integer',
+        'is_party_event' => 'boolean',
+        'small_party_price_cents' => 'integer',
+        'small_party_size' => 'integer',
+        'large_party_price_cents' => 'integer',
+        'large_party_size' => 'integer',
+        'additional_guest_price_cents' => 'integer',
+        'max_party_size' => 'integer',
     ];
 
     protected static function boot()
@@ -113,5 +127,62 @@ class ArtClass extends Model
         return $query->published()
             ->upcoming()
             ->orderBy('class_date', 'asc');
+    }
+
+    // Party pricing methods
+
+    /**
+     * Get formatted small party price.
+     */
+    public function getFormattedSmallPartyPriceAttribute()
+    {
+        return '$' . number_format(($this->small_party_price_cents ?? 0) / 100, 2);
+    }
+
+    /**
+     * Get formatted large party price.
+     */
+    public function getFormattedLargePartyPriceAttribute()
+    {
+        return '$' . number_format(($this->large_party_price_cents ?? 0) / 100, 2);
+    }
+
+    /**
+     * Get formatted additional guest price.
+     */
+    public function getFormattedAdditionalGuestPriceAttribute()
+    {
+        return '$' . number_format(($this->additional_guest_price_cents ?? 0) / 100, 2);
+    }
+
+    /**
+     * Calculate party price based on package and guest count.
+     *
+     * @param string $package 'small' or 'large'
+     * @param int $guestCount Total number of guests
+     * @return int Price in cents
+     */
+    public function calculatePartyPrice(string $package, int $guestCount): int
+    {
+        if ($package === 'small') {
+            $basePrice = $this->small_party_price_cents ?? 0;
+            $includedGuests = $this->small_party_size ?? 0;
+        } else {
+            $basePrice = $this->large_party_price_cents ?? 0;
+            $includedGuests = $this->large_party_size ?? 0;
+        }
+
+        $extraGuests = max(0, $guestCount - $includedGuests);
+        $extraCost = $extraGuests * ($this->additional_guest_price_cents ?? 0);
+
+        return $basePrice + $extraCost;
+    }
+
+    /**
+     * Get formatted calculated party price.
+     */
+    public function getFormattedPartyPrice(string $package, int $guestCount): string
+    {
+        return '$' . number_format($this->calculatePartyPrice($package, $guestCount) / 100, 2);
     }
 }

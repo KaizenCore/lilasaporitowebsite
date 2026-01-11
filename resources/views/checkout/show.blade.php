@@ -64,13 +64,34 @@
                     </div>
 
                     <div class="border-t border-gray-200 pt-6 space-y-3">
+                        @if($class->is_party_event && $partyPackage)
+                        <div class="flex justify-between text-gray-600">
+                            <span>{{ ucfirst($partyPackage) }} Party Package</span>
+                            <span>{{ $partyPackage === 'small' ? $class->formatted_small_party_price : $class->formatted_large_party_price }}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Number of Kids</span>
+                            <span>{{ $partyGuests }}</span>
+                        </div>
+                        @php
+                            $includedGuests = $partyPackage === 'small' ? ($class->small_party_size ?? 6) : ($class->large_party_size ?? 12);
+                            $extraGuests = max(0, $partyGuests - $includedGuests);
+                        @endphp
+                        @if($extraGuests > 0)
+                        <div class="flex justify-between text-gray-600">
+                            <span>Extra Kids ({{ $extraGuests }} x {{ $class->formatted_additional_guest_price }})</span>
+                            <span>${{ number_format(($extraGuests * $class->additional_guest_price_cents) / 100, 2) }}</span>
+                        </div>
+                        @endif
+                        @else
                         <div class="flex justify-between text-gray-600">
                             <span>Class Price</span>
                             <span>{{ $class->formatted_price }}</span>
                         </div>
+                        @endif
                         <div class="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t border-gray-200">
                             <span>Total</span>
-                            <span>{{ $class->formatted_price }}</span>
+                            <span>${{ number_format($totalPriceCents / 100, 2) }}</span>
                         </div>
                     </div>
                 </div>
@@ -111,7 +132,7 @@
 
                         <!-- Submit Button -->
                         <button type="submit" id="submit-button" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition shadow-lg">
-                            <span id="button-text">Pay {{ $class->formatted_price }}</span>
+                            <span id="button-text">Pay ${{ number_format($totalPriceCents / 100, 2) }}</span>
                             <span id="spinner" class="hidden">
                                 <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -152,6 +173,10 @@
         window.createPaymentIntentUrl = '{{ route('checkout.payment-intent') }}';
         window.confirmPaymentUrl = '{{ route('checkout.confirm-payment') }}';
         window.csrfToken = '{{ csrf_token() }}';
+        @if($class->is_party_event && $partyPackage)
+        window.partyPackage = '{{ $partyPackage }}';
+        window.partyGuests = {{ $partyGuests }};
+        @endif
     </script>
     @vite(['resources/js/checkout.js'])
 </x-public-layout>

@@ -23,7 +23,7 @@ class CheckoutController extends Controller
     /**
      * Show checkout page for a class
      */
-    public function show($classSlug)
+    public function show(Request $request, $classSlug)
     {
         $class = ArtClass::where('slug', $classSlug)
             ->where('status', 'published')
@@ -53,9 +53,35 @@ class CheckoutController extends Controller
                 ->with('error', 'You already have a booking for this class.');
         }
 
+        // Handle party pricing
+        $partyPackage = null;
+        $partyGuests = null;
+        $totalPriceCents = $class->price_cents;
+
+        if ($class->is_party_event) {
+            $partyPackage = $request->query('package', 'small');
+            $partyGuests = (int) $request->query('guests', $class->small_party_size ?? 6);
+
+            // Validate package
+            if (!in_array($partyPackage, ['small', 'large'])) {
+                $partyPackage = 'small';
+            }
+
+            // Validate guest count
+            $minGuests = 1;
+            $maxGuests = $class->max_party_size ?? 20;
+            $partyGuests = max($minGuests, min($maxGuests, $partyGuests));
+
+            // Calculate total price
+            $totalPriceCents = $class->calculatePartyPrice($partyPackage, $partyGuests);
+        }
+
         return view('checkout.show', [
             'class' => $class,
             'user' => Auth::user(),
+            'partyPackage' => $partyPackage,
+            'partyGuests' => $partyGuests,
+            'totalPriceCents' => $totalPriceCents,
         ]);
     }
 
@@ -66,6 +92,8 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'art_class_id' => 'required|exists:art_classes,id',
+            'party_package' => 'nullable|in:small,large',
+            'party_guests' => 'nullable|integer|min:1|max:50',
         ]);
 
         try {
@@ -91,17 +119,30 @@ class CheckoutController extends Controller
                 ], 400);
             }
 
+            // Calculate price (handle party events)
+            $priceCents = $class->price_cents;
+            $metadata = [
+                'art_class_id' => $class->id,
+                'user_id' => Auth::id(),
+                'user_email' => Auth::user()->email,
+                'class_title' => $class->title,
+                'class_date' => $class->class_date->toDateTimeString(),
+            ];
+
+            if ($class->is_party_event && $request->party_package) {
+                $package = $request->party_package;
+                $guests = (int) $request->party_guests;
+                $priceCents = $class->calculatePartyPrice($package, $guests);
+
+                $metadata['party_package'] = $package;
+                $metadata['party_guests'] = $guests;
+            }
+
             // Create payment intent
             $paymentIntent = $this->stripeService->createPaymentIntent(
-                $class->price_cents,
+                $priceCents,
                 "FrizzBoss - {$class->title}",
-                [
-                    'art_class_id' => $class->id,
-                    'user_id' => Auth::id(),
-                    'user_email' => Auth::user()->email,
-                    'class_title' => $class->title,
-                    'class_date' => $class->class_date->toDateTimeString(),
-                ]
+                $metadata
             );
 
             return response()->json([

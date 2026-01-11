@@ -50,6 +50,16 @@ form.addEventListener('submit', async (event) => {
     hideError();
 
     try {
+        // Build request body with party params if present
+        const requestBody = {
+            art_class_id: window.artClassId
+        };
+
+        if (window.partyPackage) {
+            requestBody.party_package = window.partyPackage;
+            requestBody.party_guests = window.partyGuests;
+        }
+
         // Create payment intent on server
         const response = await fetch(window.createPaymentIntentUrl, {
             method: 'POST',
@@ -58,9 +68,7 @@ form.addEventListener('submit', async (event) => {
                 'X-CSRF-TOKEN': window.csrfToken,
                 'Accept': 'application/json'
             },
-            body: JSON.stringify({
-                art_class_id: window.artClassId
-            })
+            body: JSON.stringify(requestBody)
         });
 
         const data = await response.json();

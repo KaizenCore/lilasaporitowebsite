@@ -71,7 +71,7 @@ class ProductController extends Controller
             'product_type' => 'required|in:physical,digital,class_package',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'digital_file' => 'required_if:product_type,digital|file|max:51200', // 50MB max
+            'digital_file' => 'required_if:product_type,digital|file|max:51200|mimes:pdf,zip,png,jpg,jpeg,gif,mp3,mp4,wav,mov,psd,ai,eps,svg', // 50MB max
             'stock_quantity' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:50|unique:products,sku',
             'weight_grams' => 'nullable|integer|min:0',
@@ -157,7 +157,7 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'remove_gallery_images' => 'nullable|array',
-            'digital_file' => 'nullable|file|max:51200',
+            'digital_file' => 'nullable|file|max:51200|mimes:pdf,zip,png,jpg,jpeg,gif,mp3,mp4,wav,mov,psd,ai,eps,svg',
             'stock_quantity' => 'nullable|integer|min:0',
             'sku' => 'nullable|string|max:50|unique:products,sku,' . $product->id,
             'weight_grams' => 'nullable|integer|min:0',

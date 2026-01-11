@@ -47,7 +47,7 @@ Route::middleware('guest')->group(function () {
 // Admin Login Routes (Separate password-based authentication)
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AdminLoginController::class, 'show'])->name('admin.login');
-    Route::post('/admin/login', [AdminLoginController::class, 'login'])->name('admin.login.submit');
+    Route::post('/admin/login', [AdminLoginController::class, 'login'])->middleware('throttle:5,1')->name('admin.login.submit');
 });
 
 // Dashboard (Auth Required)
@@ -64,8 +64,8 @@ Route::middleware('auth')->group(function () {
 // Checkout & Payment Routes (Auth Required)
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/{class:slug}', [CheckoutController::class, 'show'])->name('checkout.show');
-    Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->name('checkout.payment-intent');
-    Route::post('/checkout/confirm-payment', [CheckoutController::class, 'confirmPayment'])->name('checkout.confirm-payment');
+    Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.payment-intent');
+    Route::post('/checkout/confirm-payment', [CheckoutController::class, 'confirmPayment'])->middleware('throttle:10,1')->name('checkout.confirm-payment');
     Route::get('/checkout/success/{booking}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
 
@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
 // Class Checkout Routes (Auth Required)
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/classes', [ClassCheckoutController::class, 'checkout'])->name('checkout.classes');
-    Route::post('/checkout/classes/payment-intent', [ClassCheckoutController::class, 'createPaymentIntent'])->name('checkout.classes.payment-intent');
+    Route::post('/checkout/classes/payment-intent', [ClassCheckoutController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.classes.payment-intent');
     Route::get('/checkout/classes/success/{order}', [ClassCheckoutController::class, 'success'])->name('checkout.classes.success');
 });
 
@@ -100,7 +100,7 @@ Route::middleware('auth')->get('/api/check-class-order/{paymentIntentId}', [Clas
 // Order Checkout Routes (Auth Required)
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/order', [OrderController::class, 'checkout'])->name('checkout.order');
-    Route::post('/checkout/order/payment-intent', [OrderController::class, 'createPaymentIntent'])->name('checkout.order.payment-intent');
+    Route::post('/checkout/order/payment-intent', [OrderController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.order.payment-intent');
     Route::get('/checkout/order/success/{order}', [OrderController::class, 'success'])->name('checkout.order.success');
 });
 

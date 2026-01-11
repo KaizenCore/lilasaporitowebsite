@@ -27,7 +27,8 @@
       "Bash(cmd.exe /c:*)",
       "Bash(powershell.exe -Command \"composer require resend/resend-laravel --no-scripts --ignore-platform-reqs\")",
       "Bash(curl:*)",
-      "Bash(powershell.exe -Command \"Get-Command php -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")"
+      "Bash(powershell.exe -Command \"Get-Command php -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(git fetch:*)"
     ]
   }
 }

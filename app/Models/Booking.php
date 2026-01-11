@@ -12,6 +12,7 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'art_class_id',
+        'class_booking_order_id',
         'ticket_code',
         'payment_status',
         'attendance_status',
@@ -51,6 +52,11 @@ class Booking extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function classBookingOrder()
+    {
+        return $this->belongsTo(ClassBookingOrder::class);
     }
 
     public function emailLogs()

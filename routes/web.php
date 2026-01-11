@@ -13,6 +13,8 @@ use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ClassCartController;
+use App\Http\Controllers\ClassCheckoutController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\StoreController;
@@ -75,6 +77,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
+// Class Cart Routes (Auth Required)
+Route::middleware('auth')->group(function () {
+    Route::get('/class-cart', [ClassCartController::class, 'index'])->name('class-cart.index');
+    Route::post('/class-cart/add', [ClassCartController::class, 'add'])->name('class-cart.add');
+    Route::delete('/class-cart/remove/{artClassId}', [ClassCartController::class, 'remove'])->name('class-cart.remove');
+    Route::delete('/class-cart/clear', [ClassCartController::class, 'clear'])->name('class-cart.clear');
+    Route::get('/class-cart/count', [ClassCartController::class, 'count'])->name('class-cart.count');
+});
+
+// Class Checkout Routes (Auth Required)
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout/classes', [ClassCheckoutController::class, 'checkout'])->name('checkout.classes');
+    Route::post('/checkout/classes/payment-intent', [ClassCheckoutController::class, 'createPaymentIntent'])->name('checkout.classes.payment-intent');
+    Route::get('/checkout/classes/success/{order}', [ClassCheckoutController::class, 'success'])->name('checkout.classes.success');
+});
+
+// API Route for Class Order Status (Auth Required)
+Route::middleware('auth')->get('/api/check-class-order/{paymentIntentId}', [ClassCheckoutController::class, 'checkOrderStatus'])->name('api.check-class-order');
+
 // Order Checkout Routes (Auth Required)
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/order', [OrderController::class, 'checkout'])->name('checkout.order');
@@ -105,6 +126,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Class Management
     Route::resource('classes', AdminClassController::class);
+    Route::get('/classes/{class}/recurring', [AdminClassController::class, 'showRecurringForm'])->name('classes.recurring');
+    Route::post('/classes/{class}/recurring/preview', [AdminClassController::class, 'previewRecurring'])->name('classes.recurring.preview');
+    Route::post('/classes/{class}/recurring', [AdminClassController::class, 'generateRecurring'])->name('classes.recurring.generate');
 
     // Booking Management
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');

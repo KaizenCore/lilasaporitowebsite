@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ArtClass;
+use App\Services\RecurringClassService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -197,5 +198,70 @@ class ClassController extends Controller
         return redirect()
             ->route('admin.classes.index')
             ->with('success', 'Art class deleted successfully!');
+    }
+
+    /**
+     * Show the form for generating recurring classes.
+     */
+    public function showRecurringForm(ArtClass $class)
+    {
+        return view('admin.classes.recurring', compact('class'));
+    }
+
+    /**
+     * Preview dates for recurring class generation (AJAX).
+     */
+    public function previewRecurring(Request $request, ArtClass $class, RecurringClassService $recurringService)
+    {
+        $validated = $request->validate([
+            'recurrence_type' => 'required|in:weekly,biweekly,custom',
+            'start_date' => 'required|date|after:today',
+            'end_date' => 'required|date|after:start_date',
+            'time' => 'required|date_format:H:i',
+            'days_of_week' => 'required_if:recurrence_type,custom|array',
+            'days_of_week.*' => 'integer|min:1|max:7',
+        ]);
+
+        $dates = $recurringService->previewDates([
+            'recurrence_type' => $validated['recurrence_type'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'time' => $validated['time'],
+            'days_of_week' => $validated['days_of_week'] ?? [],
+        ]);
+
+        return response()->json([
+            'dates' => $dates,
+            'count' => count($dates),
+        ]);
+    }
+
+    /**
+     * Generate recurring classes from template.
+     */
+    public function generateRecurring(Request $request, ArtClass $class, RecurringClassService $recurringService)
+    {
+        $validated = $request->validate([
+            'recurrence_type' => 'required|in:weekly,biweekly,custom',
+            'start_date' => 'required|date|after:today',
+            'end_date' => 'required|date|after:start_date',
+            'time' => 'required|date_format:H:i',
+            'days_of_week' => 'required_if:recurrence_type,custom|array',
+            'days_of_week.*' => 'integer|min:1|max:7',
+            'series_name' => 'nullable|string|max:255',
+        ]);
+
+        $createdClasses = $recurringService->generate($class, [
+            'recurrence_type' => $validated['recurrence_type'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'time' => $validated['time'],
+            'days_of_week' => $validated['days_of_week'] ?? [],
+            'series_name' => $validated['series_name'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('admin.classes.index')
+            ->with('success', count($createdClasses) . ' recurring classes created successfully! They are saved as drafts for review.');
     }
 }

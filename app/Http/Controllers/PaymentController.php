@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Mail\BookingConfirmation;
 use App\Models\ArtClass;
 use App\Models\Booking;
+use App\Models\ClassBookingOrder;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Services\ClassCartService;
 use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -74,9 +76,15 @@ class PaymentController extends Controller
         try {
             $metadata = $paymentIntent->metadata;
 
-            // Check if this is a store order or class booking
-            if (isset($metadata->order_type) && $metadata->order_type === 'store') {
-                $this->createStoreOrder($paymentIntent);
+            // Check order type
+            if (isset($metadata->order_type)) {
+                if ($metadata->order_type === 'store') {
+                    $this->createStoreOrder($paymentIntent);
+                } elseif ($metadata->order_type === 'class_booking') {
+                    $this->createMultiClassBooking($paymentIntent);
+                } else {
+                    $this->createClassBooking($paymentIntent);
+                }
             } else {
                 $this->createClassBooking($paymentIntent);
             }
@@ -157,11 +165,125 @@ class PaymentController extends Controller
             $booking->load('artClass', 'user');
             Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
             Log::info('Booking confirmation email sent via webhook', ['booking_id' => $booking->id]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to send booking confirmation email via webhook', [
                 'booking_id' => $booking->id,
                 'error' => $e->getMessage(),
             ]);
+        }
+    }
+
+    /**
+     * Create multiple class bookings from payment intent (multi-class cart checkout)
+     */
+    protected function createMultiClassBooking($paymentIntent)
+    {
+        $metadata = $paymentIntent->metadata;
+
+        // Check if order already exists (prevent duplicates)
+        $existingOrder = ClassBookingOrder::whereHas('payment', function ($query) use ($paymentIntent) {
+            $query->where('stripe_payment_intent_id', $paymentIntent->id);
+        })->first();
+
+        if ($existingOrder) {
+            Log::info('Class booking order already exists for payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+                'order_id' => $existingOrder->id,
+            ]);
+            return;
+        }
+
+        // Parse cart items from metadata
+        $cartItems = json_decode($metadata->cart_items, true);
+
+        // Create the class booking order
+        $order = ClassBookingOrder::create([
+            'user_id' => $metadata->user_id,
+            'email' => $metadata->user_email,
+            'total_amount_cents' => $paymentIntent->amount,
+            'subtotal_cents' => $paymentIntent->amount,
+            'payment_status' => 'completed',
+        ]);
+
+        // Create individual bookings for each class
+        $bookings = [];
+        foreach ($cartItems as $item) {
+            $artClass = ArtClass::find($item['art_class_id']);
+
+            if (!$artClass) {
+                Log::warning('Art class not found for booking', [
+                    'art_class_id' => $item['art_class_id'],
+                    'order_id' => $order->id,
+                ]);
+                continue;
+            }
+
+            // Create booking for this class
+            $booking = Booking::create([
+                'user_id' => $metadata->user_id,
+                'art_class_id' => $item['art_class_id'],
+                'class_booking_order_id' => $order->id,
+                'payment_status' => 'completed',
+                'attendance_status' => 'booked',
+            ]);
+
+            $bookings[] = $booking;
+
+            Log::info('Booking created for multi-class order', [
+                'booking_id' => $booking->id,
+                'ticket_code' => $booking->ticket_code,
+                'art_class_id' => $item['art_class_id'],
+            ]);
+        }
+
+        // Create the payment record
+        $payment = Payment::create([
+            'class_booking_order_id' => $order->id,
+            'stripe_payment_intent_id' => $paymentIntent->id,
+            'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
+            'stripe_customer_id' => $paymentIntent->customer ?? null,
+            'amount_cents' => $paymentIntent->amount,
+            'currency' => $paymentIntent->currency,
+            'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
+            'status' => 'succeeded',
+            'metadata' => [
+                'order_number' => $order->order_number,
+                'class_count' => $metadata->class_count,
+            ],
+        ]);
+
+        // Calculate Stripe fees
+        $payment->calculateStripeFee();
+        $payment->save();
+
+        Log::info('Multi-class booking order created successfully', [
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'booking_count' => count($bookings),
+            'payment_id' => $payment->id,
+        ]);
+
+        // Clear the class cart for this user
+        try {
+            app(ClassCartService::class)->clear();
+        } catch (\Throwable $e) {
+            Log::warning('Could not clear class cart (may be called from webhook)', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        // Send confirmation emails for each booking
+        foreach ($bookings as $booking) {
+            try {
+                $booking->load('artClass', 'user');
+                Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
+                Log::info('Booking confirmation email sent for multi-class order', ['booking_id' => $booking->id]);
+            } catch (\Throwable $e) {
+                Log::error('Failed to send booking confirmation email for multi-class order', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 

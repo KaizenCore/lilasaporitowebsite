@@ -160,9 +160,65 @@
                     </button>
                     @else
                     @auth
-                    <a href="{{ route('checkout.show', $class->slug) }}" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
-                        Book Your Spot Now
-                    </a>
+                    <div class="space-y-3" x-data="{ adding: false, added: false, error: '' }">
+                        <a href="{{ route('checkout.show', $class->slug) }}" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
+                            Book Your Spot Now
+                        </a>
+                        <button
+                            x-show="!added"
+                            @click="
+                                adding = true;
+                                error = '';
+                                fetch('{{ route('class-cart.add') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({ art_class_id: {{ $class->id }} })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    adding = false;
+                                    if (data.success) {
+                                        added = true;
+                                    } else {
+                                        error = data.message || 'Unable to add to cart';
+                                    }
+                                })
+                                .catch(() => {
+                                    adding = false;
+                                    error = 'Unable to add to cart';
+                                });
+                            "
+                            :disabled="adding"
+                            class="w-full bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition text-center disabled:opacity-50"
+                        >
+                            <span x-show="!adding">Add to Cart</span>
+                            <span x-show="adding" class="inline-flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Adding...
+                            </span>
+                        </button>
+                        <template x-if="added">
+                            <div class="text-center space-y-2">
+                                <p class="text-white flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Added to cart!
+                                </p>
+                                <a href="{{ route('class-cart.index') }}" class="inline-block text-purple-200 hover:text-white underline text-sm">
+                                    View Cart
+                                </a>
+                            </div>
+                        </template>
+                        <p x-show="error" x-text="error" class="text-red-200 text-sm text-center"></p>
+                    </div>
                     @else
                     <a href="{{ route('login') }}" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
                         Login to Book

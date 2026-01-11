@@ -23,7 +23,11 @@
       "Bash(composer require:*)",
       "Bash(php -v:*)",
       "Bash(\"/c/Users/ezraj/.config/herd/bin/composer\" --version)",
-      "Bash(\"/c/Users/ezraj/.config/herd/bin/php\" -v)"
+      "Bash(\"/c/Users/ezraj/.config/herd/bin/php\" -v)",
+      "Bash(cmd.exe /c:*)",
+      "Bash(powershell.exe -Command \"composer require resend/resend-laravel --no-scripts --ignore-platform-reqs\")",
+      "Bash(curl:*)",
+      "Bash(powershell.exe -Command \"Get-Command php -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")"
     ]
   }
 }

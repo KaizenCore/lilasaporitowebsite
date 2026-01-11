@@ -125,6 +125,12 @@ class CheckoutController extends Controller
      */
     public function confirmPayment(Request $request)
     {
+        Log::info('confirmPayment called', [
+            'payment_intent_id' => $request->payment_intent_id,
+            'art_class_id' => $request->art_class_id,
+            'user_id' => Auth::id(),
+        ]);
+
         $request->validate([
             'payment_intent_id' => 'required|string',
             'art_class_id' => 'required|exists:art_classes,id',
@@ -222,12 +228,13 @@ class CheckoutController extends Controller
         } catch (\Exception $e) {
             Log::error('Payment confirmation failed', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'user_id' => Auth::id(),
                 'payment_intent_id' => $request->payment_intent_id,
             ]);
 
             return response()->json([
-                'error' => 'Failed to confirm payment. Please contact support.'
+                'error' => 'Failed to confirm payment: ' . $e->getMessage()
             ], 500);
         }
     }

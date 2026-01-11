@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingCancellation;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -74,6 +76,14 @@ class BookingController extends Controller
 
         // Cancel the booking
         $booking->cancel($request->input('reason', 'Cancelled by user'));
+
+        // Send cancellation email
+        try {
+            Mail::to($booking->user->email)->send(new BookingCancellation($booking));
+        } catch (\Exception $e) {
+            // Log error but don't fail the cancellation
+            \Log::error('Failed to send cancellation email: ' . $e->getMessage());
+        }
 
         return redirect()->route('bookings.index')
             ->with('success', 'Your booking has been cancelled. Please contact us if you would like to request a refund.');

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BookingCancellation;
 use App\Models\Booking;
 use App\Models\ArtClass;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -160,6 +162,13 @@ class BookingController extends Controller
         }
 
         $booking->cancel($request->cancellation_reason);
+
+        // Send cancellation email
+        try {
+            Mail::to($booking->user->email)->send(new BookingCancellation($booking));
+        } catch (\Exception $e) {
+            \Log::error('Failed to send cancellation email: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Booking cancelled successfully.');
     }

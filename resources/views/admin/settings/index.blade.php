@@ -138,6 +138,24 @@
                         </div>
                     </div>
 
+                    <!-- Cancellation Policy Section -->
+                    <div class="mb-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Cancellation Policy
+                        </h3>
+
+                        <div>
+                            <label for="cancellation_policy" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Your Cancellation & Refund Policy</label>
+                            <textarea name="cancellation_policy" id="cancellation_policy" rows="8"
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500"
+                                placeholder="Describe your cancellation and refund policy for classes...">{{ old('cancellation_policy', $settings['cancellation_policy']) }}</textarea>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">This will be displayed on the public Policy page. Use separate paragraphs for different sections.</p>
+                        </div>
+                    </div>
+
                     <!-- Form Actions -->
                     <div class="flex items-center justify-end gap-4 border-t border-gray-200 dark:border-gray-700 pt-6">
                         <button type="submit" class="inline-flex items-center px-4 py-2 bg-purple-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition">

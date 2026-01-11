@@ -21,6 +21,7 @@ class SiteSettingsController extends Controller
             'about_photo' => SiteSetting::get('about_photo', ''),
             'teaching_philosophy' => SiteSetting::get('teaching_philosophy', ''),
             'why_take_classes' => SiteSetting::get('why_take_classes', ''),
+            'cancellation_policy' => SiteSetting::get('cancellation_policy', ''),
         ];
 
         return view('admin.settings.index', compact('settings'));
@@ -38,6 +39,7 @@ class SiteSettingsController extends Controller
             'about_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'teaching_philosophy' => 'nullable|string',
             'why_take_classes' => 'nullable|string',
+            'cancellation_policy' => 'nullable|string',
         ]);
 
         // Handle photo upload
@@ -57,6 +59,7 @@ class SiteSettingsController extends Controller
         SiteSetting::set('about_bio', $request->about_bio ?? '', 'text');
         SiteSetting::set('teaching_philosophy', $request->teaching_philosophy ?? '', 'text');
         SiteSetting::set('why_take_classes', $request->why_take_classes ?? '', 'text');
+        SiteSetting::set('cancellation_policy', $request->cancellation_policy ?? '', 'text');
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'Settings updated successfully.');

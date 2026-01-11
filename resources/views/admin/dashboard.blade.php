@@ -139,8 +139,8 @@
                                 <div class="border-l-4 {{ $booking->attendance_status === 'attended' ? 'border-green-500' : 'border-blue-500' }} pl-4 py-2">
                                     <div class="flex justify-between items-start">
                                         <div>
-                                            <h4 class="font-medium text-gray-900 dark:text-white">{{ $booking->user->name }}</h4>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->title }}</p>
+                                            <h4 class="font-medium text-gray-900 dark:text-white">{{ $booking->user?->name ?? 'Unknown User' }}</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass?->title ?? 'Deleted Class' }}</p>
                                             <p class="text-xs text-gray-500 dark:text-gray-500">{{ $booking->ticket_code }}</p>
                                         </div>
                                         <div class="text-right">

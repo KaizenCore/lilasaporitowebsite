@@ -58,6 +58,9 @@ form.addEventListener('submit', async (event) => {
         if (window.partyPackage) {
             requestBody.party_package = window.partyPackage;
             requestBody.party_guests = window.partyGuests;
+            if (window.selectedAddons && window.selectedAddons.length > 0) {
+                requestBody.selected_addons = window.selectedAddons;
+            }
         }
 
         // Create payment intent on server

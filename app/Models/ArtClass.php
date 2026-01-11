@@ -33,6 +33,7 @@ class ArtClass extends Model
         'large_party_size',
         'additional_guest_price_cents',
         'max_party_size',
+        'party_addons',
         'created_by',
     ];
 
@@ -48,6 +49,7 @@ class ArtClass extends Model
         'large_party_size' => 'integer',
         'additional_guest_price_cents' => 'integer',
         'max_party_size' => 'integer',
+        'party_addons' => 'array',
     ];
 
     protected static function boot()
@@ -184,5 +186,42 @@ class ArtClass extends Model
     public function getFormattedPartyPrice(string $package, int $guestCount): string
     {
         return '$' . number_format($this->calculatePartyPrice($package, $guestCount) / 100, 2);
+    }
+
+    /**
+     * Calculate add-ons total based on selected add-ons and guest count.
+     *
+     * @param array $selectedAddonIndexes Array of addon indexes that are selected
+     * @param int $guestCount Total number of guests
+     * @return int Total add-ons price in cents
+     */
+    public function calculateAddonsTotal(array $selectedAddonIndexes, int $guestCount): int
+    {
+        $addons = $this->party_addons ?? [];
+        $total = 0;
+
+        foreach ($selectedAddonIndexes as $index) {
+            if (isset($addons[$index])) {
+                $total += ($addons[$index]['price_cents'] ?? 0) * $guestCount;
+            }
+        }
+
+        return $total;
+    }
+
+    /**
+     * Calculate full party price including add-ons.
+     *
+     * @param string $package 'small' or 'large'
+     * @param int $guestCount Total number of guests
+     * @param array $selectedAddonIndexes Array of addon indexes that are selected
+     * @return int Total price in cents
+     */
+    public function calculateFullPartyPrice(string $package, int $guestCount, array $selectedAddonIndexes = []): int
+    {
+        $basePrice = $this->calculatePartyPrice($package, $guestCount);
+        $addonsPrice = $this->calculateAddonsTotal($selectedAddonIndexes, $guestCount);
+
+        return $basePrice + $addonsPrice;
     }
 }

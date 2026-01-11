@@ -148,6 +148,9 @@
 
                 <!-- Price and Book Button -->
                 @if($class->is_party_event)
+                @php
+                    $addons = $class->party_addons ?? [];
+                @endphp
                 <!-- Party Event Pricing -->
                 <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white"
                      x-data="{
@@ -159,6 +162,8 @@
                          largeSize: {{ $class->large_party_size ?? 12 }},
                          additionalPrice: {{ $class->additional_guest_price_cents ?? 2000 }},
                          maxGuests: {{ $class->max_party_size ?? 20 }},
+                         addons: {{ json_encode($addons) }},
+                         selectedAddons: [],
                          get basePrice() {
                              return this.package === 'small' ? this.smallPrice : this.largePrice;
                          },
@@ -168,8 +173,17 @@
                          get extraGuests() {
                              return Math.max(0, this.guestCount - this.includedGuests);
                          },
+                         get addonsTotal() {
+                             let total = 0;
+                             this.selectedAddons.forEach(idx => {
+                                 if (this.addons[idx]) {
+                                     total += (this.addons[idx].price_cents || 0) * this.guestCount;
+                                 }
+                             });
+                             return total;
+                         },
                          get totalPrice() {
-                             return this.basePrice + (this.extraGuests * this.additionalPrice);
+                             return this.basePrice + (this.extraGuests * this.additionalPrice) + this.addonsTotal;
                          },
                          get formattedTotal() {
                              return '$' + (this.totalPrice / 100).toFixed(2);
@@ -181,6 +195,21 @@
                              if (this.package === 'large' && this.guestCount < this.largeSize) {
                                  this.guestCount = this.largeSize;
                              }
+                         },
+                         toggleAddon(index) {
+                             const idx = this.selectedAddons.indexOf(index);
+                             if (idx > -1) {
+                                 this.selectedAddons.splice(idx, 1);
+                             } else {
+                                 this.selectedAddons.push(index);
+                             }
+                         },
+                         getCheckoutUrl() {
+                             let url = '{{ route('checkout.show', $class->slug) }}?package=' + this.package + '&guests=' + this.guestCount;
+                             if (this.selectedAddons.length > 0) {
+                                 url += '&addons=' + this.selectedAddons.join(',');
+                             }
+                             return url;
                          }
                      }"
                      x-init="$watch('package', () => updateGuestCount())">
@@ -232,6 +261,36 @@
                         </p>
                     </div>
 
+                    <!-- Optional Add-ons -->
+                    @if(count($addons) > 0)
+                    <div class="mb-6">
+                        <label class="block text-purple-100 mb-3 text-sm">Optional Add-ons</label>
+                        <div class="space-y-2">
+                            @foreach($addons as $index => $addon)
+                            <label class="flex items-center justify-between bg-white/10 hover:bg-white/20 rounded-lg p-3 cursor-pointer transition"
+                                   :class="{ 'ring-2 ring-white bg-white/20': selectedAddons.includes({{ $index }}) }">
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox"
+                                           @change="toggleAddon({{ $index }})"
+                                           :checked="selectedAddons.includes({{ $index }})"
+                                           class="rounded border-white/50 bg-white/20 text-purple-600 focus:ring-white">
+                                    <div>
+                                        <span class="font-medium">{{ $addon['name'] }}</span>
+                                        @if(!empty($addon['description']))
+                                        <span class="text-purple-200 text-xs block">{{ $addon['description'] }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <span class="text-sm font-semibold">+${{ number_format($addon['price_cents'] / 100, 2) }}/kid</span>
+                            </label>
+                            @endforeach
+                        </div>
+                        <p class="text-purple-200 text-xs mt-2 text-center" x-show="addonsTotal > 0">
+                            Add-ons total: $<span x-text="(addonsTotal / 100).toFixed(2)"></span> (<span x-text="guestCount"></span> kids)
+                        </p>
+                    </div>
+                    @endif
+
                     <!-- Total Price -->
                     <div class="text-center mb-6 py-4 bg-white/10 rounded-lg">
                         <p class="text-purple-100 text-sm">Total Price</p>
@@ -244,7 +303,7 @@
                     </button>
                     @else
                     @auth
-                    <a :href="'{{ route('checkout.show', $class->slug) }}?package=' + package + '&guests=' + guestCount"
+                    <a :href="getCheckoutUrl()"
                        class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
                         Book This Party
                     </a>

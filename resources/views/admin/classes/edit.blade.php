@@ -246,6 +246,58 @@
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
                                 </div>
                             </div>
+
+                            <!-- Party Add-ons -->
+                            <div class="mt-6 pt-6 border-t border-purple-200 dark:border-purple-700" x-data="{
+                                addons: {{ json_encode(old('party_addons', $class->party_addons ?? [])) ?: '[]' }},
+                                addAddon() {
+                                    this.addons.push({ name: '', price_cents: 300, description: '' });
+                                },
+                                removeAddon(index) {
+                                    this.addons.splice(index, 1);
+                                }
+                            }">
+                                <div class="flex items-center justify-between mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Optional Add-ons (per kid)</label>
+                                    <button type="button" @click="addAddon()" class="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-md">
+                                        + Add Option
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Create optional extras customers can add to their party (e.g., goody bags, pizza, custom shirts)</p>
+
+                                <template x-for="(addon, index) in addons" :key="index">
+                                    <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 mb-3">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="'Add-on #' + (index + 1)"></span>
+                                            <button type="button" @click="removeAddon(index)" class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                            <div>
+                                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Name</label>
+                                                <input type="text" x-model="addon.name" :name="'party_addons[' + index + '][name]'" placeholder="Goody Bag"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Price (cents per kid)</label>
+                                                <input type="number" x-model.number="addon.price_cents" :name="'party_addons[' + index + '][price_cents]'" min="0" placeholder="300"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Description (optional)</label>
+                                                <input type="text" x-model="addon.description" :name="'party_addons[' + index + '][description]'" placeholder="Art supplies loot bag"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-400 mt-2" x-show="addon.price_cents > 0">
+                                            = $<span x-text="(addon.price_cents / 100).toFixed(2)"></span> per kid
+                                        </p>
+                                    </div>
+                                </template>
+
+                                <div x-show="addons.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic">
+                                    No add-ons configured. Click "+ Add Option" to create one.
+                                </div>
+                            </div>
                         </div>
                     </div>
 

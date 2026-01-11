@@ -53,6 +53,18 @@ class ClassController extends Controller
             'location' => 'required|string|max:255',
             'location_public' => 'nullable|string|max:255',
             'status' => 'required|in:draft,published,cancelled',
+            // Party pricing fields
+            'is_party_event' => 'nullable|boolean',
+            'small_party_price_cents' => 'nullable|integer|min:0',
+            'small_party_size' => 'nullable|integer|min:1',
+            'large_party_price_cents' => 'nullable|integer|min:0',
+            'large_party_size' => 'nullable|integer|min:1',
+            'additional_guest_price_cents' => 'nullable|integer|min:0',
+            'max_party_size' => 'nullable|integer|min:1',
+            'party_addons' => 'nullable|array',
+            'party_addons.*.name' => 'nullable|string|max:255',
+            'party_addons.*.price_cents' => 'nullable|integer|min:0',
+            'party_addons.*.description' => 'nullable|string|max:500',
         ]);
 
         // Handle image upload
@@ -74,6 +86,14 @@ class ClassController extends Controller
         // Convert price from dollars to cents if needed
         $priceCents = $validated['price_cents'];
 
+        // Process party addons - filter out empty ones
+        $partyAddons = null;
+        if ($request->boolean('is_party_event') && !empty($validated['party_addons'])) {
+            $partyAddons = array_values(array_filter($validated['party_addons'], function ($addon) {
+                return !empty($addon['name']) && isset($addon['price_cents']);
+            }));
+        }
+
         // Create the class
         $artClass = ArtClass::create([
             'title' => $validated['title'],
@@ -90,6 +110,14 @@ class ClassController extends Controller
             'location' => $validated['location'],
             'location_public' => $validated['location_public'] ?? null,
             'status' => $validated['status'],
+            'is_party_event' => $request->boolean('is_party_event'),
+            'small_party_price_cents' => $validated['small_party_price_cents'] ?? null,
+            'small_party_size' => $validated['small_party_size'] ?? null,
+            'large_party_price_cents' => $validated['large_party_price_cents'] ?? null,
+            'large_party_size' => $validated['large_party_size'] ?? null,
+            'additional_guest_price_cents' => $validated['additional_guest_price_cents'] ?? null,
+            'max_party_size' => $validated['max_party_size'] ?? null,
+            'party_addons' => $partyAddons,
             'created_by' => auth()->id(),
         ]);
 
@@ -136,6 +164,18 @@ class ClassController extends Controller
             'location' => 'required|string|max:255',
             'location_public' => 'nullable|string|max:255',
             'status' => 'required|in:draft,published,cancelled',
+            // Party pricing fields
+            'is_party_event' => 'nullable|boolean',
+            'small_party_price_cents' => 'nullable|integer|min:0',
+            'small_party_size' => 'nullable|integer|min:1',
+            'large_party_price_cents' => 'nullable|integer|min:0',
+            'large_party_size' => 'nullable|integer|min:1',
+            'additional_guest_price_cents' => 'nullable|integer|min:0',
+            'max_party_size' => 'nullable|integer|min:1',
+            'party_addons' => 'nullable|array',
+            'party_addons.*.name' => 'nullable|string|max:255',
+            'party_addons.*.price_cents' => 'nullable|integer|min:0',
+            'party_addons.*.description' => 'nullable|string|max:500',
         ]);
 
         // Handle image upload
@@ -171,6 +211,18 @@ class ClassController extends Controller
         // Update slug if title changed
         if ($validated['title'] !== $class->title) {
             $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        // Handle party event fields
+        $validated['is_party_event'] = $request->boolean('is_party_event');
+
+        // Process party addons - filter out empty ones
+        if ($request->boolean('is_party_event') && !empty($validated['party_addons'])) {
+            $validated['party_addons'] = array_values(array_filter($validated['party_addons'], function ($addon) {
+                return !empty($addon['name']) && isset($addon['price_cents']);
+            }));
+        } else {
+            $validated['party_addons'] = null;
         }
 
         // Update the class

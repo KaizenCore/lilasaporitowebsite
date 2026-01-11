@@ -56,6 +56,7 @@ class CheckoutController extends Controller
         // Handle party pricing
         $partyPackage = null;
         $partyGuests = null;
+        $selectedAddons = [];
         $totalPriceCents = $class->price_cents;
 
         if ($class->is_party_event) {
@@ -72,8 +73,18 @@ class CheckoutController extends Controller
             $maxGuests = $class->max_party_size ?? 20;
             $partyGuests = max($minGuests, min($maxGuests, $partyGuests));
 
-            // Calculate total price
-            $totalPriceCents = $class->calculatePartyPrice($partyPackage, $partyGuests);
+            // Parse selected add-ons (comma-separated indexes)
+            $addonsParam = $request->query('addons', '');
+            if (!empty($addonsParam)) {
+                $selectedAddons = array_map('intval', explode(',', $addonsParam));
+                // Filter to valid indexes
+                $availableAddons = $class->party_addons ?? [];
+                $selectedAddons = array_filter($selectedAddons, fn($idx) => isset($availableAddons[$idx]));
+                $selectedAddons = array_values($selectedAddons);
+            }
+
+            // Calculate total price including add-ons
+            $totalPriceCents = $class->calculateFullPartyPrice($partyPackage, $partyGuests, $selectedAddons);
         }
 
         return view('checkout.show', [
@@ -81,6 +92,7 @@ class CheckoutController extends Controller
             'user' => Auth::user(),
             'partyPackage' => $partyPackage,
             'partyGuests' => $partyGuests,
+            'selectedAddons' => $selectedAddons,
             'totalPriceCents' => $totalPriceCents,
         ]);
     }
@@ -94,6 +106,8 @@ class CheckoutController extends Controller
             'art_class_id' => 'required|exists:art_classes,id',
             'party_package' => 'nullable|in:small,large',
             'party_guests' => 'nullable|integer|min:1|max:50',
+            'selected_addons' => 'nullable|array',
+            'selected_addons.*' => 'integer|min:0',
         ]);
 
         try {
@@ -132,10 +146,20 @@ class CheckoutController extends Controller
             if ($class->is_party_event && $request->party_package) {
                 $package = $request->party_package;
                 $guests = (int) $request->party_guests;
-                $priceCents = $class->calculatePartyPrice($package, $guests);
+                $selectedAddons = $request->selected_addons ?? [];
+
+                // Validate addon indexes
+                $availableAddons = $class->party_addons ?? [];
+                $selectedAddons = array_filter($selectedAddons, fn($idx) => isset($availableAddons[$idx]));
+                $selectedAddons = array_values($selectedAddons);
+
+                $priceCents = $class->calculateFullPartyPrice($package, $guests, $selectedAddons);
 
                 $metadata['party_package'] = $package;
                 $metadata['party_guests'] = $guests;
+                if (!empty($selectedAddons)) {
+                    $metadata['selected_addons'] = implode(',', $selectedAddons);
+                }
             }
 
             // Create payment intent

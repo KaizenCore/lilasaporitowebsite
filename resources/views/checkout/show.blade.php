@@ -83,6 +83,17 @@
                             <span>${{ number_format(($extraGuests * $class->additional_guest_price_cents) / 100, 2) }}</span>
                         </div>
                         @endif
+                        @if(!empty($selectedAddons) && !empty($class->party_addons))
+                            @foreach($selectedAddons as $addonIdx)
+                                @if(isset($class->party_addons[$addonIdx]))
+                                    @php $addon = $class->party_addons[$addonIdx]; @endphp
+                                    <div class="flex justify-between text-gray-600">
+                                        <span>{{ $addon['name'] }} ({{ $partyGuests }} x ${{ number_format(($addon['price_cents'] ?? 0) / 100, 2) }})</span>
+                                        <span>${{ number_format((($addon['price_cents'] ?? 0) * $partyGuests) / 100, 2) }}</span>
+                                    </div>
+                                @endif
+                            @endforeach
+                        @endif
                         @else
                         <div class="flex justify-between text-gray-600">
                             <span>Class Price</span>
@@ -176,6 +187,7 @@
         @if($class->is_party_event && $partyPackage)
         window.partyPackage = '{{ $partyPackage }}';
         window.partyGuests = {{ $partyGuests }};
+        window.selectedAddons = @json($selectedAddons);
         @endif
     </script>
     @vite(['resources/js/checkout.js'])

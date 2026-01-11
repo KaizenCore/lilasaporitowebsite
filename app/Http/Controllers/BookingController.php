@@ -30,6 +30,7 @@ class BookingController extends Controller
         $upcomingBookings = Booking::where('user_id', auth()->id())
             ->confirmed()
             ->upcoming()
+            ->where('attendance_status', '!=', 'cancelled')
             ->with('artClass')
             ->get()
             ->sortBy('artClass.class_date');
@@ -42,6 +43,39 @@ class BookingController extends Controller
             ->sortByDesc('artClass.class_date')
             ->take(10);
 
-        return view('bookings.index', compact('upcomingBookings', 'pastBookings'));
+        $cancelledBookings = Booking::where('user_id', auth()->id())
+            ->where('attendance_status', 'cancelled')
+            ->with('artClass')
+            ->orderByDesc('cancelled_at')
+            ->take(10)
+            ->get();
+
+        return view('bookings.index', compact('upcomingBookings', 'pastBookings', 'cancelledBookings'));
+    }
+
+    public function cancel(Request $request, Booking $booking)
+    {
+        // Ensure the booking belongs to the user
+        if ($booking->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized');
+        }
+
+        // Check if already cancelled
+        if ($booking->is_cancelled) {
+            return redirect()->route('bookings.index')
+                ->with('error', 'This booking has already been cancelled.');
+        }
+
+        // Check if class has already passed
+        if ($booking->artClass->class_date < now()) {
+            return redirect()->route('bookings.index')
+                ->with('error', 'Cannot cancel a booking for a class that has already occurred.');
+        }
+
+        // Cancel the booking
+        $booking->cancel($request->input('reason', 'Cancelled by user'));
+
+        return redirect()->route('bookings.index')
+            ->with('success', 'Your booking has been cancelled. Please contact us if you would like to request a refund.');
     }
 }

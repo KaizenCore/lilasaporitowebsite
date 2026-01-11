@@ -55,6 +55,7 @@ Route::get('/dashboard', function () {
 // User Bookings (Auth Required)
 Route::middleware('auth')->group(function () {
     Route::get('/my-bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::post('/my-bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
 // Checkout & Payment Routes (Auth Required)

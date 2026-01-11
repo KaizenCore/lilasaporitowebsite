@@ -88,13 +88,22 @@
                                     </div>
                                 </div>
 
-                                <div class="mt-6">
+                                <div class="mt-6 flex items-center justify-between">
                                     <a href="{{ route('classes.show', $booking->artClass->slug) }}" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold inline-flex items-center">
                                         View Class Details
                                         <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </a>
+                                    <form action="{{ route('bookings.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? Contact us if you would like to request a refund.')">
+                                        @csrf
+                                        <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-semibold inline-flex items-center">
+                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            Cancel Booking
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -163,6 +172,60 @@
                                     </svg>
                                     Ticket: {{ $booking->ticket_code }}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <!-- Cancelled Bookings -->
+            @if($cancelledBookings->count() > 0)
+            <div class="mt-16">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Cancelled Bookings</h2>
+
+                <div class="space-y-4">
+                    @foreach($cancelledBookings as $booking)
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden opacity-60">
+                        <div class="md:flex">
+                            <!-- Class Image -->
+                            <div class="md:w-1/4">
+                                @if($booking->artClass->image_path)
+                                <div class="h-32 md:h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 relative overflow-hidden">
+                                    <img src="{{ Storage::url($booking->artClass->image_path) }}" alt="{{ $booking->artClass->title }}" class="w-full h-full object-cover grayscale">
+                                </div>
+                                @else
+                                <div class="h-32 md:h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                                    </svg>
+                                </div>
+                                @endif
+                            </div>
+
+                            <!-- Booking Details -->
+                            <div class="md:w-3/4 p-6">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $booking->artClass->title }}</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->class_date->format('F j, Y') }}</p>
+                                    </div>
+                                    <span class="bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
+                                        Cancelled
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Cancelled on {{ $booking->cancelled_at->format('F j, Y') }}
+                                </div>
+
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    Contact us if you would like to request a refund.
+                                </p>
                             </div>
                         </div>
                     </div>

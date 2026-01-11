@@ -17,7 +17,9 @@ class ClassController extends Controller
     public function index()
     {
         $classes = ArtClass::with('creator')
-            ->withCount('bookings')
+            ->withCount(['bookings' => function ($query) {
+                $query->where('attendance_status', '!=', 'cancelled');
+            }])
             ->orderBy('class_date', 'desc')
             ->paginate(15);
 
@@ -181,8 +183,11 @@ class ClassController extends Controller
      */
     public function destroy(ArtClass $class)
     {
-        // Check if class has bookings
-        if ($class->bookings()->where('payment_status', 'completed')->count() > 0) {
+        // Check if class has active (non-cancelled) confirmed bookings
+        if ($class->bookings()
+            ->where('payment_status', 'completed')
+            ->where('attendance_status', '!=', 'cancelled')
+            ->count() > 0) {
             return redirect()
                 ->route('admin.classes.index')
                 ->with('error', 'Cannot delete class with confirmed bookings. Cancel the class instead.');

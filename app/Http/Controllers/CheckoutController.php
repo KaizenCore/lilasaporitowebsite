@@ -189,6 +189,7 @@ class CheckoutController extends Controller
                 'currency' => $paymentIntent->currency,
                 'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
                 'status' => 'succeeded',
+                'is_test' => !$paymentIntent->livemode,
                 'metadata' => [
                     'class_title' => $class->title,
                     'class_date' => $class->class_date->toDateTimeString(),

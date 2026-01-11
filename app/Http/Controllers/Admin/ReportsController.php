@@ -18,26 +18,27 @@ class ReportsController extends Controller
         $currentYear = now()->year;
 
         $stats = [
-            'total_revenue' => Payment::succeeded()->sum('amount_cents'),
-            'total_fees' => Payment::succeeded()->sum('stripe_fee_cents'),
-            'total_net' => Payment::succeeded()->sum('net_amount_cents'),
-            'year_revenue' => Payment::succeeded()
+            'total_revenue' => Payment::succeeded()->live()->sum('amount_cents'),
+            'total_fees' => Payment::succeeded()->live()->sum('stripe_fee_cents'),
+            'total_net' => Payment::succeeded()->live()->sum('net_amount_cents'),
+            'year_revenue' => Payment::succeeded()->live()
                 ->whereYear('created_at', $currentYear)
                 ->sum('amount_cents'),
-            'year_fees' => Payment::succeeded()
+            'year_fees' => Payment::succeeded()->live()
                 ->whereYear('created_at', $currentYear)
                 ->sum('stripe_fee_cents'),
-            'year_net' => Payment::succeeded()
+            'year_net' => Payment::succeeded()->live()
                 ->whereYear('created_at', $currentYear)
                 ->sum('net_amount_cents'),
-            'transaction_count' => Payment::succeeded()->count(),
-            'year_transaction_count' => Payment::succeeded()
+            'transaction_count' => Payment::succeeded()->live()->count(),
+            'year_transaction_count' => Payment::succeeded()->live()
                 ->whereYear('created_at', $currentYear)
                 ->count(),
         ];
 
-        // Get available years for export
-        $years = Payment::selectRaw('EXTRACT(YEAR FROM created_at) as year')
+        // Get available years for export (from live payments only)
+        $years = Payment::live()
+            ->selectRaw('EXTRACT(YEAR FROM created_at) as year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year')
@@ -55,6 +56,7 @@ class ReportsController extends Controller
 
         $query = Payment::with(['booking.user', 'booking.artClass', 'order.user', 'classBookingOrder.user'])
             ->succeeded()
+            ->live()
             ->orderBy('created_at', 'asc');
 
         if ($year && $year !== 'all') {

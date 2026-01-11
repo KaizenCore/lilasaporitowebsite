@@ -26,6 +26,7 @@ class Payment extends Model
         'refund_amount_cents',
         'refunded_at',
         'metadata',
+        'is_test',
     ];
 
     protected $casts = [
@@ -35,6 +36,7 @@ class Payment extends Model
         'refund_amount_cents' => 'integer',
         'refunded_at' => 'datetime',
         'metadata' => 'array',
+        'is_test' => 'boolean',
     ];
 
     // Relationships
@@ -126,5 +128,15 @@ class Payment extends Model
     public function scopeSucceeded($query)
     {
         return $query->where('status', 'succeeded');
+    }
+
+    public function scopeLive($query)
+    {
+        return $query->where('is_test', false);
+    }
+
+    public function scopeTest($query)
+    {
+        return $query->where('is_test', true);
     }
 }

@@ -143,6 +143,7 @@ class PaymentController extends Controller
             'currency' => $paymentIntent->currency,
             'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
             'status' => 'succeeded',
+            'is_test' => !$paymentIntent->livemode,
             'metadata' => [
                 'class_title' => $metadata->class_title,
                 'class_date' => $metadata->class_date,
@@ -248,6 +249,7 @@ class PaymentController extends Controller
             'currency' => $paymentIntent->currency,
             'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
             'status' => 'succeeded',
+            'is_test' => !$paymentIntent->livemode,
             'metadata' => [
                 'order_number' => $order->order_number,
                 'class_count' => $metadata->class_count,
@@ -369,6 +371,7 @@ class PaymentController extends Controller
             'currency' => $paymentIntent->currency,
             'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
             'status' => 'succeeded',
+            'is_test' => !$paymentIntent->livemode,
             'metadata' => [
                 'order_number' => $order->order_number,
                 'item_count' => $metadata->item_count,

@@ -150,10 +150,11 @@ class CheckoutController extends Controller
 
             $class = ArtClass::findOrFail($request->art_class_id);
 
-            // Check if booking already exists (prevent duplicates)
+            // Check if booking already exists (prevent duplicates, but allow rebooking cancelled ones)
             $existingBooking = Booking::where('user_id', Auth::id())
                 ->where('art_class_id', $class->id)
-                ->whereIn('payment_status', ['completed'])
+                ->where('payment_status', 'completed')
+                ->where('attendance_status', '!=', 'cancelled')
                 ->first();
 
             if ($existingBooking) {

@@ -77,12 +77,16 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Days of Week *</label>
                         <div class="flex flex-wrap gap-2">
                             <template x-for="day in days" :key="day.value">
-                                <label class="relative flex cursor-pointer rounded-lg border px-4 py-2 shadow-sm"
-                                       :class="selectedDays.includes(day.value) ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/50 ring-1 ring-purple-500' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'">
-                                    <input type="checkbox" :name="'days_of_week[]'" :value="day.value"
-                                           x-model="selectedDays" class="sr-only">
+                                <button type="button"
+                                    @click="toggleDay(day.value)"
+                                    class="relative flex cursor-pointer rounded-lg border px-4 py-2 shadow-sm transition-all"
+                                    :class="selectedDays.includes(day.value) ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/50 ring-1 ring-purple-500' : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-purple-300'">
                                     <span class="text-sm font-medium" :class="selectedDays.includes(day.value) ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-white'" x-text="day.label"></span>
-                                </label>
+                                </button>
+                            </template>
+                            <!-- Hidden inputs for form submission -->
+                            <template x-for="dayValue in selectedDays" :key="'input-' + dayValue">
+                                <input type="hidden" name="days_of_week[]" :value="dayValue">
                             </template>
                         </div>
                         @error('days_of_week')
@@ -226,6 +230,15 @@
                 loading: false,
                 submitting: false,
                 errorMessage: '',
+
+                toggleDay(value) {
+                    const index = this.selectedDays.indexOf(value);
+                    if (index === -1) {
+                        this.selectedDays.push(value);
+                    } else {
+                        this.selectedDays.splice(index, 1);
+                    }
+                },
 
                 get canPreview() {
                     if (!this.startDate || !this.endDate || !this.time) return false;

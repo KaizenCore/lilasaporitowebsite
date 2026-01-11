@@ -113,12 +113,12 @@
                                             <div class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->created_at->format('M d, Y') }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $booking->user->name }}</div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->user->email }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $booking->user?->name ?? 'Unknown User' }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->user?->email ?? 'N/A' }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $booking->artClass->title }}</div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->artClass->class_date->format('M d, Y g:i A') }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $booking->artClass?->title ?? 'Deleted Class' }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->artClass?->class_date?->format('M d, Y g:i A') ?? 'N/A' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($booking->payment_status === 'completed')

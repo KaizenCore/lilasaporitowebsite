@@ -119,7 +119,8 @@
                             </svg>
                             <div>
                                 <p class="font-semibold text-gray-900 dark:text-white">Location</p>
-                                <p class="text-gray-600 dark:text-gray-400">{{ $class->location }}</p>
+                                <p class="text-gray-600 dark:text-gray-400">{{ $class->display_location }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">Full address provided after booking</p>
                             </div>
                         </div>
 

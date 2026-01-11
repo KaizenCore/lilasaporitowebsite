@@ -51,6 +51,7 @@ class ClassController extends Controller
             'price_cents' => 'required|integer|min:0',
             'capacity' => 'required|integer|min:1|max:100',
             'location' => 'required|string|max:255',
+            'location_public' => 'nullable|string|max:255',
             'status' => 'required|in:draft,published,cancelled',
         ]);
 
@@ -87,6 +88,7 @@ class ClassController extends Controller
             'price_cents' => $priceCents,
             'capacity' => $validated['capacity'],
             'location' => $validated['location'],
+            'location_public' => $validated['location_public'] ?? null,
             'status' => $validated['status'],
             'created_by' => auth()->id(),
         ]);
@@ -132,6 +134,7 @@ class ClassController extends Controller
             'price_cents' => 'required|integer|min:0',
             'capacity' => 'required|integer|min:1|max:100',
             'location' => 'required|string|max:255',
+            'location_public' => 'nullable|string|max:255',
             'status' => 'required|in:draft,published,cancelled',
         ]);
 

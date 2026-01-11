@@ -99,10 +99,22 @@
 
                     <!-- Location -->
                     <div class="mb-4">
-                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Location *</label>
-                        <input type="text" name="location" id="location" value="{{ old('location') }}" required
+                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Full Address *</label>
+                        <input type="text" name="location" id="location" value="{{ old('location') }}" required placeholder="123 Main St, Brooklyn, NY 11211"
                             class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500 @error('location') border-red-500 @enderror">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Full address - only shown in booking confirmation emails</p>
                         @error('location')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Public Location -->
+                    <div class="mb-4">
+                        <label for="location_public" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Public Display Location</label>
+                        <input type="text" name="location_public" id="location_public" value="{{ old('location_public') }}" placeholder="Williamsburg, Brooklyn"
+                            class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-purple-500 focus:ring-purple-500 @error('location_public') border-red-500 @enderror">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">General area shown on the website (e.g., "Williamsburg, Brooklyn"). Leave blank to use full address.</p>
+                        @error('location_public')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>

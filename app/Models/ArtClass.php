@@ -24,6 +24,7 @@ class ArtClass extends Model
         'price_cents',
         'capacity',
         'location',
+        'location_public',
         'status',
         'created_by',
     ];
@@ -86,6 +87,15 @@ class ArtClass extends Model
     public function getIsPastAttribute()
     {
         return $this->class_date->isPast();
+    }
+
+    /**
+     * Get the public display location (general area).
+     * Falls back to full location if public location not set.
+     */
+    public function getDisplayLocationAttribute()
+    {
+        return $this->location_public ?: $this->location;
     }
 
     public function scopePublished($query)

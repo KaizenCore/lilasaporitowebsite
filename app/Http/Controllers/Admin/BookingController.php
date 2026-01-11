@@ -165,7 +165,9 @@ class BookingController extends Controller
 
         // Send cancellation email
         try {
-            Mail::to($booking->user->email)->send(new BookingCancellation($booking));
+            if ($booking->user?->email) {
+                Mail::to($booking->user->email)->send(new BookingCancellation($booking));
+            }
         } catch (\Throwable $e) {
             \Log::error('Failed to send cancellation email: ' . $e->getMessage());
         }

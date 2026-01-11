@@ -25,8 +25,10 @@ class BookingConfirmation extends Mailable
      */
     public function envelope(): Envelope
     {
+        $classTitle = $this->booking->artClass?->title ?? 'Art Class';
+
         return new Envelope(
-            subject: 'Your FrizzBoss Class Booking Confirmation - ' . $this->booking->artClass->title,
+            subject: 'Your FrizzBoss Class Booking Confirmation - ' . $classTitle,
         );
     }
 

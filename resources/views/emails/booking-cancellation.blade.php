@@ -25,7 +25,7 @@
                                 <span style="color: white; font-size: 30px;">&#10005;</span>
                             </div>
                             <h2 style="margin: 0; color: #1f2937; font-size: 24px;">Booking Cancelled</h2>
-                            <p style="margin: 10px 0 0; color: #6b7280; font-size: 16px;">Hi {{ $user->name }}, your booking has been cancelled.</p>
+                            <p style="margin: 10px 0 0; color: #6b7280; font-size: 16px;">Hi {{ $user?->name ?? 'there' }}, your booking has been cancelled.</p>
                         </td>
                     </tr>
 
@@ -39,19 +39,19 @@
                                     <tr>
                                         <td style="padding: 8px 0;">
                                             <p style="margin: 0; color: #6b7280; font-size: 14px;">Class</p>
-                                            <p style="margin: 3px 0 0; color: #1f2937; font-size: 16px; font-weight: 600;">{{ $artClass->title }}</p>
+                                            <p style="margin: 3px 0 0; color: #1f2937; font-size: 16px; font-weight: 600;">{{ $artClass?->title ?? 'Art Class' }}</p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 8px 0;">
                                             <p style="margin: 0; color: #6b7280; font-size: 14px;">Original Date</p>
-                                            <p style="margin: 3px 0 0; color: #1f2937; font-size: 16px;">{{ $artClass->class_date->format('l, F j, Y') }} at {{ $artClass->class_date->format('g:i A') }}</p>
+                                            <p style="margin: 3px 0 0; color: #1f2937; font-size: 16px;">{{ $artClass?->class_date?->format('l, F j, Y') ?? 'N/A' }} {{ $artClass?->class_date ? 'at ' . $artClass->class_date->format('g:i A') : '' }}</p>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 8px 0;">
                                             <p style="margin: 0; color: #6b7280; font-size: 14px;">Cancelled On</p>
-                                            <p style="margin: 3px 0 0; color: #1f2937; font-size: 16px;">{{ $booking->cancelled_at->format('F j, Y \a\t g:i A') }}</p>
+                                            <p style="margin: 3px 0 0; color: #1f2937; font-size: 16px;">{{ $booking->cancelled_at?->format('F j, Y \a\t g:i A') ?? now()->format('F j, Y \a\t g:i A') }}</p>
                                         </td>
                                     </tr>
                                 </table>

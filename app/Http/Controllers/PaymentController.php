@@ -163,8 +163,10 @@ class PaymentController extends Controller
         // Send confirmation email
         try {
             $booking->load('artClass', 'user');
-            Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
-            Log::info('Booking confirmation email sent via webhook', ['booking_id' => $booking->id]);
+            if ($booking->user?->email) {
+                Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
+                Log::info('Booking confirmation email sent via webhook', ['booking_id' => $booking->id]);
+            }
         } catch (\Throwable $e) {
             Log::error('Failed to send booking confirmation email via webhook', [
                 'booking_id' => $booking->id,
@@ -276,8 +278,10 @@ class PaymentController extends Controller
         foreach ($bookings as $booking) {
             try {
                 $booking->load('artClass', 'user');
-                Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
-                Log::info('Booking confirmation email sent for multi-class order', ['booking_id' => $booking->id]);
+                if ($booking->user?->email) {
+                    Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
+                    Log::info('Booking confirmation email sent for multi-class order', ['booking_id' => $booking->id]);
+                }
             } catch (\Throwable $e) {
                 Log::error('Failed to send booking confirmation email for multi-class order', [
                     'booking_id' => $booking->id,

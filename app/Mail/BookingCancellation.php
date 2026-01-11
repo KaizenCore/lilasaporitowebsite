@@ -25,8 +25,10 @@ class BookingCancellation extends Mailable
      */
     public function envelope(): Envelope
     {
+        $classTitle = $this->booking->artClass?->title ?? 'Art Class';
+
         return new Envelope(
-            subject: 'Booking Cancelled - ' . $this->booking->artClass->title,
+            subject: 'Booking Cancelled - ' . $classTitle,
         );
     }
 

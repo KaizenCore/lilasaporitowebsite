@@ -23,7 +23,7 @@
                         <div class="md:flex">
                             <!-- Class Image -->
                             <div class="md:w-1/3">
-                                @if($booking->artClass->image_path)
+                                @if($booking->artClass?->image_path)
                                 <div class="h-64 md:h-full bg-gradient-to-br from-purple-200 to-pink-200 dark:from-purple-900 dark:to-pink-900 relative overflow-hidden">
                                     <img src="{{ Storage::url($booking->artClass->image_path) }}" alt="{{ $booking->artClass->title }}" class="w-full h-full object-cover">
                                 </div>
@@ -40,8 +40,8 @@
                             <div class="md:w-2/3 p-8">
                                 <div class="flex items-start justify-between mb-4">
                                     <div>
-                                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $booking->artClass->title }}</h3>
-                                        <p class="text-gray-600 dark:text-gray-400">{{ $booking->artClass->short_description }}</p>
+                                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $booking->artClass?->title ?? 'Class No Longer Available' }}</h3>
+                                        <p class="text-gray-600 dark:text-gray-400">{{ $booking->artClass?->short_description ?? '' }}</p>
                                     </div>
                                     <span class="bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap">
                                         Confirmed
@@ -55,8 +55,8 @@
                                         </svg>
                                         <div>
                                             <p class="text-sm font-semibold text-gray-900 dark:text-white">Date & Time</p>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->class_date->format('l, F j, Y') }}</p>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->class_date->format('g:i A') }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass?->class_date?->format('l, F j, Y') ?? 'N/A' }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass?->class_date?->format('g:i A') ?? '' }}</p>
                                         </div>
                                     </div>
 
@@ -67,7 +67,7 @@
                                         </svg>
                                         <div>
                                             <p class="text-sm font-semibold text-gray-900 dark:text-white">Location</p>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->location }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass?->location ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -89,12 +89,16 @@
                                 </div>
 
                                 <div class="mt-6 flex items-center justify-between">
+                                    @if($booking->artClass)
                                     <a href="{{ route('classes.show', $booking->artClass->slug) }}" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-semibold inline-flex items-center">
                                         View Class Details
                                         <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                         </svg>
                                     </a>
+                                    @else
+                                    <span class="text-gray-400">Class details unavailable</span>
+                                    @endif
                                     <form action="{{ route('bookings.cancel', $booking) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking? Contact us if you would like to request a refund.')">
                                         @csrf
                                         <button type="submit" class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-semibold inline-flex items-center">
@@ -135,7 +139,7 @@
                         <div class="md:flex">
                             <!-- Class Image -->
                             <div class="md:w-1/4">
-                                @if($booking->artClass->image_path)
+                                @if($booking->artClass?->image_path)
                                 <div class="h-48 md:h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 relative overflow-hidden">
                                     <img src="{{ Storage::url($booking->artClass->image_path) }}" alt="{{ $booking->artClass->title }}" class="w-full h-full object-cover">
                                 </div>
@@ -152,8 +156,8 @@
                             <div class="md:w-3/4 p-6">
                                 <div class="flex items-start justify-between mb-4">
                                     <div>
-                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $booking->artClass->title }}</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->class_date->format('F j, Y') }}</p>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $booking->artClass?->title ?? 'Deleted Class' }}</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass?->class_date?->format('F j, Y') ?? 'N/A' }}</p>
                                     </div>
                                     @if($booking->is_checked_in)
                                     <span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -191,7 +195,7 @@
                         <div class="md:flex">
                             <!-- Class Image -->
                             <div class="md:w-1/4">
-                                @if($booking->artClass->image_path)
+                                @if($booking->artClass?->image_path)
                                 <div class="h-32 md:h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 relative overflow-hidden">
                                     <img src="{{ Storage::url($booking->artClass->image_path) }}" alt="{{ $booking->artClass->title }}" class="w-full h-full object-cover grayscale">
                                 </div>
@@ -208,8 +212,8 @@
                             <div class="md:w-3/4 p-6">
                                 <div class="flex items-start justify-between mb-2">
                                     <div>
-                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $booking->artClass->title }}</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass->class_date->format('F j, Y') }}</p>
+                                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $booking->artClass?->title ?? 'Deleted Class' }}</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $booking->artClass?->class_date?->format('F j, Y') ?? 'N/A' }}</p>
                                     </div>
                                     <span class="bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
                                         Cancelled
@@ -220,7 +224,7 @@
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
-                                    Cancelled on {{ $booking->cancelled_at->format('F j, Y') }}
+                                    Cancelled on {{ $booking->cancelled_at?->format('F j, Y') ?? 'N/A' }}
                                 </div>
 
                                 <p class="text-sm text-gray-500 dark:text-gray-400">

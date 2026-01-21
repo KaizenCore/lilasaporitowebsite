@@ -24,6 +24,14 @@ use App\Http\Controllers\ClassController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\PartyController;
+use App\Http\Controllers\PartyInquiryController;
+use App\Http\Controllers\PartyCheckoutController;
+use App\Http\Controllers\Admin\PartyPaintingController;
+use App\Http\Controllers\Admin\PartyPricingController;
+use App\Http\Controllers\Admin\PartyAddonController;
+use App\Http\Controllers\Admin\PartyAvailabilityController;
+use App\Http\Controllers\Admin\PartyBookingController;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
@@ -32,6 +40,31 @@ Route::get('/classes', [ClassController::class, 'index'])->name('classes.index')
 Route::get('/classes/{slug}', [ClassController::class, 'show'])->name('classes.show');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/policy', [PolicyController::class, 'index'])->name('policy');
+
+// Public Party Routes
+Route::prefix('parties')->name('parties.')->group(function () {
+    Route::get('/', [PartyController::class, 'index'])->name('index');
+    Route::get('/paintings', [PartyController::class, 'paintings'])->name('paintings');
+    Route::get('/api/available-dates', [PartyController::class, 'availableDates'])->name('api.available-dates');
+    Route::post('/api/pricing-estimate', [PartyController::class, 'getPricingEstimate'])->name('api.pricing-estimate');
+
+    // Auth required for inquiry and booking
+    Route::middleware('auth')->group(function () {
+        Route::get('/inquire', [PartyInquiryController::class, 'create'])->name('inquire');
+        Route::post('/inquire', [PartyInquiryController::class, 'store'])->name('inquire.store');
+        Route::get('/my-inquiries', [PartyInquiryController::class, 'index'])->name('my-inquiries');
+        Route::get('/booking/{partyBooking}', [PartyInquiryController::class, 'show'])->name('booking.show');
+
+        // Checkout/Payment
+        Route::get('/checkout/{partyBooking}', [PartyCheckoutController::class, 'show'])->name('checkout');
+        Route::post('/checkout/{partyBooking}/accept', [PartyCheckoutController::class, 'acceptQuote'])->name('checkout.accept');
+        Route::post('/checkout/{partyBooking}/payment-intent', [PartyCheckoutController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.payment-intent');
+        Route::get('/checkout/{partyBooking}/success', [PartyCheckoutController::class, 'success'])->name('checkout.success');
+    });
+});
+
+// API Route for Party Payment Status (Auth Required)
+Route::middleware('auth')->get('/api/check-party-payment/{paymentIntentId}', [PartyCheckoutController::class, 'checkPaymentStatus'])->name('api.check-party-payment');
 
 // Store Routes
 Route::get('/store', [StoreController::class, 'index'])->name('store.index');
@@ -156,6 +189,37 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Reports & Export
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [ReportsController::class, 'exportPayments'])->name('reports.export');
+
+    // Party Management
+    Route::prefix('parties')->name('parties.')->group(function () {
+        // Paintings Gallery
+        Route::resource('paintings', PartyPaintingController::class);
+
+        // Pricing Configs
+        Route::resource('pricing', PartyPricingController::class);
+
+        // Add-ons
+        Route::resource('addons', PartyAddonController::class);
+
+        // Availability Management
+        Route::get('/availability', [PartyAvailabilityController::class, 'index'])->name('availability.index');
+        Route::post('/availability', [PartyAvailabilityController::class, 'store'])->name('availability.store');
+        Route::post('/availability/bulk', [PartyAvailabilityController::class, 'bulkStore'])->name('availability.bulk');
+        Route::delete('/availability/{slot}', [PartyAvailabilityController::class, 'destroy'])->name('availability.destroy');
+        Route::post('/availability/blackout', [PartyAvailabilityController::class, 'blackout'])->name('availability.blackout');
+        Route::post('/availability/unblock', [PartyAvailabilityController::class, 'unblock'])->name('availability.unblock');
+        Route::get('/availability/data', [PartyAvailabilityController::class, 'getData'])->name('availability.data');
+
+        // Booking Management
+        Route::get('/bookings', [PartyBookingController::class, 'index'])->name('bookings.index');
+        Route::get('/bookings/{partyBooking}', [PartyBookingController::class, 'show'])->name('bookings.show');
+        Route::post('/bookings/{partyBooking}/quote', [PartyBookingController::class, 'sendQuote'])->name('bookings.quote');
+        Route::post('/bookings/{partyBooking}/confirm', [PartyBookingController::class, 'confirm'])->name('bookings.confirm');
+        Route::post('/bookings/{partyBooking}/decline', [PartyBookingController::class, 'decline'])->name('bookings.decline');
+        Route::post('/bookings/{partyBooking}/complete', [PartyBookingController::class, 'complete'])->name('bookings.complete');
+        Route::post('/bookings/{partyBooking}/cancel', [PartyBookingController::class, 'cancel'])->name('bookings.cancel');
+        Route::post('/bookings/{partyBooking}/notes', [PartyBookingController::class, 'addNotes'])->name('bookings.notes');
+    });
 });
 
 require __DIR__.'/auth.php';

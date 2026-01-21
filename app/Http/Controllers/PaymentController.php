@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Mail\BookingConfirmation;
+use App\Mail\PartyBookingConfirmed;
 use App\Models\ArtClass;
+use App\Models\PartyBooking;
+use App\Models\PartyPayment;
 use App\Models\Booking;
 use App\Models\ClassBookingOrder;
 use App\Models\Order;
@@ -82,6 +85,8 @@ class PaymentController extends Controller
                     $this->createStoreOrder($paymentIntent);
                 } elseif ($metadata->order_type === 'class_booking') {
                     $this->createMultiClassBooking($paymentIntent);
+                } elseif ($metadata->order_type === 'party_booking') {
+                    $this->processPartyPayment($paymentIntent);
                 } else {
                     $this->createClassBooking($paymentIntent);
                 }
@@ -393,6 +398,66 @@ class PaymentController extends Controller
     }
 
     /**
+     * Process a party booking payment from payment intent
+     */
+    protected function processPartyPayment($paymentIntent)
+    {
+        $metadata = $paymentIntent->metadata;
+
+        // Find the party payment record
+        $partyPayment = PartyPayment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+
+        if (!$partyPayment) {
+            Log::warning('Party payment record not found for payment intent', [
+                'payment_intent_id' => $paymentIntent->id,
+            ]);
+            return;
+        }
+
+        // Check if already processed
+        if ($partyPayment->status === 'succeeded') {
+            Log::info('Party payment already processed', [
+                'payment_intent_id' => $paymentIntent->id,
+                'party_payment_id' => $partyPayment->id,
+            ]);
+            return;
+        }
+
+        // Update payment record
+        $partyPayment->update([
+            'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
+            'stripe_customer_id' => $paymentIntent->customer ?? null,
+            'payment_method' => $paymentIntent->payment_method_types[0] ?? 'card',
+            'is_test' => !$paymentIntent->livemode,
+        ]);
+
+        // Mark as succeeded (this also updates the booking)
+        $partyPayment->markAsSucceeded();
+
+        $booking = $partyPayment->partyBooking;
+
+        Log::info('Party payment processed successfully', [
+            'party_payment_id' => $partyPayment->id,
+            'party_booking_id' => $booking->id,
+            'booking_number' => $booking->booking_number,
+            'payment_type' => $partyPayment->payment_type,
+            'amount_cents' => $partyPayment->amount_cents,
+        ]);
+
+        // Send confirmation email
+        try {
+            $booking->load('partyPainting', 'pricingConfig');
+            Mail::to($booking->contact_email)->send(new PartyBookingConfirmed($booking));
+            Log::info('Party booking confirmation email sent', ['booking_id' => $booking->id]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to send party booking confirmation email', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Handle failed payment intent
      */
     protected function handlePaymentIntentFailed($paymentIntent)
@@ -408,6 +473,13 @@ class PaymentController extends Controller
 
         if ($payment) {
             $payment->markAsFailed($paymentIntent->last_payment_error->message ?? 'Payment failed');
+        }
+
+        // Also check for party payments
+        $partyPayment = PartyPayment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+
+        if ($partyPayment) {
+            $partyPayment->markAsFailed($paymentIntent->last_payment_error->message ?? 'Payment failed');
         }
     }
 }

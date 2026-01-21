@@ -47,6 +47,21 @@
                                 <a href="{{ route('admin.calendar.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Calendar
                                 </a>
+                                <div class="relative" x-data="{ open: false }">
+                                    <button @click="open = !open" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.parties.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
+                                        Parties
+                                        <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <div x-show="open" @click.away="open = false" x-cloak class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                                        <a href="{{ route('admin.parties.bookings.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Party Bookings</a>
+                                        <a href="{{ route('admin.parties.paintings.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Paintings</a>
+                                        <a href="{{ route('admin.parties.pricing.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Pricing</a>
+                                        <a href="{{ route('admin.parties.addons.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Add-ons</a>
+                                        <a href="{{ route('admin.parties.availability.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Availability</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -105,6 +120,16 @@
                         <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-600 hover:border-purple-300' }} text-base font-medium">
                             Calendar
                         </a>
+                        <div class="pl-3 pr-4 py-2 {{ request()->routeIs('admin.parties.*') ? 'bg-purple-800' : '' }}">
+                            <span class="text-purple-100 font-medium">Parties</span>
+                            <div class="pl-4 mt-1 space-y-1">
+                                <a href="{{ route('admin.parties.bookings.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.parties.bookings.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Bookings</a>
+                                <a href="{{ route('admin.parties.paintings.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.parties.paintings.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Paintings</a>
+                                <a href="{{ route('admin.parties.pricing.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.parties.pricing.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Pricing</a>
+                                <a href="{{ route('admin.parties.addons.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.parties.addons.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Add-ons</a>
+                                <a href="{{ route('admin.parties.availability.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.parties.availability.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Availability</a>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Responsive Settings Options -->

@@ -28,7 +28,13 @@
       "Bash(powershell.exe -Command \"composer require resend/resend-laravel --no-scripts --ignore-platform-reqs\")",
       "Bash(curl:*)",
       "Bash(powershell.exe -Command \"Get-Command php -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(npm run build:*)",
+      "Bash(cmd /c \"php artisan key:generate\")",
+      "Bash(cmd /c php artisan key:generate)",
+      "Bash(powershell -Command \"cd ''C:\\\\Users\\\\ezraj\\\\lilaapp''; php artisan key:generate\")",
+      "Bash(openssl rand:*)",
+      "Bash(powershell -Command \"[Convert]::ToBase64String\\([System.Security.Cryptography.RandomNumberGenerator]::GetBytes\\(32\\)\\)\")"
     ]
   }
 }

@@ -92,17 +92,21 @@
                         <p class="text-lg text-gray-700 dark:text-gray-300 mb-6">{{ $product->short_description }}</p>
                     @endif
 
-                    <!-- Add to Cart Button (Placeholder) -->
+                    <!-- Add to Cart -->
                     <div class="mb-6">
                         @if($product->is_out_of_stock)
                             <button disabled class="w-full bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 px-6 py-4 rounded-xl font-semibold cursor-not-allowed text-lg">
                                 Out of Stock
                             </button>
                         @else
-                            <button class="w-full bg-purple-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-purple-700 transition text-lg shadow-lg">
-                                Add to Cart - {{ $product->formatted_price }}
-                            </button>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 text-center">Shopping cart coming soon!</p>
+                            <form action="{{ route('cart.add') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="w-full bg-purple-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-purple-700 transition text-lg shadow-lg">
+                                    Add to Cart - {{ $product->formatted_price }}
+                                </button>
+                            </form>
                         @endif
                     </div>
                 </div>

@@ -15,7 +15,6 @@ class OrderController extends Controller
 
     public function __construct(CartService $cartService, StripeService $stripeService)
     {
-        $this->middleware('auth');
         $this->cartService = $cartService;
         $this->stripeService = $stripeService;
     }

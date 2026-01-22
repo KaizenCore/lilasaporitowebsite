@@ -94,7 +94,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
-// Checkout & Payment Routes (Auth Required)
+// Order Checkout Routes (Auth Required) - Must be before wildcard /checkout/{class:slug}
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout/order', [OrderController::class, 'checkout'])->name('checkout.order');
+    Route::post('/checkout/order/payment-intent', [OrderController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.order.payment-intent');
+    Route::get('/checkout/order/success/{order}', [OrderController::class, 'success'])->name('checkout.order.success');
+});
+
+// Class Checkout Routes (Auth Required) - Must be before wildcard /checkout/{class:slug}
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout/classes', [ClassCheckoutController::class, 'checkout'])->name('checkout.classes');
+    Route::post('/checkout/classes/payment-intent', [ClassCheckoutController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.classes.payment-intent');
+    Route::get('/checkout/classes/success/{order}', [ClassCheckoutController::class, 'success'])->name('checkout.classes.success');
+});
+
+// Single Class Checkout & Payment Routes (Auth Required) - Wildcard must be LAST
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/{class:slug}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/payment-intent', [CheckoutController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.payment-intent');
@@ -120,22 +134,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/class-cart/count', [ClassCartController::class, 'count'])->name('class-cart.count');
 });
 
-// Class Checkout Routes (Auth Required)
-Route::middleware('auth')->group(function () {
-    Route::get('/checkout/classes', [ClassCheckoutController::class, 'checkout'])->name('checkout.classes');
-    Route::post('/checkout/classes/payment-intent', [ClassCheckoutController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.classes.payment-intent');
-    Route::get('/checkout/classes/success/{order}', [ClassCheckoutController::class, 'success'])->name('checkout.classes.success');
-});
-
 // API Route for Class Order Status (Auth Required)
 Route::middleware('auth')->get('/api/check-class-order/{paymentIntentId}', [ClassCheckoutController::class, 'checkOrderStatus'])->name('api.check-class-order');
-
-// Order Checkout Routes (Auth Required)
-Route::middleware('auth')->group(function () {
-    Route::get('/checkout/order', [OrderController::class, 'checkout'])->name('checkout.order');
-    Route::post('/checkout/order/payment-intent', [OrderController::class, 'createPaymentIntent'])->middleware('throttle:10,1')->name('checkout.order.payment-intent');
-    Route::get('/checkout/order/success/{order}', [OrderController::class, 'success'])->name('checkout.order.success');
-});
 
 // Digital Download Route (Auth Required)
 Route::middleware('auth')->get('/download/{token}', [DownloadController::class, 'download'])->name('download');

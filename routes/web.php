@@ -94,6 +94,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
+// User Orders (Auth Required)
+Route::middleware('auth')->group(function () {
+    Route::get('/my-orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/my-orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+});
+
 // Order Checkout Routes (Auth Required) - Must be before wildcard /checkout/{class:slug}
 Route::middleware('auth')->group(function () {
     Route::get('/checkout/order', [OrderController::class, 'checkout'])->name('checkout.order');

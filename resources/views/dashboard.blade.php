@@ -52,6 +52,19 @@
                     <p class="text-gray-600 dark:text-gray-400">Browse art supplies and products</p>
                 </a>
 
+                <!-- My Orders Card -->
+                <a href="{{ route('orders.index') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 dark:bg-green-900/50 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-green-600 dark:group-hover:text-green-400 transition">My Orders</h3>
+                    <p class="text-gray-600 dark:text-gray-400">View your purchase history</p>
+                </a>
+
                 <!-- Profile Card -->
                 <a href="{{ route('profile.edit') }}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition group">
                     <div class="flex items-center mb-4">

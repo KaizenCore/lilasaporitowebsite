@@ -20,6 +20,34 @@ class OrderController extends Controller
     }
 
     /**
+     * Show user's order history
+     */
+    public function index()
+    {
+        $orders = Order::where('user_id', Auth::id())
+            ->with(['items', 'payment'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('orders.index', compact('orders'));
+    }
+
+    /**
+     * Show order details
+     */
+    public function show(Order $order)
+    {
+        // Verify order belongs to current user
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $order->load(['items.product', 'payment']);
+
+        return view('orders.show', compact('order'));
+    }
+
+    /**
      * Show checkout page
      */
     public function checkout()
@@ -106,6 +134,9 @@ class OrderController extends Controller
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
+
+        // Clear the cart after successful order
+        $this->cartService->clear();
 
         return view('checkout.order-success', compact('order'));
     }

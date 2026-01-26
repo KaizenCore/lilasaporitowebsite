@@ -6,10 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ArtClass;
 use App\Models\Booking;
 use App\Models\Payment;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportsController extends Controller
@@ -136,101 +133,6 @@ class ReportsController extends Controller
     }
 
     /**
-     * Export revenue report as PDF.
-     */
-    public function revenuePdf(Request $request)
-    {
-        $year = $request->input('year');
-
-        $query = Payment::with(['booking.user', 'booking.artClass', 'order.user', 'classBookingOrder.user'])
-            ->succeeded()
-            ->live()
-            ->orderBy('created_at', 'asc');
-
-        if ($year && $year !== 'all') {
-            $query->whereYear('created_at', $year);
-        }
-
-        $payments = $query->get();
-
-        $grossRevenue = $payments->sum('amount_cents');
-        $stripeFees = $payments->sum('stripe_fee_cents') ?? 0;
-        $netRevenue = $payments->sum('net_amount_cents') ?? $grossRevenue;
-
-        $period = $year && $year !== 'all' ? $year : 'All Time';
-
-        $pdf = Pdf::loadView('pdf.revenue-report', [
-            'title' => "Revenue Report - {$period}",
-            'payments' => $payments,
-            'grossRevenue' => $grossRevenue,
-            'stripeFees' => $stripeFees,
-            'netRevenue' => $netRevenue,
-            'transactionCount' => $payments->count(),
-            'period' => $period,
-        ]);
-
-        $filename = $year && $year !== 'all'
-            ? "frizzboss-revenue-{$year}.pdf"
-            : "frizzboss-revenue-all.pdf";
-
-        return $pdf->download($filename);
-    }
-
-    /**
-     * Email revenue report to admin.
-     */
-    public function emailRevenue(Request $request)
-    {
-        $year = $request->input('year');
-
-        $query = Payment::with(['booking.user', 'booking.artClass', 'order.user', 'classBookingOrder.user'])
-            ->succeeded()
-            ->live()
-            ->orderBy('created_at', 'asc');
-
-        if ($year && $year !== 'all') {
-            $query->whereYear('created_at', $year);
-        }
-
-        $payments = $query->get();
-
-        $grossRevenue = $payments->sum('amount_cents');
-        $stripeFees = $payments->sum('stripe_fee_cents') ?? 0;
-        $netRevenue = $payments->sum('net_amount_cents') ?? $grossRevenue;
-
-        $period = $year && $year !== 'all' ? $year : 'All Time';
-
-        $pdf = Pdf::loadView('pdf.revenue-report', [
-            'title' => "Revenue Report - {$period}",
-            'payments' => $payments,
-            'grossRevenue' => $grossRevenue,
-            'stripeFees' => $stripeFees,
-            'netRevenue' => $netRevenue,
-            'transactionCount' => $payments->count(),
-            'period' => $period,
-        ]);
-
-        $filename = $year && $year !== 'all'
-            ? "frizzboss-revenue-{$year}.pdf"
-            : "frizzboss-revenue-all.pdf";
-
-        try {
-            // Send to Lila's email
-            Mail::raw("Here is your FrizzBoss revenue report for {$period}.\n\nGenerated: " . now()->format('F j, Y \a\t g:i A'), function ($message) use ($pdf, $filename) {
-                $message->to('Lesaporito@gmail.com')
-                    ->subject('FrizzBoss Revenue Report')
-                    ->attachData($pdf->output(), $filename, [
-                        'mime' => 'application/pdf',
-                    ]);
-            });
-
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Failed to send email.'], 500);
-        }
-    }
-
-    /**
      * Show booking reports page.
      */
     public function bookings(Request $request)
@@ -349,62 +251,6 @@ class ReportsController extends Controller
     }
 
     /**
-     * Export bookings to PDF.
-     */
-    public function exportBookingsPdf(Request $request)
-    {
-        $query = Booking::with(['user', 'artClass'])
-            ->orderBy('created_at', 'desc');
-
-        // Apply same filters as bookings page
-        if ($request->filled('date_from')) {
-            $query->whereHas('artClass', function ($q) use ($request) {
-                $q->whereDate('class_date', '>=', $request->date_from);
-            });
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereHas('artClass', function ($q) use ($request) {
-                $q->whereDate('class_date', '<=', $request->date_to);
-            });
-        }
-
-        if ($request->filled('class_id')) {
-            $query->where('art_class_id', $request->class_id);
-        }
-
-        if ($request->filled('payment_status')) {
-            $query->where('payment_status', $request->payment_status);
-        }
-
-        if ($request->filled('attendance_status')) {
-            $query->where('attendance_status', $request->attendance_status);
-        }
-
-        $bookings = $query->get();
-
-        $filters = [
-            'date_from' => $request->date_from,
-            'date_to' => $request->date_to,
-            'class' => $request->class_id ? ArtClass::find($request->class_id)?->title : null,
-            'payment_status' => $request->payment_status,
-            'attendance_status' => $request->attendance_status,
-        ];
-
-        $pdf = Pdf::loadView('pdf.booking-report', [
-            'title' => 'Booking Report',
-            'bookings' => $bookings,
-            'totalBookings' => $bookings->count(),
-            'confirmedCount' => $bookings->where('payment_status', 'completed')->count(),
-            'attendedCount' => $bookings->where('attendance_status', 'attended')->count(),
-            'cancelledCount' => $bookings->where('attendance_status', 'cancelled')->count(),
-            'filters' => array_filter($filters),
-        ]);
-
-        return $pdf->download('frizzboss-bookings-' . now()->format('Y-m-d') . '.pdf');
-    }
-
-    /**
      * Show attendance list page.
      */
     public function attendance(Request $request)
@@ -437,28 +283,5 @@ class ReportsController extends Controller
         }
 
         return view('admin.reports.attendance', compact('upcomingClasses', 'pastClasses', 'selectedClass', 'bookings'));
-    }
-
-    /**
-     * Generate attendance PDF for a class.
-     */
-    public function attendancePdf(ArtClass $artClass)
-    {
-        $bookings = Booking::with('user')
-            ->where('art_class_id', $artClass->id)
-            ->where('payment_status', 'completed')
-            ->whereIn('attendance_status', ['booked', 'attended'])
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $pdf = Pdf::loadView('pdf.attendance-sheet', [
-            'title' => 'Attendance Sheet - ' . $artClass->title,
-            'artClass' => $artClass,
-            'bookings' => $bookings,
-        ]);
-
-        $filename = 'attendance-' . Str::slug($artClass->title) . '-' . $artClass->class_date->format('Y-m-d') . '.pdf';
-
-        return $pdf->download($filename);
     }
 }

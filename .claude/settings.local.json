@@ -41,7 +41,9 @@
       "Bash(powershell -Command \"where.exe php 2>&1\")",
       "Bash(powershell -Command \"Get-ChildItem C:/Users/ezraj/lilaapp/storage/framework/sessions | Select-Object -First 10\")",
       "Bash(find:*)",
-      "Bash(composer show:*)"
+      "Bash(composer show:*)",
+      "Bash(php composer.phar require:*)",
+      "Bash(php -r \"echo shell_exec\\(''composer require barryvdh/laravel-dompdf''\\);\")"
     ]
   }
 }

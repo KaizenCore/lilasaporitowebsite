@@ -27,7 +27,11 @@ if [ -z "$APP_KEY" ]; then
     echo "Warning: APP_KEY is not set!"
 fi
 
-# Clear and cache configuration for production
+# Clear old caches first to pick up new environment variables
+php artisan config:clear
+php artisan cache:clear
+
+# Cache configuration for production
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache

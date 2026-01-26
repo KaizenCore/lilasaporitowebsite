@@ -121,7 +121,9 @@ class ArtClass extends Model
 
     public function scopeUpcoming($query)
     {
-        return $query->where('class_date', '>', now());
+        // Show classes until end of the day they're scheduled
+        // This ensures classes remain visible throughout their scheduled day
+        return $query->whereDate('class_date', '>=', now()->toDateString());
     }
 
     public function scopeAvailable($query)

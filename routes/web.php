@@ -195,6 +195,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Reports & Export
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [ReportsController::class, 'exportPayments'])->name('reports.export');
+    Route::get('/reports/revenue/pdf', [ReportsController::class, 'revenuePdf'])->name('reports.revenue.pdf');
+    Route::post('/reports/revenue/email', [ReportsController::class, 'emailRevenue'])->name('reports.revenue.email');
+    Route::get('/reports/bookings', [ReportsController::class, 'bookings'])->name('reports.bookings');
+    Route::get('/reports/bookings/export', [ReportsController::class, 'exportBookings'])->name('reports.bookings.export');
+    Route::get('/reports/bookings/pdf', [ReportsController::class, 'exportBookingsPdf'])->name('reports.bookings.pdf');
+    Route::get('/reports/attendance', [ReportsController::class, 'attendance'])->name('reports.attendance');
+    Route::get('/reports/attendance/{artClass}/pdf', [ReportsController::class, 'attendancePdf'])->name('reports.attendance.pdf');
 
     // Party Management
     Route::prefix('parties')->name('parties.')->group(function () {

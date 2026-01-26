@@ -34,7 +34,14 @@
       "Bash(cmd /c php artisan key:generate)",
       "Bash(powershell -Command \"cd ''C:\\\\Users\\\\ezraj\\\\lilaapp''; php artisan key:generate\")",
       "Bash(openssl rand:*)",
-      "Bash(powershell -Command \"[Convert]::ToBase64String\\([System.Security.Cryptography.RandomNumberGenerator]::GetBytes\\(32\\)\\)\")"
+      "Bash(powershell -Command \"[Convert]::ToBase64String\\([System.Security.Cryptography.RandomNumberGenerator]::GetBytes\\(32\\)\\)\")",
+      "Bash(cmd /c \"php artisan route:list --path=orders\")",
+      "Bash(powershell -Command \"cd C:/Users/ezraj/lilaapp; php artisan route:list --path=my-orders\")",
+      "Bash(powershell -Command \"Get-Command php -ErrorAction SilentlyContinue | Select-Object Source\")",
+      "Bash(powershell -Command \"where.exe php 2>&1\")",
+      "Bash(powershell -Command \"Get-ChildItem C:/Users/ezraj/lilaapp/storage/framework/sessions | Select-Object -First 10\")",
+      "Bash(find:*)",
+      "Bash(composer show:*)"
     ]
   }
 }

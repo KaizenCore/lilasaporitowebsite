@@ -64,7 +64,7 @@
                         <td style="padding: 0 40px 30px;">
                             <div style="background-color: #fefce8; border: 1px solid #fef08a; border-radius: 12px; padding: 20px;">
                                 <h4 style="margin: 0 0 10px; color: #854d0e; font-size: 16px;">Refund Information</h4>
-                                <p style="margin: 0; color: #713f12; font-size: 14px; line-height: 1.6;">If you would like to request a refund, please contact us on Instagram or reply to this email. Refunds are handled on a case-by-case basis according to our cancellation policy.</p>
+                                <p style="margin: 0; color: #713f12; font-size: 14px; line-height: 1.6;">If you would like to request a refund, please email Lila at Lesaporito@gmail.com or message us on Instagram. Refunds are handled on a case-by-case basis according to our cancellation policy.</p>
                             </div>
                         </td>
                     </tr>
@@ -79,7 +79,7 @@
                     <!-- Footer -->
                     <tr>
                         <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
-                            <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">Questions? Reply to this email or reach out on Instagram</p>
+                            <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">Questions? Email Lila at <a href="mailto:Lesaporito@gmail.com" style="color: #9333ea; text-decoration: none;">Lesaporito@gmail.com</a> or DM on Instagram</p>
                             <p style="margin: 0;">
                                 <a href="https://instagram.com/frizzboss" style="color: #9333ea; text-decoration: none; font-weight: 600;">@frizzboss</a>
                             </p>

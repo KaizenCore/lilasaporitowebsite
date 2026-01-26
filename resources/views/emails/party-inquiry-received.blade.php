@@ -35,7 +35,7 @@ Thank you for your interest in hosting a paint party with us! We've received you
 View Your Inquiry
 </x-mail::button>
 
-If you have any questions in the meantime, feel free to reply to this email.
+If you have any questions in the meantime, email Lila at Lesaporito@gmail.com or DM @frizzboss on Instagram.
 
 We can't wait to party with you!
 

@@ -61,7 +61,7 @@ Click the button below to review your quote details and complete your payment to
 Accept Quote & Pay
 </x-mail::button>
 
-If you have any questions about your quote, just reply to this email and we'll be happy to help.
+If you have any questions about your quote, email Lila at Lesaporito@gmail.com or DM @frizzboss on Instagram.
 
 We're looking forward to creating an amazing party experience for you!
 

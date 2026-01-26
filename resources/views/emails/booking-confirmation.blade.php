@@ -97,7 +97,7 @@
                     <!-- Footer -->
                     <tr>
                         <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
-                            <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">Questions? Reply to this email or reach out on Instagram</p>
+                            <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">Questions? Email Lila at <a href="mailto:Lesaporito@gmail.com" style="color: #9333ea; text-decoration: none;">Lesaporito@gmail.com</a> or DM on Instagram</p>
                             <p style="margin: 0;">
                                 <a href="https://instagram.com/frizzboss" style="color: #9333ea; text-decoration: none; font-weight: 600;">@frizzboss</a>
                             </p>

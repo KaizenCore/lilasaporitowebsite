@@ -66,7 +66,7 @@ We'll be in touch to finalize your custom painting design before the event.
 View Booking Details
 </x-mail::button>
 
-If you have any questions or need to make changes, please reply to this email or contact us directly.
+If you have any questions or need to make changes, email Lila at Lesaporito@gmail.com or DM @frizzboss on Instagram.
 
 See you soon!
 

@@ -236,9 +236,10 @@
                             @error('contact_email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                         </div>
 
+                        @if($addons->count() > 0)
                         <div class="mb-6">
-                            <label class="flex items-center">
-                                <input type="hidden" name="addon_ids" value="">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Optional Add-ons</label>
+                            <div class="flex flex-wrap">
                                 @foreach($addons as $addon)
                                     <div class="flex items-center mr-4 mb-2">
                                         <input type="checkbox" name="addon_ids[]" value="{{ $addon->id }}"
@@ -247,8 +248,9 @@
                                         <span class="ml-2 text-sm">{{ $addon->name }} ({{ $addon->formatted_price }})</span>
                                     </div>
                                 @endforeach
-                            </label>
+                            </div>
                         </div>
+                        @endif
 
                         <div class="bg-purple-50 rounded-lg p-4 mb-6">
                             <p class="text-sm text-purple-800">

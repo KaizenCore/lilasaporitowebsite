@@ -59,11 +59,8 @@ class PartyBooking extends Model
 
     protected $casts = [
         'preferred_date' => 'date',
-        'preferred_time' => 'datetime:H:i',
         'alternate_date' => 'date',
-        'alternate_time' => 'datetime:H:i',
         'confirmed_date' => 'date',
-        'confirmed_time' => 'datetime:H:i',
         'guest_count' => 'integer',
         'honoree_age' => 'integer',
         'wants_custom_painting' => 'boolean',

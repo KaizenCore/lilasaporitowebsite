@@ -28,7 +28,7 @@ class StripeService
         try {
             $paymentIntent = PaymentIntent::create([
                 'amount' => $amount,
-                'currency' => 'usd',
+                'currency' => 'cad',
                 'description' => $description,
                 'metadata' => $metadata,
                 'automatic_payment_methods' => [

@@ -3,38 +3,37 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ---
-## CURRENT STATUS (2026-01-27)
+## CURRENT STATUS (2026-01-29)
 
-### Blocking Issue: Production Mail Not Working
-**Problem**: Party inquiry form submits successfully but fails on email send with "Class Resend not found"
+### TODO: Switch Stripe to Live Mode
+**Code change done**: Currency changed from USD to CAD in `app/Services/StripeService.php` (committed & pushed)
 
-**Root Cause**:
-- Dokploy container is 26+ hours old with stale cached config (`MAIL_MAILER=resend`)
-- Dokploy env vars were changed but container was never redeployed
-- Current Dokploy env vars have `MAIL_MAILER=log` which only logs, doesn't send
-
-**Fix Required** (do this first thing tomorrow):
-1. Go to Dokploy UI → frizzboss app → Environment Variables
-2. Update mail settings:
+**Remaining steps in Dokploy UI**:
+1. Get live keys from Stripe Dashboard (https://dashboard.stripe.com/apikeys) - toggle to "Live mode"
+2. Create live webhook at https://dashboard.stripe.com/webhooks:
+   - Endpoint: `https://frizzboss.ca/webhook/stripe`
+   - Events: `payment_intent.succeeded`, `payment_intent.payment_failed`
+   - Copy the signing secret
+3. Update env vars in Dokploy:
    ```
-   MAIL_MAILER=smtp
-   MAIL_HOST=smtp.resend.com
-   MAIL_PORT=587
-   MAIL_USERNAME=resend
-   MAIL_PASSWORD=<get_resend_api_key_from_resend.com>
-   MAIL_FROM_ADDRESS=hello@frizzboss.ca
-   MAIL_FROM_NAME=FizzBoss
+   STRIPE_KEY=pk_live_xxxxx
+   STRIPE_SECRET=sk_live_xxxxx
+   STRIPE_WEBHOOK_SECRET=whsec_xxxxx
    ```
-3. **Redeploy the container** (critical - env var changes don't apply until redeploy)
+4. **Redeploy the container**
 
-### Code Fixes Made Today
-1. `resources/views/parties/inquire.blade.php` - Removed broken hidden `addon_ids` input that caused validation failures
-2. `app/Models/PartyBooking.php` - Removed incorrect `datetime:H:i` casts for time fields (they're `time` columns, not datetime)
-
-### Pending: Needs Resend Account Setup
-- Sign up at https://resend.com (free tier)
-- Add domain `frizzboss.ca` and verify DNS
-- Get API key for MAIL_PASSWORD
+### Previous Issue: Production Mail
+If mail still not working, ensure these env vars are set in Dokploy:
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.resend.com
+MAIL_PORT=587
+MAIL_USERNAME=resend
+MAIL_PASSWORD=<resend_api_key_from_resend.com>
+MAIL_FROM_ADDRESS=hello@frizzboss.ca
+MAIL_FROM_NAME=FizzBoss
+```
+Then redeploy.
 
 ---
 

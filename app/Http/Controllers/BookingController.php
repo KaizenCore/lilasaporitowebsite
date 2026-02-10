@@ -28,26 +28,30 @@ class BookingController extends Controller
             return response()->json(['booking_id' => null]);
         }
 
-        // Normal view request
+        // Normal view request — use withTrashed so bookings for deleted classes still appear
         $upcomingBookings = Booking::where('user_id', auth()->id())
             ->confirmed()
-            ->upcoming()
+            ->whereHas('artClass', function ($q) {
+                $q->withTrashed()->where('class_date', '>', now());
+            })
             ->where('attendance_status', '!=', 'cancelled')
-            ->with('artClass')
+            ->with(['artClass' => fn($q) => $q->withTrashed()])
             ->get()
             ->sortBy('artClass.class_date');
 
         $pastBookings = Booking::where('user_id', auth()->id())
             ->confirmed()
-            ->past()
-            ->with('artClass')
+            ->whereHas('artClass', function ($q) {
+                $q->withTrashed()->where('class_date', '<=', now());
+            })
+            ->with(['artClass' => fn($q) => $q->withTrashed()])
             ->get()
             ->sortByDesc('artClass.class_date')
             ->take(10);
 
         $cancelledBookings = Booking::where('user_id', auth()->id())
             ->where('attendance_status', 'cancelled')
-            ->with('artClass')
+            ->with(['artClass' => fn($q) => $q->withTrashed()])
             ->orderByDesc('cancelled_at')
             ->take(10)
             ->get();

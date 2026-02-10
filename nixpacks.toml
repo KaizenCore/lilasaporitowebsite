@@ -18,4 +18,4 @@ cmds = [
 ]
 
 [start]
-cmd = "php artisan package:discover --ansi && php artisan storage:link --force && php artisan migrate --force && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "mkdir -p /tmp/phpini && echo 'upload_max_filesize=50M\npost_max_size=60M\nmax_file_uploads=20\nmax_execution_time=300\nmax_input_time=300\nmemory_limit=256M' > /tmp/phpini/uploads.ini && export PHP_INI_SCAN_DIR=\"$(php -r 'echo PHP_CONFIG_FILE_SCAN_DIR;'):/tmp/phpini\" && php artisan package:discover --ansi && php artisan storage:link --force && mkdir -p storage/logs && php artisan migrate --force && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"

@@ -39,7 +39,7 @@ class ProductCategoryController extends Controller
             'name' => 'required|string|max:255|unique:product_categories,name',
             'slug' => 'nullable|string|max:255|unique:product_categories,slug',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
@@ -71,7 +71,7 @@ class ProductCategoryController extends Controller
             'name' => 'required|string|max:255|unique:product_categories,name,' . $category->id,
             'slug' => 'nullable|string|max:255|unique:product_categories,slug,' . $category->id,
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 

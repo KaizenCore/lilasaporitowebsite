@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(EmailLog::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
     // Helper methods
     public function isAdmin()
     {

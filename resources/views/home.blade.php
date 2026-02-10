@@ -120,6 +120,54 @@
     </section>
     @endif
 
+    <!-- Trustpilot Reviews Section -->
+    @if(config('services.trustpilot.business_unit_id'))
+    <section class="py-16 px-4 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4 text-center">What Our Students Say</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-center mb-12">See what others are saying about their FrizzBoss experience</p>
+
+            <!-- TrustBox Carousel Widget -->
+            <div class="trustpilot-widget" data-locale="en-CA" data-template-id="53aa8912dec7e10d38f59f36" data-businessunit-id="{{ config('services.trustpilot.business_unit_id') }}" data-style-height="140px" data-style-width="100%" data-theme="{{ 'light' }}" data-stars="4,5" data-review-languages="en">
+                <a href="https://www.trustpilot.com/review/frizzboss.ca" target="_blank" rel="noopener">Trustpilot</a>
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Student Reviews Section -->
+    @if($reviews->count() > 0)
+    <section class="py-16 px-4">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4 text-center">Student Reviews</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-center mb-12">Hear from our creative community</p>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                @foreach($reviews as $review)
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <div class="flex items-center mb-3">
+                        @for($i = 1; $i <= 5; $i++)
+                            <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600' }}" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ $review->title }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{{ $review->body }}</p>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ $review->user->name }}</span>
+                        @if($review->artClass)
+                            <span class="mx-1">&middot;</span>
+                            <span>{{ $review->artClass->title }}</span>
+                        @endif
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- CTA Section -->
     <section class="py-20 px-4 bg-gradient-to-r from-purple-600 to-pink-600">
         <div class="max-w-4xl mx-auto text-center">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ArtClass;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -13,6 +14,12 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        return view('home', compact('featuredClasses'));
+        $reviews = Review::approved()
+            ->with(['user', 'artClass'])
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        return view('home', compact('featuredClasses', 'reviews'));
     }
 }

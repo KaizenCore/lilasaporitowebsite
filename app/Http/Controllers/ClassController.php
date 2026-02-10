@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ArtClass;
+use App\Models\Review;
 use Illuminate\Http\Request;
 
 class ClassController extends Controller
@@ -38,6 +39,16 @@ class ClassController extends Controller
             ->limit(3)
             ->get();
 
-        return view('classes.show', compact('class', 'relatedClasses'));
+        $reviews = Review::approved()
+            ->forClass($class->id)
+            ->with('user')
+            ->latest()
+            ->get();
+
+        $userHasReviewed = auth()->check()
+            ? Review::where('user_id', auth()->id())->where('art_class_id', $class->id)->exists()
+            : false;
+
+        return view('classes.show', compact('class', 'relatedClasses', 'reviews', 'userHasReviewed'));
     }
 }

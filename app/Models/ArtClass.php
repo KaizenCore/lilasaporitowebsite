@@ -74,6 +74,26 @@ class ArtClass extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews()
+    {
+        return $this->hasMany(Review::class)->approved();
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->approvedReviews()->avg('rating');
+    }
+
+    public function getReviewCountAttribute()
+    {
+        return $this->approvedReviews()->count();
+    }
+
     // Helper methods
     public function getFormattedPriceAttribute()
     {

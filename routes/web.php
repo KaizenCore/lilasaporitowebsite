@@ -24,9 +24,11 @@ use App\Http\Controllers\ClassController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\PartyController;
 use App\Http\Controllers\PartyInquiryController;
 use App\Http\Controllers\PartyCheckoutController;
+use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\PartyPaintingController;
 use App\Http\Controllers\Admin\PartyPricingController;
 use App\Http\Controllers\Admin\PartyAddonController;
@@ -93,6 +95,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::post('/my-bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
+
+// Reviews (Auth Required)
+Route::middleware('auth')->post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 // User Orders (Auth Required)
 Route::middleware('auth')->group(function () {
@@ -198,6 +203,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reports/bookings', [ReportsController::class, 'bookings'])->name('reports.bookings');
     Route::get('/reports/bookings/export', [ReportsController::class, 'exportBookings'])->name('reports.bookings.export');
     Route::get('/reports/attendance', [ReportsController::class, 'attendance'])->name('reports.attendance');
+
+    // Review Management
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::post('/reviews/{review}/approve', [AdminReviewController::class, 'approve'])->name('reviews.approve');
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
 
     // Party Management
     Route::prefix('parties')->name('parties.')->group(function () {

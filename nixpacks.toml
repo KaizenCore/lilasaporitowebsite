@@ -1,7 +1,7 @@
 # Nixpacks configuration for Laravel 12
 # This prevents artisan commands from running during build phase
 # when environment variables are not yet available
-# Cache bust: 2026-01-10
+# Cache bust: 2026-02-11
 
 [phases.setup]
 nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo", "php83Extensions.pdo_mysql", "php83Extensions.pdo_sqlite", "php83Extensions.mbstring", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "nodejs_20"]
@@ -18,4 +18,4 @@ cmds = [
 ]
 
 [start]
-cmd = "mkdir -p /tmp/phpini && echo 'upload_max_filesize=50M\npost_max_size=60M\nmax_file_uploads=20\nmax_execution_time=300\nmax_input_time=300\nmemory_limit=256M' > /tmp/phpini/uploads.ini && export PHP_INI_SCAN_DIR=\"$(php -r 'echo PHP_CONFIG_FILE_SCAN_DIR;'):/tmp/phpini\" && php artisan package:discover --ansi && php artisan storage:link --force && mkdir -p storage/logs && php artisan migrate --force && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "mkdir -p /tmp/phpini && echo upload_max_filesize=50M > /tmp/phpini/uploads.ini && echo post_max_size=60M >> /tmp/phpini/uploads.ini && echo max_file_uploads=20 >> /tmp/phpini/uploads.ini && echo max_execution_time=300 >> /tmp/phpini/uploads.ini && echo max_input_time=300 >> /tmp/phpini/uploads.ini && echo memory_limit=256M >> /tmp/phpini/uploads.ini && export PHP_INI_SCAN_DIR=$(php -r 'echo PHP_CONFIG_FILE_SCAN_DIR;'):/tmp/phpini && php artisan package:discover --ansi && php artisan storage:link --force && mkdir -p storage/logs && php artisan migrate --force && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"

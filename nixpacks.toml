@@ -1,14 +1,14 @@
 # Nixpacks configuration for Laravel 12
 # This prevents artisan commands from running during build phase
 # when environment variables are not yet available
-# Cache bust: 2026-02-12a
+# Cache bust: 2026-02-12b
 
 [phases.setup]
-nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo", "php83Extensions.pdo_mysql", "php83Extensions.pdo_sqlite", "php83Extensions.mbstring", "php83Extensions.iconv", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "nodejs_20"]
+nixPkgs = ["php83", "php83Extensions.pdo", "php83Extensions.pdo_mysql", "php83Extensions.pdo_sqlite", "php83Extensions.mbstring", "php83Extensions.iconv", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "nodejs_20"]
 
 [phases.install]
 cmds = [
-    "php $(which composer) install --no-dev --no-scripts --optimize-autoloader --ignore-platform-reqs",
+    "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\" && php composer-setup.php --quiet && php composer.phar install --no-dev --no-scripts --optimize-autoloader --ignore-platform-reqs",
     "npm ci"
 ]
 

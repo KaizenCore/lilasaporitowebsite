@@ -16,7 +16,7 @@
                 wantsCustomPainting: {{ old('wants_custom_painting', false) ? 'true' : 'false' }},
                 selectedPaintingId: '{{ old('party_painting_id', '') }}'
             }">
-                <form action="{{ route('parties.inquire.store') }}" method="POST">
+                <form action="{{ route('parties.inquire.store') }}" method="POST" novalidate>
                     @csrf
 
                     <!-- Step Indicator -->

@@ -90,6 +90,25 @@
                         </div>
                         @endif
                     </div>
+                    @if($partyBooking->event_type === 'fundraiser')
+                    <div class="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                        <h4 class="text-sm font-semibold text-green-800 mb-2">Fundraiser Details</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Organization</p>
+                                <p class="font-medium">{{ $partyBooking->fundraiser_org_name }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Cause / Charity</p>
+                                <p class="font-medium">{{ $partyBooking->fundraiser_cause }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Type</p>
+                                <p class="font-medium">{{ $partyBooking->fundraiser_type === 'donated' ? 'Donated Time (Free)' : 'Fundraiser Event (Raise Money)' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     @if($partyBooking->event_details)
                     <div class="mt-4">
                         <p class="text-sm text-gray-500">Additional Details</p>
@@ -313,13 +332,17 @@
                             </form>
                         @endif
 
-                        @if(in_array($partyBooking->status, ['quoted', 'accepted', 'deposit_paid']))
+                        @if(in_array($partyBooking->status, ['quoted', 'accepted', 'deposit_paid']) || ($partyBooking->status === 'inquiry' && $partyBooking->event_type === 'fundraiser' && $partyBooking->fundraiser_type === 'donated'))
                             <form action="{{ route('admin.parties.bookings.confirm', $partyBooking) }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="confirmed_date" value="{{ $partyBooking->confirmed_date ?? $partyBooking->preferred_date }}">
                                 <input type="hidden" name="confirmed_time" value="{{ $partyBooking->confirmed_time ?? $partyBooking->preferred_time }}">
                                 <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                                    Manually Confirm (Bypass Payment)
+                                    @if($partyBooking->event_type === 'fundraiser' && $partyBooking->fundraiser_type === 'donated')
+                                        Confirm Donated Event (No Payment)
+                                    @else
+                                        Manually Confirm (Bypass Payment)
+                                    @endif
                                 </button>
                             </form>
                         @endif

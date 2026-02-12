@@ -30,6 +30,9 @@ class PartyBooking extends Model
         'event_type',
         'honoree_name',
         'honoree_age',
+        'fundraiser_org_name',
+        'fundraiser_cause',
+        'fundraiser_type',
         'party_painting_id',
         'wants_custom_painting',
         'custom_painting_description',
@@ -253,6 +256,7 @@ class PartyBooking extends Model
             'bridal_shower' => 'Bridal Shower',
             'bachelorette' => 'Bachelorette Party',
             'team_building' => 'Team Building',
+            'fundraiser' => 'Fundraiser',
             'other' => 'Other Event',
             default => ucfirst($this->event_type ?? 'Event'),
         };

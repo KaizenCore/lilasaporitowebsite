@@ -90,6 +90,11 @@
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                             {{ $booking->event_type_display }}
+                                            @if($booking->event_type === 'fundraiser')
+                                                <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-green-100 text-green-800">
+                                                    {{ $booking->fundraiser_type === 'donated' ? 'Donated' : 'Fundraising' }}
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-3 whitespace-nowrap">
                                             <div class="text-sm text-gray-900 dark:text-white">{{ $booking->preferred_date->format('M j, Y') }}</div>

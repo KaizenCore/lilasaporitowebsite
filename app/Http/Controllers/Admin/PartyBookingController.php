@@ -139,10 +139,13 @@ class PartyBookingController extends Controller
             'confirmed_time' => 'required|date_format:H:i',
         ]);
 
+        $isDonated = $partyBooking->event_type === 'fundraiser' && $partyBooking->fundraiser_type === 'donated';
+
         $partyBooking->update([
             'status' => PartyBooking::STATUS_CONFIRMED,
-            'payment_status' => PartyBooking::PAYMENT_PAID,
-            'total_paid_cents' => $partyBooking->quoted_total_cents,
+            'payment_status' => $isDonated ? PartyBooking::PAYMENT_PAID : PartyBooking::PAYMENT_PAID,
+            'total_paid_cents' => $isDonated ? 0 : $partyBooking->quoted_total_cents,
+            'quoted_total_cents' => $isDonated ? 0 : $partyBooking->quoted_total_cents,
             'confirmed_date' => $validated['confirmed_date'],
             'confirmed_time' => $validated['confirmed_time'],
             'admin_notes' => $validated['admin_notes'],

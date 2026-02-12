@@ -49,6 +49,7 @@
                                     'bridal_shower' => 'Bridal Shower',
                                     'bachelorette' => 'Bachelorette',
                                     'team_building' => 'Team Building',
+                                    'fundraiser' => 'Fundraiser',
                                     'other' => 'Other',
                                 ] as $value => $label)
                                     <label class="cursor-pointer">
@@ -99,6 +100,43 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Age Turning</label>
                                 <input type="number" name="honoree_age" value="{{ old('honoree_age') }}" min="1" max="120"
                                     class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                            </div>
+                        </div>
+
+                        <div x-show="eventType === 'fundraiser'" class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
+                                <input type="text" name="fundraiser_org_name" value="{{ old('fundraiser_org_name') }}"
+                                    :required="eventType === 'fundraiser'" placeholder="Who is organizing?"
+                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                @error('fundraiser_org_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Cause / Charity *</label>
+                                <input type="text" name="fundraiser_cause" value="{{ old('fundraiser_cause') }}"
+                                    :required="eventType === 'fundraiser'" placeholder="What cause will the funds support?"
+                                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                                @error('fundraiser_cause') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Fundraiser Type *</label>
+                                <div class="grid grid-cols-2 gap-4" x-data="{ fundraiserType: '{{ old('fundraiser_type', '') }}' }">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="fundraiser_type" value="donated" x-model="fundraiserType" class="sr-only peer">
+                                        <div class="p-4 border-2 rounded-lg text-center peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-300 transition">
+                                            <div class="font-medium">Donated Time</div>
+                                            <div class="text-sm text-gray-500">Lila donates her time for free</div>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="fundraiser_type" value="fundraising" x-model="fundraiserType" class="sr-only peer">
+                                        <div class="p-4 border-2 rounded-lg text-center peer-checked:border-purple-600 peer-checked:bg-purple-50 hover:border-purple-300 transition">
+                                            <div class="font-medium">Fundraiser Event</div>
+                                            <div class="text-sm text-gray-500">Paint night to raise money</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                @error('fundraiser_type') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
                     </div>

@@ -119,13 +119,16 @@ class PartyInquiryController extends Controller
             'contact_phone' => $validated['contact_phone'] ?? null,
         ]);
 
-        // Send confirmation email to customer
-        Mail::to($booking->contact_email)->send(new PartyInquiryReceived($booking));
+        // Send emails (don't let mail failures block the inquiry submission)
+        try {
+            Mail::to($booking->contact_email)->send(new PartyInquiryReceived($booking));
 
-        // Send notification to admin
-        $adminEmail = config('mail.admin_address', config('mail.from.address'));
-        if ($adminEmail) {
-            Mail::to($adminEmail)->send(new PartyInquiryAdmin($booking));
+            $adminEmail = config('mail.admin_address', config('mail.from.address'));
+            if ($adminEmail) {
+                Mail::to($adminEmail)->send(new PartyInquiryAdmin($booking));
+            }
+        } catch (\Exception $e) {
+            report($e);
         }
 
         return redirect()->route('parties.booking.show', $booking)

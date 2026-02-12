@@ -36,7 +36,7 @@ class PartyBookingConfirmed extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.party-booking-confirmed',
+            markdown: 'emails.party-booking-confirmed',
             with: [
                 'booking' => $this->booking,
                 'painting' => $this->booking->partyPainting,

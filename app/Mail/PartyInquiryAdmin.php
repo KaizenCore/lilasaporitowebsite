@@ -36,7 +36,7 @@ class PartyInquiryAdmin extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.party-inquiry-admin',
+            markdown: 'emails.party-inquiry-admin',
             with: [
                 'booking' => $this->booking,
                 'painting' => $this->booking->partyPainting,

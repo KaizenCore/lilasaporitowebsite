@@ -36,7 +36,7 @@ class PartyQuoteSent extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.party-quote-sent',
+            markdown: 'emails.party-quote-sent',
             with: [
                 'booking' => $this->booking,
                 'painting' => $this->booking->partyPainting,

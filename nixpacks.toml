@@ -1,15 +1,15 @@
 # Nixpacks configuration for Laravel 12
 # This prevents artisan commands from running during build phase
 # when environment variables are not yet available
-# Cache bust: 2026-02-12d
+# Cache bust: 2026-02-12e
 
 [phases.setup]
-nixPkgs = ["php83", "php83Packages.composer", "php83Extensions.pdo", "php83Extensions.pdo_mysql", "php83Extensions.pdo_sqlite", "php83Extensions.mbstring", "php83Extensions.iconv", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "nodejs_20"]
-cmds = ["ls /nix/store/*/bin/php | grep with-extensions || true", "ls /nix/store/*/share/composer/composer.phar || true"]
+nixPkgs = ["php83", "php83Extensions.pdo", "php83Extensions.pdo_mysql", "php83Extensions.pdo_sqlite", "php83Extensions.mbstring", "php83Extensions.iconv", "php83Extensions.xml", "php83Extensions.curl", "php83Extensions.zip", "php83Extensions.gd", "php83Extensions.bcmath", "php83Extensions.tokenizer", "php83Extensions.openssl", "nodejs_20"]
+cmds = ["ls /nix/store/*/bin/php | grep with-extensions || true"]
 
 [phases.install]
 cmds = [
-    "PHPEXT=$(ls /nix/store/*/bin/php 2>/dev/null | grep with-extensions | head -1) && CPHAR=$(ls /nix/store/*/share/composer/composer.phar 2>/dev/null | head -1) && echo PHP=$PHPEXT COMPOSER=$CPHAR && $PHPEXT $CPHAR install --no-dev --no-scripts --optimize-autoloader --ignore-platform-reqs",
+    "PHPEXT=$(ls /nix/store/*/bin/php 2>/dev/null | grep with-extensions | head -1) && echo \"Using PHP: $PHPEXT\" && $PHPEXT -r \"copy('https://getcomposer.org/installer', '/tmp/composer-setup.php');\" && $PHPEXT /tmp/composer-setup.php --install-dir=/tmp --quiet && $PHPEXT /tmp/composer.phar install --no-dev --no-scripts --optimize-autoloader --ignore-platform-reqs",
     "npm ci"
 ]
 
@@ -19,4 +19,4 @@ cmds = [
 ]
 
 [start]
-cmd = "PHPEXT=$(ls /nix/store/*/bin/php 2>/dev/null | grep with-extensions | head -1) && mkdir -p /tmp/phpini && echo upload_max_filesize=50M > /tmp/phpini/uploads.ini && echo post_max_size=60M >> /tmp/phpini/uploads.ini && echo max_file_uploads=20 >> /tmp/phpini/uploads.ini && echo max_execution_time=300 >> /tmp/phpini/uploads.ini && echo max_input_time=300 >> /tmp/phpini/uploads.ini && echo memory_limit=256M >> /tmp/phpini/uploads.ini && export PHP_INI_SCAN_DIR=$($PHPEXT -r 'echo PHP_CONFIG_FILE_SCAN_DIR;'):/tmp/phpini && $PHPEXT artisan package:discover --ansi && $PHPEXT artisan storage:link --force && mkdir -p storage/logs && $PHPEXT artisan migrate --force && $PHPEXT artisan config:clear && $PHPEXT artisan config:cache && $PHPEXT artisan route:cache && $PHPEXT artisan view:cache && $PHPEXT artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+cmd = "PHPEXT=$(ls /nix/store/*/bin/php 2>/dev/null | grep with-extensions | head -1) && mkdir -p /tmp/phpini && echo upload_max_filesize=50M > /tmp/phpini/uploads.ini && echo post_max_size=60M >> /tmp/phpini/uploads.ini && echo max_file_uploads=20 >> /tmp/phpini/uploads.ini && echo max_execution_time=300 >> /tmp/phpini/uploads.ini && echo max_input_time=300 >> /tmp/phpini/uploads.ini && echo memory_limit=256M >> /tmp/phpini/uploads.ini && $PHPEXT artisan package:discover --ansi && $PHPEXT artisan storage:link --force && mkdir -p storage/logs && $PHPEXT artisan migrate --force && $PHPEXT artisan serve --host=0.0.0.0 --port=${PORT:-8080}"

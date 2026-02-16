@@ -37,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Trust all proxies (Dokploy/Traefik) so Laravel generates HTTPS URLs
+        $middleware->validateCsrfTokens(except: ['webhook/*']);
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

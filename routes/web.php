@@ -155,7 +155,7 @@ Route::middleware('auth')->get('/download/{token}', [DownloadController::class, 
 Route::middleware('auth')->get('/api/check-order/{paymentIntentId}', [OrderController::class, 'checkOrderStatus'])->name('api.check-order');
 
 // Stripe Webhook (No Auth, No CSRF)
-Route::post('/webhook/stripe', [PaymentController::class, 'webhook'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/webhook/stripe', [PaymentController::class, 'webhook']);
 
 // Profile Management (Auth Required)
 Route::middleware('auth')->group(function () {

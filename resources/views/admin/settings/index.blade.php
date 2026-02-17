@@ -57,13 +57,9 @@
                             @if($settings['about_photo'])
                                 <div class="flex-shrink-0">
                                     <img src="{{ Storage::url($settings['about_photo']) }}" alt="About photo" class="w-32 h-32 object-cover rounded-lg shadow-md">
-                                    <form action="{{ route('admin.settings.delete-photo') }}" method="POST" class="mt-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" onclick="return confirm('Delete this photo?')">
-                                            Remove photo
-                                        </button>
-                                    </form>
+                                    <button type="submit" form="delete-photo-form" class="mt-2 text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300" onclick="return confirm('Delete this photo?')">
+                                        Remove photo
+                                    </button>
                                 </div>
                             @else
                                 <div class="w-32 h-32 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
@@ -163,6 +159,13 @@
                         </button>
                     </div>
                 </form>
+
+                @if($settings['about_photo'])
+                    <form id="delete-photo-form" action="{{ route('admin.settings.delete-photo') }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                    </form>
+                @endif
             </div>
         </div>
     </div>

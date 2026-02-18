@@ -180,9 +180,14 @@ class ClassController extends Controller
 
         // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+            // Only delete old file if no other class references it
             if ($class->image_path) {
-                Storage::disk('public')->delete($class->image_path);
+                $sharedCount = ArtClass::where('image_path', $class->image_path)
+                    ->where('id', '!=', $class->id)
+                    ->count();
+                if ($sharedCount === 0) {
+                    Storage::disk('public')->delete($class->image_path);
+                }
             }
 
             $validated['image_path'] = $request->file('image')->store('class-images', 'public');
@@ -194,7 +199,13 @@ class ClassController extends Controller
         // Remove selected gallery images
         if ($request->has('remove_gallery_images')) {
             foreach ($request->remove_gallery_images as $path) {
-                Storage::disk('public')->delete($path);
+                // Only delete file if no other class references it in gallery_images
+                $sharedGallery = ArtClass::where('id', '!=', $class->id)
+                    ->where('gallery_images', 'like', '%' . str_replace(['%', '_'], ['\\%', '\\_'], $path) . '%')
+                    ->count();
+                if ($sharedGallery === 0) {
+                    Storage::disk('public')->delete($path);
+                }
                 $currentGallery = array_filter($currentGallery, fn($img) => $img !== $path);
             }
         }
@@ -248,9 +259,14 @@ class ClassController extends Controller
                 ->with('error', 'Cannot delete class with confirmed bookings. Cancel the class instead.');
         }
 
-        // Delete image if exists
+        // Only delete image file if no other class references it
         if ($class->image_path) {
-            Storage::disk('public')->delete($class->image_path);
+            $sharedCount = ArtClass::where('image_path', $class->image_path)
+                ->where('id', '!=', $class->id)
+                ->count();
+            if ($sharedCount === 0) {
+                Storage::disk('public')->delete($class->image_path);
+            }
         }
 
         $class->delete();

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ArtClass;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class RecurringClassService
@@ -91,6 +92,11 @@ class RecurringClassService
         $dateSlug = $classDateTime->format('Y-m-d');
         $slug = $this->generateUniqueSlug("{$baseSlug}-{$dateSlug}");
 
+        // Copy the image file so each class owns its own copy.
+        // This prevents edits/deletes on one class from breaking another's image.
+        $newImagePath = $this->copyFile($template->image_path);
+        $newGalleryImages = $this->copyGalleryImages($template->gallery_images);
+
         return ArtClass::create([
             'title' => $template->title,
             'slug' => $slug,
@@ -101,14 +107,52 @@ class RecurringClassService
             'location' => $template->location,
             'capacity' => $template->capacity,
             'price_cents' => $template->price_cents,
-            'image_path' => $template->image_path,
-            'gallery_images' => $template->gallery_images,
+            'image_path' => $newImagePath,
+            'gallery_images' => $newGalleryImages,
             'materials_included' => $template->materials_included,
             'status' => 'draft', // Start as draft so admin can review
             'created_by' => $template->created_by,
-            'template_source_id' => $template->id,
-            'series_name' => $seriesName,
         ]);
+    }
+
+    /**
+     * Copy a file on the public disk, returning the new path (or null).
+     */
+    protected function copyFile(?string $path): ?string
+    {
+        if (!$path || !Storage::disk('public')->exists($path)) {
+            return $path; // Keep the original path even if file is missing — better than null
+        }
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $directory = pathinfo($path, PATHINFO_DIRNAME);
+        $newPath = $directory . '/' . Str::random(40) . '.' . $extension;
+
+        Storage::disk('public')->copy($path, $newPath);
+
+        return $newPath;
+    }
+
+    /**
+     * Copy all gallery images, returning the new JSON string (or null).
+     */
+    protected function copyGalleryImages(?string $galleryJson): ?string
+    {
+        if (!$galleryJson) {
+            return null;
+        }
+
+        $paths = json_decode($galleryJson, true);
+        if (!is_array($paths) || empty($paths)) {
+            return null;
+        }
+
+        $newPaths = [];
+        foreach ($paths as $path) {
+            $newPaths[] = $this->copyFile($path) ?? $path;
+        }
+
+        return json_encode($newPaths);
     }
 
     /**

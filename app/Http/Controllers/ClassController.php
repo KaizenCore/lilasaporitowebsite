@@ -23,7 +23,7 @@ class ClassController extends Controller
             $query->orderBy('class_date', 'asc');
         }
 
-        $classes = $query->paginate(9);
+        $classes = $query->paginate(9)->withQueryString();
 
         return view('classes.index', compact('classes', 'sortBy'));
     }

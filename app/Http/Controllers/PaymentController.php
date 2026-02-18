@@ -226,22 +226,27 @@ class PaymentController extends Controller
                 continue;
             }
 
-            // Create booking for this class
-            $booking = Booking::create([
-                'user_id' => $metadata->user_id,
-                'art_class_id' => $item['art_class_id'],
-                'class_booking_order_id' => $order->id,
-                'payment_status' => 'completed',
-                'attendance_status' => 'booked',
-            ]);
+            // Create booking(s) for this class (one per ticket)
+            $qty = $item['quantity'] ?? 1;
+            for ($i = 0; $i < $qty; $i++) {
+                $booking = Booking::create([
+                    'user_id' => $metadata->user_id,
+                    'art_class_id' => $item['art_class_id'],
+                    'class_booking_order_id' => $order->id,
+                    'payment_status' => 'completed',
+                    'attendance_status' => 'booked',
+                ]);
 
-            $bookings[] = $booking;
+                $bookings[] = $booking;
 
-            Log::info('Booking created for multi-class order', [
-                'booking_id' => $booking->id,
-                'ticket_code' => $booking->ticket_code,
-                'art_class_id' => $item['art_class_id'],
-            ]);
+                Log::info('Booking created for multi-class order', [
+                    'booking_id' => $booking->id,
+                    'ticket_code' => $booking->ticket_code,
+                    'art_class_id' => $item['art_class_id'],
+                    'ticket_number' => $i + 1,
+                    'total_qty' => $qty,
+                ]);
+            }
         }
 
         // Create the payment record

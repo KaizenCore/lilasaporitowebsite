@@ -70,7 +70,11 @@
                                     @if($item['location'])
                                         <p class="text-xs text-gray-500">{{ $item['location'] }}</p>
                                     @endif
-                                    <p class="text-sm font-semibold text-gray-900 mt-1">${{ number_format($item['price_cents'] / 100, 2) }}</p>
+                                    @if(($item['quantity'] ?? 1) > 1)
+                                        <p class="text-sm font-semibold text-gray-900 mt-1">{{ $item['quantity'] }} x ${{ number_format($item['price_cents'] / 100, 2) }} = ${{ number_format($item['price_cents'] * $item['quantity'] / 100, 2) }}</p>
+                                    @else
+                                        <p class="text-sm font-semibold text-gray-900 mt-1">${{ number_format($item['price_cents'] / 100, 2) }}</p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -78,7 +82,7 @@
 
                     <div class="border-t border-gray-200 pt-4 space-y-2 mb-6">
                         <div class="flex justify-between text-gray-600">
-                            <span>Subtotal ({{ $count }} {{ Str::plural('class', $count) }})</span>
+                            <span>Subtotal ({{ $count }} {{ Str::plural('ticket', $count) }})</span>
                             <span>${{ number_format($subtotal / 100, 2) }}</span>
                         </div>
                     </div>

@@ -71,6 +71,7 @@ class ClassCheckoutController extends Controller
                     'title' => $item['title'],
                     'class_date' => $item['class_date'],
                     'price_cents' => $item['price_cents'],
+                    'quantity' => $item['quantity'] ?? 1,
                 ];
             }
 

@@ -12,10 +12,12 @@ class ClassCartService
     const CART_SESSION_KEY = 'class_cart';
 
     /**
-     * Add class to cart (1 ticket per class, no quantity)
+     * Add class to cart with quantity support
      */
-    public function add($artClassId)
+    public function add($artClassId, $quantity = 1)
     {
+        $quantity = max(1, (int) $quantity);
+
         $artClass = ArtClass::published()
             ->upcoming()
             ->findOrFail($artClassId);
@@ -29,24 +31,22 @@ class ClassCartService
             throw new \Exception('This class has already occurred.');
         }
 
-        // Check if user already has a booking for this class
-        if (Auth::check()) {
-            $existingBooking = Booking::where('user_id', Auth::id())
-                ->where('art_class_id', $artClassId)
-                ->whereIn('payment_status', ['pending', 'completed'])
-                ->whereIn('attendance_status', ['booked', 'attended'])
-                ->exists();
-
-            if ($existingBooking) {
-                throw new \Exception('You already have a booking for this class.');
-            }
+        // Check spots available for requested quantity
+        if ($artClass->spots_available < $quantity) {
+            throw new \Exception("Only {$artClass->spots_available} spots available.");
         }
 
         $cart = $this->get();
 
-        // Prevent duplicate in cart
+        // If already in cart, update quantity instead of rejecting
         if (isset($cart[$artClassId])) {
-            throw new \Exception('This class is already in your cart.');
+            $newQty = ($cart[$artClassId]['quantity'] ?? 1) + $quantity;
+            if ($artClass->spots_available < $newQty) {
+                throw new \Exception("Only {$artClass->spots_available} spots available (you already have " . ($cart[$artClassId]['quantity'] ?? 1) . " in cart).");
+            }
+            $cart[$artClassId]['quantity'] = $newQty;
+            Session::put(self::CART_SESSION_KEY, $cart);
+            return $cart[$artClassId];
         }
 
         $cart[$artClassId] = [
@@ -59,8 +59,32 @@ class ClassCartService
             'location' => $artClass->location,
             'price_cents' => $artClass->price_cents,
             'image_path' => $artClass->image_path,
+            'quantity' => $quantity,
         ];
 
+        Session::put(self::CART_SESSION_KEY, $cart);
+
+        return $cart[$artClassId];
+    }
+
+    /**
+     * Update quantity for a class in cart
+     */
+    public function updateQuantity($artClassId, $quantity)
+    {
+        $quantity = max(1, (int) $quantity);
+        $cart = $this->get();
+
+        if (!isset($cart[$artClassId])) {
+            throw new \Exception('Class not found in cart.');
+        }
+
+        $artClass = ArtClass::findOrFail($artClassId);
+        if ($artClass->spots_available < $quantity) {
+            throw new \Exception("Only {$artClass->spots_available} spots available.");
+        }
+
+        $cart[$artClassId]['quantity'] = $quantity;
         Session::put(self::CART_SESSION_KEY, $cart);
 
         return $cart[$artClassId];
@@ -101,6 +125,11 @@ class ClassCartService
         $classes = ArtClass::whereIn('id', $classIds)->get()->keyBy('id');
 
         foreach ($cart as $classId => &$item) {
+            // Ensure quantity exists (backward compat with old cart entries)
+            if (!isset($item['quantity'])) {
+                $item['quantity'] = 1;
+            }
+
             if (isset($classes[$classId])) {
                 $artClass = $classes[$classId];
                 $item['art_class'] = $artClass;
@@ -118,6 +147,11 @@ class ClassCartService
                     && !$artClass->is_past;
 
                 $item['spots_available'] = $artClass->spots_available;
+
+                // Cap quantity to available spots
+                if ($item['quantity'] > $artClass->spots_available) {
+                    $item['quantity'] = max(1, $artClass->spots_available);
+                }
             } else {
                 $item['is_available'] = false;
             }
@@ -129,11 +163,16 @@ class ClassCartService
     }
 
     /**
-     * Get total item count (number of classes)
+     * Get total ticket count (sum of all quantities)
      */
     public function count()
     {
-        return count($this->get());
+        $cart = $this->get();
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['quantity'] ?? 1;
+        }
+        return $total;
     }
 
     /**
@@ -142,7 +181,11 @@ class ClassCartService
     public function subtotal()
     {
         $cart = $this->get();
-        return array_sum(array_column($cart, 'price_cents'));
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price_cents'] * ($item['quantity'] ?? 1);
+        }
+        return $total;
     }
 
     /**

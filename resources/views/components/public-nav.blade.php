@@ -14,7 +14,11 @@
                 <a href="{{ route('store.index') }}" class="{{ request()->routeIs('store.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Store</a>
                 @php
                     $productCartCount = array_sum(array_column(session('shopping_cart', []), 'quantity'));
-                    $classCartCount = count(session('class_cart', []));
+                    $classCartItems = session('class_cart', []);
+                    $classCartCount = 0;
+                    foreach ($classCartItems as $item) {
+                        $classCartCount += $item['quantity'] ?? 1;
+                    }
                     $totalCartCount = $productCartCount + $classCartCount;
                     $cartUrl = $classCartCount > 0 ? route('class-cart.index') : route('cart.index');
                 @endphp

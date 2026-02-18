@@ -109,13 +109,23 @@
                                                     </div>
 
                                                     <div class="text-right">
-                                                        <p class="text-lg font-bold text-gray-900">${{ number_format($item['price_cents'] / 100, 2) }}</p>
-                                                        <p class="text-xs text-gray-500">1 ticket</p>
+                                                        <p class="text-lg font-bold text-gray-900">${{ number_format($item['price_cents'] * ($item['quantity'] ?? 1) / 100, 2) }}</p>
+                                                        <p class="text-xs text-gray-500">{{ ($item['quantity'] ?? 1) }} {{ Str::plural('ticket', $item['quantity'] ?? 1) }} x ${{ number_format($item['price_cents'] / 100, 2) }}</p>
                                                     </div>
                                                 </div>
 
-                                                <!-- Remove Button -->
-                                                <div class="mt-4 flex items-center justify-end">
+                                                <!-- Quantity + Remove -->
+                                                <div class="mt-4 flex items-center justify-between">
+                                                    <form action="{{ route('class-cart.update', $classId) }}" method="POST" class="flex items-center gap-2">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <label class="text-sm text-gray-600 font-medium">Qty:</label>
+                                                        <div class="flex items-center border border-gray-300 rounded-lg">
+                                                            <button type="submit" name="quantity" value="{{ max(1, ($item['quantity'] ?? 1) - 1) }}" class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-l-lg {{ ($item['quantity'] ?? 1) <= 1 ? 'opacity-50 cursor-not-allowed' : '' }}">-</button>
+                                                            <span class="px-3 py-1 text-gray-900 font-semibold border-x border-gray-300">{{ $item['quantity'] ?? 1 }}</span>
+                                                            <button type="submit" name="quantity" value="{{ min(($item['spots_available'] ?? 10), ($item['quantity'] ?? 1) + 1) }}" class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-r-lg">+</button>
+                                                        </div>
+                                                    </form>
                                                     <form action="{{ route('class-cart.remove', $classId) }}" method="POST">
                                                         @csrf
                                                         @method('DELETE')
@@ -154,7 +164,7 @@
 
                             <div class="space-y-3 mb-4">
                                 <div class="flex justify-between text-gray-600">
-                                    <span>Subtotal ({{ $count }} {{ Str::plural('class', $count) }})</span>
+                                    <span>Subtotal ({{ $count }} {{ Str::plural('ticket', $count) }})</span>
                                     <span>${{ number_format($subtotal / 100, 2) }}</span>
                                 </div>
                             </div>

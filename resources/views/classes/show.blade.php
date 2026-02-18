@@ -384,7 +384,7 @@
                                         'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || '{{ csrf_token() }}',
                                         'Accept': 'application/json'
                                     },
-                                    body: JSON.stringify({ art_class_id: {{ $class->id }} })
+                                    body: JSON.stringify({ art_class_id: {{ $class->id }}, quantity: quantity })
                                 })
                                 .then(async response => {
                                     adding = false;
@@ -408,7 +408,8 @@
                             :disabled="adding"
                             class="w-full bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition text-center disabled:opacity-50"
                         >
-                            <span x-show="!adding">Add to Cart</span>
+                            <span x-show="!adding && quantity === 1">Add to Cart</span>
+                            <span x-show="!adding && quantity > 1">Add <span x-text="quantity"></span> Tickets to Cart</span>
                             <span x-show="adding" class="inline-flex items-center">
                                 <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

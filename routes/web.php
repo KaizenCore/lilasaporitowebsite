@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/class-cart', [ClassCartController::class, 'index'])->name('class-cart.index');
     Route::post('/class-cart/add', [ClassCartController::class, 'add'])->name('class-cart.add');
+    Route::patch('/class-cart/update/{artClassId}', [ClassCartController::class, 'updateQuantity'])->name('class-cart.update');
     Route::delete('/class-cart/remove/{artClassId}', [ClassCartController::class, 'remove'])->name('class-cart.remove');
     Route::delete('/class-cart/clear', [ClassCartController::class, 'clear'])->name('class-cart.clear');
     Route::get('/class-cart/count', [ClassCartController::class, 'count'])->name('class-cart.count');

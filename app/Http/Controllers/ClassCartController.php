@@ -36,10 +36,11 @@ class ClassCartController extends Controller
     {
         $validated = $request->validate([
             'art_class_id' => 'required|exists:art_classes,id',
+            'quantity' => 'sometimes|integer|min:1|max:10',
         ]);
 
         try {
-            $this->classCartService->add($validated['art_class_id']);
+            $this->classCartService->add($validated['art_class_id'], $validated['quantity'] ?? 1);
 
             if ($request->wantsJson()) {
                 return response()->json([
@@ -58,6 +59,23 @@ class ClassCartController extends Controller
                 ], 400);
             }
 
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Update quantity for a class in cart
+     */
+    public function updateQuantity(Request $request, $artClassId)
+    {
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1|max:10',
+        ]);
+
+        try {
+            $this->classCartService->updateQuantity($artClassId, $validated['quantity']);
+            return redirect()->route('class-cart.index')->with('success', 'Quantity updated!');
+        } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }

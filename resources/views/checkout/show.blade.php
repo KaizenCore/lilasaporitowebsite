@@ -99,11 +99,20 @@
                             <span>Class Price</span>
                             <span>{{ $class->formatted_price }}</span>
                         </div>
+                        @if($quantity > 1)
+                        <div class="flex justify-between text-gray-600">
+                            <span>Tickets</span>
+                            <span>x{{ $quantity }}</span>
+                        </div>
+                        @endif
                         @endif
                         <div class="flex justify-between text-xl font-bold text-gray-900 pt-3 border-t border-gray-200">
                             <span>Total</span>
                             <span>${{ number_format($totalPriceCents / 100, 2) }}</span>
                         </div>
+                        @if($quantity > 1)
+                        <p class="text-sm text-gray-500 text-center">{{ $quantity }} tickets will be generated with individual ticket codes</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -184,6 +193,7 @@
         window.createPaymentIntentUrl = '{{ route('checkout.payment-intent') }}';
         window.confirmPaymentUrl = '{{ route('checkout.confirm-payment') }}';
         window.csrfToken = '{{ csrf_token() }}';
+        window.ticketQuantity = {{ $quantity }};
         @if($class->is_party_event && $partyPackage)
         window.partyPackage = '{{ $partyPackage }}';
         window.partyGuests = {{ $partyGuests }};

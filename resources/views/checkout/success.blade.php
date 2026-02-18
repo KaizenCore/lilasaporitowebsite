@@ -10,18 +10,31 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Booking Confirmed!</h1>
-            <p class="text-xl text-gray-600">Your spot has been secured. We can't wait to see you!</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{{ $allBookings->count() > 1 ? 'Bookings' : 'Booking' }} Confirmed!</h1>
+            <p class="text-xl text-gray-600">{{ $allBookings->count() > 1 ? "Your {$allBookings->count()} spots have been secured" : 'Your spot has been secured' }}. We can't wait to see you!</p>
         </div>
 
-        <!-- Ticket Code -->
+        <!-- Ticket Code(s) -->
         <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 mb-8 text-white">
             <div class="text-center">
+                @if($allBookings->count() > 1)
+                <p class="text-purple-100 mb-2 text-lg">Your {{ $allBookings->count() }} Ticket Codes</p>
+                <div class="space-y-3 mb-4">
+                    @foreach($allBookings as $i => $b)
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl py-4 px-8">
+                        <p class="text-purple-200 text-xs mb-1">Ticket {{ $i + 1 }}</p>
+                        <p class="text-4xl md:text-5xl font-bold tracking-wider">{{ $b->ticket_code }}</p>
+                    </div>
+                    @endforeach
+                </div>
+                <p class="text-purple-100 text-sm">Show these codes when you arrive at the class</p>
+                @else
                 <p class="text-purple-100 mb-2 text-lg">Your Ticket Code</p>
                 <div class="bg-white/10 backdrop-blur-sm rounded-xl py-6 px-8 mb-4">
                     <p class="text-6xl font-bold tracking-wider">{{ $booking->ticket_code }}</p>
                 </div>
                 <p class="text-purple-100 text-sm">Show this code when you arrive at the class</p>
+                @endif
             </div>
         </div>
 
@@ -82,10 +95,17 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Payment Summary</h2>
 
             <div class="space-y-3">
+                @if($allBookings->count() > 1)
+                <div class="flex justify-between text-gray-600">
+                    <span>{{ $allBookings->count() }} x {{ $booking->artClass->formatted_price }}</span>
+                    <span>{{ $booking->payment->formatted_amount }}</span>
+                </div>
+                @else
                 <div class="flex justify-between text-gray-600">
                     <span>Class Price</span>
                     <span>{{ $booking->payment->formatted_amount }}</span>
                 </div>
+                @endif
                 <div class="flex justify-between text-sm text-gray-500">
                     <span>Payment Method</span>
                     <span class="capitalize">{{ $booking->payment->payment_method }}</span>
@@ -110,8 +130,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <div>
-                        <p class="font-semibold">Save Your Ticket Code</p>
-                        <p class="text-sm text-gray-600">Write down or screenshot your ticket code: <span class="font-mono font-bold">{{ $booking->ticket_code }}</span></p>
+                        <p class="font-semibold">Save Your Ticket {{ $allBookings->count() > 1 ? 'Codes' : 'Code' }}</p>
+                        <p class="text-sm text-gray-600">Write down or screenshot your ticket {{ $allBookings->count() > 1 ? 'codes' : 'code' }}: @foreach($allBookings as $b)<span class="font-mono font-bold">{{ $b->ticket_code }}</span>@if(!$loop->last), @endif @endforeach</p>
                     </div>
                 </li>
                 <li class="flex items-start">

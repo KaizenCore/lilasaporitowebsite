@@ -52,12 +52,14 @@ form.addEventListener('submit', async (event) => {
     try {
         // Build request body with party params if present
         const requestBody = {
-            art_class_id: window.artClassId
+            art_class_id: window.artClassId,
+            quantity: window.ticketQuantity || 1
         };
 
         if (window.partyPackage) {
             requestBody.party_package = window.partyPackage;
             requestBody.party_guests = window.partyGuests;
+            requestBody.quantity = 1;
             if (window.selectedAddons && window.selectedAddons.length > 0) {
                 requestBody.selected_addons = window.selectedAddons;
             }

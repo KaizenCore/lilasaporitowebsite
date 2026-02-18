@@ -41,7 +41,7 @@ class ClassCartController extends Controller
         try {
             $this->classCartService->add($validated['art_class_id']);
 
-            if ($request->ajax()) {
+            if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'count' => $this->classCartService->count(),
@@ -51,7 +51,7 @@ class ClassCartController extends Controller
 
             return redirect()->back()->with('success', 'Class added to cart!');
         } catch (\Exception $e) {
-            if ($request->ajax()) {
+            if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => $e->getMessage(),

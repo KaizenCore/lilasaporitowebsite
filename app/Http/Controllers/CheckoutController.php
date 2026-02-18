@@ -41,25 +41,18 @@ class CheckoutController extends Controller
                 ->with('error', 'This class is currently full.');
         }
 
-        // Check if user already has a booking for this class
-        $existingBooking = Booking::where('user_id', Auth::id())
-            ->where('art_class_id', $class->id)
-            ->whereIn('payment_status', ['pending', 'completed'])
-            ->whereIn('attendance_status', ['booked', 'attended'])
-            ->first();
-
-        if ($existingBooking) {
-            return redirect()->route('bookings.index')
-                ->with('error', 'You already have a booking for this class.');
-        }
+        // Handle quantity (for group bookings)
+        $quantity = max(1, min(10, (int) $request->query('quantity', 1)));
+        $quantity = min($quantity, $class->spots_available);
 
         // Handle party pricing
         $partyPackage = null;
         $partyGuests = null;
         $selectedAddons = [];
-        $totalPriceCents = $class->price_cents;
+        $totalPriceCents = $class->price_cents * $quantity;
 
         if ($class->is_party_event) {
+            $quantity = 1; // Party events are always 1 booking
             $partyPackage = $request->query('package', 'small');
             $partyGuests = (int) $request->query('guests', $class->small_party_size ?? 6);
 
@@ -90,6 +83,7 @@ class CheckoutController extends Controller
         return view('checkout.show', [
             'class' => $class,
             'user' => Auth::user(),
+            'quantity' => $quantity,
             'partyPackage' => $partyPackage,
             'partyGuests' => $partyGuests,
             'selectedAddons' => $selectedAddons,
@@ -104,6 +98,7 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'art_class_id' => 'required|exists:art_classes,id',
+            'quantity' => 'nullable|integer|min:1|max:10',
             'party_package' => 'nullable|in:small,large',
             'party_guests' => 'nullable|integer|min:1|max:50',
             'selected_addons' => 'nullable|array',
@@ -112,6 +107,7 @@ class CheckoutController extends Controller
 
         try {
             $class = ArtClass::findOrFail($request->art_class_id);
+            $quantity = max(1, min(10, (int) ($request->quantity ?? 1)));
 
             // Double-check availability
             if ($class->is_full || $class->is_past) {
@@ -120,30 +116,26 @@ class CheckoutController extends Controller
                 ], 400);
             }
 
-            // Check for existing booking
-            $existingBooking = Booking::where('user_id', Auth::id())
-                ->where('art_class_id', $class->id)
-                ->whereIn('payment_status', ['pending', 'completed'])
-                ->whereIn('attendance_status', ['booked', 'attended'])
-                ->first();
-
-            if ($existingBooking) {
+            // Check enough spots for requested quantity
+            if ($class->spots_available < $quantity) {
                 return response()->json([
-                    'error' => 'You already have a booking for this class.'
+                    'error' => "Only {$class->spots_available} spots remaining."
                 ], 400);
             }
 
             // Calculate price (handle party events)
-            $priceCents = $class->price_cents;
+            $priceCents = $class->price_cents * $quantity;
             $metadata = [
                 'art_class_id' => $class->id,
                 'user_id' => Auth::id(),
                 'user_email' => Auth::user()->email,
                 'class_title' => $class->title,
                 'class_date' => $class->class_date->toDateTimeString(),
+                'quantity' => $quantity,
             ];
 
             if ($class->is_party_event && $request->party_package) {
+                $quantity = 1;
                 $package = $request->party_package;
                 $guests = (int) $request->party_guests;
                 $selectedAddons = $request->selected_addons ?? [];
@@ -157,15 +149,20 @@ class CheckoutController extends Controller
 
                 $metadata['party_package'] = $package;
                 $metadata['party_guests'] = $guests;
+                $metadata['quantity'] = 1;
                 if (!empty($selectedAddons)) {
                     $metadata['selected_addons'] = implode(',', $selectedAddons);
                 }
             }
 
             // Create payment intent
+            $description = $quantity > 1
+                ? "FrizzBoss - {$class->title} x{$quantity}"
+                : "FrizzBoss - {$class->title}";
+
             $paymentIntent = $this->stripeService->createPaymentIntent(
                 $priceCents,
-                "FrizzBoss - {$class->title}",
+                $description,
                 $metadata
             );
 
@@ -186,7 +183,7 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Confirm payment and create booking (called after Stripe payment succeeds)
+     * Confirm payment and create booking(s) (called after Stripe payment succeeds)
      */
     public function confirmPayment(Request $request)
     {
@@ -220,33 +217,36 @@ class CheckoutController extends Controller
             }
 
             $class = ArtClass::findOrFail($request->art_class_id);
+            $quantity = max(1, (int) ($paymentIntent->metadata->quantity ?? 1));
 
-            // Check if booking already exists (prevent duplicates, but allow rebooking cancelled ones)
-            $existingBooking = Booking::where('user_id', Auth::id())
-                ->where('art_class_id', $class->id)
-                ->where('payment_status', 'completed')
-                ->where('attendance_status', '!=', 'cancelled')
-                ->first();
-
-            if ($existingBooking) {
+            // Prevent duplicate processing of same payment intent
+            $existingPayment = \App\Models\Payment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
+            if ($existingPayment) {
+                $firstBookingId = $existingPayment->booking_id;
                 return response()->json([
                     'success' => true,
-                    'booking_id' => $existingBooking->id,
-                    'message' => 'Booking already exists.'
+                    'booking_id' => $firstBookingId,
+                    'message' => 'Payment already processed.'
                 ]);
             }
 
-            // Create the booking
-            $booking = Booking::create([
-                'user_id' => Auth::id(),
-                'art_class_id' => $class->id,
-                'payment_status' => 'completed',
-                'attendance_status' => 'booked',
-            ]);
+            // Create bookings (one per ticket)
+            $bookings = [];
+            for ($i = 0; $i < $quantity; $i++) {
+                $bookings[] = Booking::create([
+                    'user_id' => Auth::id(),
+                    'art_class_id' => $class->id,
+                    'payment_status' => 'completed',
+                    'attendance_status' => 'booked',
+                    'booking_notes' => $quantity > 1 ? "Group booking: ticket " . ($i + 1) . " of {$quantity} (PI: {$paymentIntent->id})" : null,
+                ]);
+            }
 
-            // Create the payment record
+            $firstBooking = $bookings[0];
+
+            // Create one payment record linked to first booking
             $payment = \App\Models\Payment::create([
-                'booking_id' => $booking->id,
+                'booking_id' => $firstBooking->id,
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'stripe_charge_id' => $paymentIntent->latest_charge ?? null,
                 'stripe_customer_id' => $paymentIntent->customer ?? null,
@@ -259,6 +259,8 @@ class CheckoutController extends Controller
                     'class_title' => $class->title,
                     'class_date' => $class->class_date->toDateTimeString(),
                     'user_email' => Auth::user()->email,
+                    'quantity' => $quantity,
+                    'booking_ids' => collect($bookings)->pluck('id')->toArray(),
                 ],
             ]);
 
@@ -266,31 +268,39 @@ class CheckoutController extends Controller
             $payment->calculateStripeFee();
             $payment->save();
 
-            Log::info('Booking created via confirm endpoint', [
-                'booking_id' => $booking->id,
+            $ticketCodes = collect($bookings)->pluck('ticket_code')->toArray();
+
+            Log::info('Booking(s) created via confirm endpoint', [
+                'booking_ids' => collect($bookings)->pluck('id')->toArray(),
                 'payment_id' => $payment->id,
-                'ticket_code' => $booking->ticket_code,
+                'ticket_codes' => $ticketCodes,
+                'quantity' => $quantity,
             ]);
 
-            // Send confirmation email
-            try {
-                $booking->load('artClass', 'user');
-                if ($booking->user?->email) {
-                    Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
-                    Log::info('Booking confirmation email sent', ['booking_id' => $booking->id]);
+            // Send confirmation email for each booking
+            foreach ($bookings as $booking) {
+                try {
+                    $booking->load('artClass', 'user');
+                    if ($booking->user?->email) {
+                        Mail::to($booking->user->email)->send(new BookingConfirmation($booking));
+                        Log::info('Booking confirmation email sent', ['booking_id' => $booking->id]);
+                    }
+                } catch (\Throwable $e) {
+                    Log::error('Failed to send booking confirmation email', [
+                        'booking_id' => $booking->id,
+                        'error' => $e->getMessage(),
+                    ]);
                 }
-            } catch (\Throwable $e) {
-                Log::error('Failed to send booking confirmation email', [
-                    'booking_id' => $booking->id,
-                    'error' => $e->getMessage(),
-                ]);
-                // Don't fail the booking if email fails
             }
+
+            // Flash all booking IDs for the success page
+            session()->flash('purchased_booking_ids', collect($bookings)->pluck('id')->toArray());
 
             return response()->json([
                 'success' => true,
-                'booking_id' => $booking->id,
-                'ticket_code' => $booking->ticket_code,
+                'booking_id' => $firstBooking->id,
+                'ticket_codes' => $ticketCodes,
+                'quantity' => $quantity,
             ]);
 
         } catch (\Exception $e) {
@@ -320,8 +330,29 @@ class CheckoutController extends Controller
         // Load relationships
         $booking->load('artClass', 'payment');
 
+        // Check for group booking (multiple tickets purchased together)
+        $purchasedIds = session('purchased_booking_ids');
+        $allBookings = collect([$booking]);
+
+        if ($purchasedIds && count($purchasedIds) > 1) {
+            $allBookings = Booking::whereIn('id', $purchasedIds)
+                ->where('user_id', Auth::id())
+                ->with('artClass')
+                ->get();
+        } elseif ($booking->payment && $booking->payment->metadata) {
+            // Fallback: check payment metadata for booking_ids
+            $metaBookingIds = $booking->payment->metadata['booking_ids'] ?? null;
+            if ($metaBookingIds && count($metaBookingIds) > 1) {
+                $allBookings = Booking::whereIn('id', $metaBookingIds)
+                    ->where('user_id', Auth::id())
+                    ->with('artClass')
+                    ->get();
+            }
+        }
+
         return view('checkout.success', [
             'booking' => $booking,
+            'allBookings' => $allBookings,
         ]);
     }
 }

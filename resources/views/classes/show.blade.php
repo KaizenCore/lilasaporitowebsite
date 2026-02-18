@@ -318,8 +318,15 @@
                 </div>
                 @else
                 <!-- Standard Class Pricing -->
-                <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white">
-                    <div class="flex items-center justify-between mb-6">
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white"
+                     x-data="{
+                         quantity: 1,
+                         priceCents: {{ $class->price_cents }},
+                         maxQty: Math.min(10, {{ $class->spots_available }}),
+                         get total() { return (this.quantity * this.priceCents / 100).toFixed(2); },
+                         get bookUrl() { return '{{ route('checkout.show', $class->slug) }}?quantity=' + this.quantity; }
+                     }">
+                    <div class="flex items-center justify-between mb-4">
                         <div>
                             <p class="text-purple-100 mb-1">Price per person</p>
                             <p class="text-5xl font-bold">{{ $class->formatted_price }}</p>
@@ -332,9 +339,38 @@
                     </button>
                     @else
                     @auth
+                    <!-- Quantity Selector -->
+                    <div class="mb-4">
+                        <label class="block text-purple-100 mb-2 text-sm font-medium">Number of Tickets</label>
+                        <div class="flex items-center gap-3">
+                            <button type="button"
+                                    @click="if(quantity > 1) quantity--"
+                                    :disabled="quantity <= 1"
+                                    class="bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold transition">
+                                -
+                            </button>
+                            <input type="number" x-model.number="quantity" min="1" :max="maxQty"
+                                   @change="quantity = Math.max(1, Math.min(maxQty, quantity))"
+                                   class="flex-1 bg-white/20 border-0 rounded-lg text-center text-2xl font-bold py-3 text-white placeholder-white/50 focus:ring-2 focus:ring-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            <button type="button"
+                                    @click="if(quantity < maxQty) quantity++"
+                                    :disabled="quantity >= maxQty"
+                                    class="bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold transition">
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="text-center mb-4 py-3 bg-white/10 rounded-lg" x-show="quantity > 1" x-transition>
+                        <p class="text-purple-100 text-sm"><span x-text="quantity"></span> tickets x {{ $class->formatted_price }}</p>
+                        <p class="text-2xl font-bold">$<span x-text="total"></span></p>
+                    </div>
+
                     <div class="space-y-3" x-data="{ adding: false, added: false, error: '' }">
-                        <a href="{{ route('checkout.show', $class->slug) }}" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
-                            Book Your Spot Now
+                        <a :href="bookUrl" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
+                            <span x-show="quantity === 1">Book Your Spot Now</span>
+                            <span x-show="quantity > 1">Book <span x-text="quantity"></span> Tickets - $<span x-text="total"></span></span>
                         </a>
                         <button
                             x-show="!added"

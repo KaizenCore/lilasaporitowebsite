@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Services\ClassCartService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class ClassCartController extends Controller
 {
@@ -19,12 +21,25 @@ class ClassCartController extends Controller
      */
     public function index()
     {
+        $rawCart = $this->classCartService->get();
+        Log::info('Cart page loaded', [
+            'session_id' => Session::getId(),
+            'user_id' => auth()->id(),
+            'raw_cart_count' => count($rawCart),
+            'raw_cart_keys' => array_keys($rawCart),
+        ]);
+
         $cart = $this->classCartService->getWithClasses();
         $subtotal = $this->classCartService->subtotal();
         $count = $this->classCartService->count();
 
         // Validate availability
         $errors = $this->classCartService->validate();
+
+        Log::info('Cart page after validate', [
+            'cart_count' => $count,
+            'errors' => $errors,
+        ]);
 
         return view('class-cart.index', compact('cart', 'subtotal', 'count', 'errors'));
     }
@@ -40,6 +55,13 @@ class ClassCartController extends Controller
 
         try {
             $this->classCartService->add($validated['art_class_id']);
+
+            Log::info('Class added to cart', [
+                'session_id' => Session::getId(),
+                'user_id' => auth()->id(),
+                'art_class_id' => $validated['art_class_id'],
+                'cart_count' => $this->classCartService->count(),
+            ]);
 
             if ($request->wantsJson()) {
                 return response()->json([

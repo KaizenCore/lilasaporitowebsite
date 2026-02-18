@@ -149,8 +149,7 @@ class ArtClass extends Model
     public function scopeAvailable($query)
     {
         return $query->published()
-            ->upcoming()
-            ->orderBy('class_date', 'asc');
+            ->upcoming();
     }
 
     // Party pricing methods

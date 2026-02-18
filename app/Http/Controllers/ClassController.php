@@ -36,6 +36,7 @@ class ClassController extends Controller
 
         $relatedClasses = ArtClass::available()
             ->where('id', '!=', $class->id)
+            ->orderBy('class_date', 'asc')
             ->limit(3)
             ->get();
 

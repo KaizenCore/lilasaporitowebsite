@@ -381,23 +381,28 @@
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || '{{ csrf_token() }}',
                                         'Accept': 'application/json'
                                     },
                                     body: JSON.stringify({ art_class_id: {{ $class->id }} })
                                 })
-                                .then(response => response.json())
-                                .then(data => {
+                                .then(async response => {
                                     adding = false;
-                                    if (data.success) {
+                                    if (response.redirected) {
+                                        window.location.href = response.url;
+                                        return;
+                                    }
+                                    const data = await response.json();
+                                    if (response.ok && data.success) {
                                         added = true;
                                     } else {
-                                        error = data.message || 'Unable to add to cart';
+                                        error = data.message || 'Unable to add to cart (status ' + response.status + ')';
                                     }
                                 })
-                                .catch(() => {
+                                .catch((e) => {
                                     adding = false;
-                                    error = 'Unable to add to cart';
+                                    error = 'Unable to add to cart: ' + (e.message || 'network error');
+                                    console.error('Add to cart error:', e);
                                 });
                             "
                             :disabled="adding"

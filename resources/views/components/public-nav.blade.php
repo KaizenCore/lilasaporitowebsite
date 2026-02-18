@@ -12,13 +12,18 @@
                 <a href="/" class="{{ request()->routeIs('home') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Home</a>
                 <a href="{{ route('classes.index') }}" class="{{ request()->routeIs('classes.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Classes</a>
                 <a href="{{ route('store.index') }}" class="{{ request()->routeIs('store.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Store</a>
-                @php $cartCount = array_sum(array_column(session('shopping_cart', []), 'quantity')); @endphp
-                <a href="{{ route('cart.index') }}" class="relative {{ request()->routeIs('cart.*') ? 'text-purple-600 dark:text-purple-400' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} transition">
+                @php
+                    $productCartCount = array_sum(array_column(session('shopping_cart', []), 'quantity'));
+                    $classCartCount = count(session('class_cart', []));
+                    $totalCartCount = $productCartCount + $classCartCount;
+                    $cartUrl = $classCartCount > 0 ? route('class-cart.index') : route('cart.index');
+                @endphp
+                <a href="{{ $cartUrl }}" class="relative {{ request()->routeIs('cart.*', 'class-cart.*') ? 'text-purple-600 dark:text-purple-400' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
                     </svg>
-                    @if($cartCount > 0)
-                        <span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ $cartCount > 9 ? '9+' : $cartCount }}</span>
+                    @if($totalCartCount > 0)
+                        <span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ $totalCartCount > 9 ? '9+' : $totalCartCount }}</span>
                     @endif
                 </a>
                 <a href="{{ route('parties.index') }}" class="{{ request()->routeIs('parties.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Book a Party</a>
@@ -73,10 +78,10 @@
             <a href="/" class="block py-2 {{ request()->routeIs('home') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Home</a>
             <a href="{{ route('classes.index') }}" class="block py-2 {{ request()->routeIs('classes.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Classes</a>
             <a href="{{ route('store.index') }}" class="block py-2 {{ request()->routeIs('store.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Store</a>
-            <a href="{{ route('cart.index') }}" class="flex items-center gap-2 py-2 {{ request()->routeIs('cart.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+            <a href="{{ $cartUrl }}" class="flex items-center gap-2 py-2 {{ request()->routeIs('cart.*', 'class-cart.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                 Cart
-                @if($cartCount > 0)
-                    <span class="bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">{{ $cartCount }}</span>
+                @if($totalCartCount > 0)
+                    <span class="bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">{{ $totalCartCount }}</span>
                 @endif
             </a>
             <a href="{{ route('parties.index') }}" class="block py-2 {{ request()->routeIs('parties.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Book a Party</a>

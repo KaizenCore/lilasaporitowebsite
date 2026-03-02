@@ -14,14 +14,41 @@ class ClassController extends Controller
     /**
      * Display a listing of all art classes.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $classes = ArtClass::with('creator')
+        $query = ArtClass::with('creator')
             ->withCount(['bookings' => function ($query) {
                 $query->where('attendance_status', '!=', 'cancelled');
-            }])
-            ->orderBy('class_date', 'desc')
-            ->paginate(15);
+            }]);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Sort
+        switch ($request->get('sort', 'date_desc')) {
+            case 'date_asc':
+                $query->orderBy('class_date', 'asc');
+                break;
+            case 'name_asc':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'name_desc':
+                $query->orderBy('title', 'desc');
+                break;
+            case 'price_asc':
+                $query->orderBy('price_cents', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price_cents', 'desc');
+                break;
+            default: // date_desc
+                $query->orderBy('class_date', 'desc');
+                break;
+        }
+
+        $classes = $query->paginate(15)->withQueryString();
 
         return view('admin.classes.index', compact('classes'));
     }

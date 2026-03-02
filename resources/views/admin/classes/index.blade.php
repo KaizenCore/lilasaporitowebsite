@@ -11,6 +11,55 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Filter & Sort Bar --}}
+        <div class="mb-4 bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-4">
+            <form method="GET" action="{{ route('admin.classes.index') }}" class="flex flex-wrap items-center gap-3">
+                {{-- Status Filter --}}
+                <div class="flex items-center gap-2">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Status:</label>
+                    <div class="flex rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
+                        @php
+                            $currentStatus = request('status', '');
+                        @endphp
+                        <a href="{{ route('admin.classes.index', array_merge(request()->except('status', 'page'))) }}"
+                           class="px-3 py-1.5 text-sm font-medium {{ $currentStatus === '' ? 'bg-purple-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600' }}">
+                            All
+                        </a>
+                        <a href="{{ route('admin.classes.index', array_merge(request()->except('page'), ['status' => 'published'])) }}"
+                           class="px-3 py-1.5 text-sm font-medium border-l border-gray-300 dark:border-gray-600 {{ $currentStatus === 'published' ? 'bg-purple-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600' }}">
+                            Published
+                        </a>
+                        <a href="{{ route('admin.classes.index', array_merge(request()->except('page'), ['status' => 'draft'])) }}"
+                           class="px-3 py-1.5 text-sm font-medium border-l border-gray-300 dark:border-gray-600 {{ $currentStatus === 'draft' ? 'bg-purple-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600' }}">
+                            Draft
+                        </a>
+                        <a href="{{ route('admin.classes.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}"
+                           class="px-3 py-1.5 text-sm font-medium border-l border-gray-300 dark:border-gray-600 {{ $currentStatus === 'cancelled' ? 'bg-purple-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600' }}">
+                            Cancelled
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Sort Dropdown --}}
+                <div class="flex items-center gap-2 ml-auto">
+                    <label for="sort" class="text-sm font-medium text-gray-700 dark:text-gray-300">Sort:</label>
+                    <select name="sort" id="sort" onchange="this.form.submit()"
+                            class="rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 text-sm shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                        <option value="date_desc" {{ request('sort', 'date_desc') === 'date_desc' ? 'selected' : '' }}>Date (Newest)</option>
+                        <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Date (Oldest)</option>
+                        <option value="name_asc" {{ request('sort') === 'name_asc' ? 'selected' : '' }}>Name (A-Z)</option>
+                        <option value="name_desc" {{ request('sort') === 'name_desc' ? 'selected' : '' }}>Name (Z-A)</option>
+                        <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Price (Low-High)</option>
+                        <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Price (High-Low)</option>
+                    </select>
+                    {{-- Preserve status filter when sorting --}}
+                    @if(request('status'))
+                        <input type="hidden" name="status" value="{{ request('status') }}">
+                    @endif
+                </div>
+            </form>
+        </div>
+
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
                 @if($classes->count() > 0)
@@ -95,8 +144,14 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No classes</h3>
-                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new art class.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No classes found</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            @if(request('status'))
+                                No {{ request('status') }} classes found. Try a different filter.
+                            @else
+                                Get started by creating a new art class.
+                            @endif
+                        </p>
                         <div class="mt-6">
                             <a href="{{ route('admin.classes.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
                                 Create New Class

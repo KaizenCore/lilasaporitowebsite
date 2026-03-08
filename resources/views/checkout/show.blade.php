@@ -96,13 +96,19 @@
                         @endif
                         @else
                         <div class="flex justify-between text-gray-600">
-                            <span>Class Price</span>
-                            <span>{{ $class->formatted_price }}</span>
+                            <span>{{ $ticketTypeName ?? 'Class Price' }}</span>
+                            <span>${{ number_format(($totalPriceCents / $quantity) / 100, 2) }}</span>
                         </div>
                         @if($quantity > 1)
                         <div class="flex justify-between text-gray-600">
-                            <span>Tickets</span>
+                            <span>Quantity</span>
                             <span>x{{ $quantity }}</span>
+                        </div>
+                        @endif
+                        @if($ticketTypeName && ($spotsPerTicket ?? 1) > 1)
+                        <div class="flex justify-between text-gray-500 text-sm">
+                            <span>Total spots</span>
+                            <span>{{ $quantity * $spotsPerTicket }}</span>
                         </div>
                         @endif
                         @endif
@@ -194,6 +200,9 @@
         window.confirmPaymentUrl = '{{ route('checkout.confirm-payment') }}';
         window.csrfToken = '{{ csrf_token() }}';
         window.ticketQuantity = {{ $quantity }};
+        @if(isset($ticketTypeIndex) && $ticketTypeIndex !== null)
+        window.ticketTypeIndex = {{ $ticketTypeIndex }};
+        @endif
         @if($class->is_party_event && $partyPackage)
         window.partyPackage = '{{ $partyPackage }}';
         window.partyGuests = {{ $partyGuests }};

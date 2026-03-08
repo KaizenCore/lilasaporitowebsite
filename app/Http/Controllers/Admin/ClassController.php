@@ -92,6 +92,12 @@ class ClassController extends Controller
             'party_addons.*.name' => 'nullable|string|max:255',
             'party_addons.*.price_cents' => 'nullable|integer|min:0',
             'party_addons.*.description' => 'nullable|string|max:500',
+            // Ticket types
+            'ticket_types' => 'nullable|array',
+            'ticket_types.*.name' => 'nullable|string|max:255',
+            'ticket_types.*.price_cents' => 'nullable|integer|min:0',
+            'ticket_types.*.spots' => 'nullable|integer|min:1',
+            'ticket_types.*.description' => 'nullable|string|max:500',
         ]);
 
         // Handle image upload
@@ -121,6 +127,21 @@ class ClassController extends Controller
             }));
         }
 
+        // Process ticket types - filter out empty ones
+        $ticketTypes = null;
+        if (!empty($validated['ticket_types'])) {
+            $ticketTypes = array_values(array_filter($validated['ticket_types'], function ($type) {
+                return !empty($type['name']) && isset($type['price_cents']);
+            }));
+            // Ensure spots defaults to 1
+            foreach ($ticketTypes as &$type) {
+                $type['spots'] = max(1, (int) ($type['spots'] ?? 1));
+            }
+            if (empty($ticketTypes)) {
+                $ticketTypes = null;
+            }
+        }
+
         // Create the class
         $artClass = ArtClass::create([
             'title' => $validated['title'],
@@ -144,6 +165,7 @@ class ClassController extends Controller
             'large_party_size' => $validated['large_party_size'] ?? null,
             'additional_guest_price_cents' => $validated['additional_guest_price_cents'] ?? null,
             'max_party_size' => $validated['max_party_size'] ?? null,
+            'ticket_types' => $ticketTypes,
             'party_addons' => $partyAddons,
             'created_by' => auth()->id(),
         ]);
@@ -203,6 +225,12 @@ class ClassController extends Controller
             'party_addons.*.name' => 'nullable|string|max:255',
             'party_addons.*.price_cents' => 'nullable|integer|min:0',
             'party_addons.*.description' => 'nullable|string|max:500',
+            // Ticket types
+            'ticket_types' => 'nullable|array',
+            'ticket_types.*.name' => 'nullable|string|max:255',
+            'ticket_types.*.price_cents' => 'nullable|integer|min:0',
+            'ticket_types.*.spots' => 'nullable|integer|min:1',
+            'ticket_types.*.description' => 'nullable|string|max:500',
         ]);
 
         // Handle image upload
@@ -261,6 +289,21 @@ class ClassController extends Controller
             }));
         } else {
             $validated['party_addons'] = null;
+        }
+
+        // Process ticket types - filter out empty ones
+        if (!empty($validated['ticket_types'])) {
+            $validated['ticket_types'] = array_values(array_filter($validated['ticket_types'], function ($type) {
+                return !empty($type['name']) && isset($type['price_cents']);
+            }));
+            foreach ($validated['ticket_types'] as &$type) {
+                $type['spots'] = max(1, (int) ($type['spots'] ?? 1));
+            }
+            if (empty($validated['ticket_types'])) {
+                $validated['ticket_types'] = null;
+            }
+        } else {
+            $validated['ticket_types'] = null;
         }
 
         // Update the class

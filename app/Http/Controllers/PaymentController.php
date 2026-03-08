@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AdminBookingNotification;
 use App\Mail\BookingConfirmation;
 use App\Mail\PartyBookingConfirmed;
 use App\Models\ArtClass;
@@ -179,6 +180,18 @@ class PaymentController extends Controller
                 'error' => $e->getMessage(),
             ]);
         }
+
+        // Send admin notification email
+        try {
+            $adminEmail = config('mail.admin_address', config('mail.from.address'));
+            Mail::to($adminEmail)->send(new AdminBookingNotification($booking));
+            Log::info('Admin booking notification email sent', ['booking_id' => $booking->id]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to send admin booking notification email', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -226,9 +239,12 @@ class PaymentController extends Controller
                 continue;
             }
 
-            // Create booking(s) for this class (one per ticket)
+            // Create booking(s) for this class
+            // Each ticket creates (spots_per_ticket) bookings
             $qty = $item['quantity'] ?? 1;
-            for ($i = 0; $i < $qty; $i++) {
+            $spotsPerTicket = $item['spots_per_ticket'] ?? 1;
+            $totalBookings = $qty * $spotsPerTicket;
+            for ($i = 0; $i < $totalBookings; $i++) {
                 $booking = Booking::create([
                     'user_id' => $metadata->user_id,
                     'art_class_id' => $item['art_class_id'],
@@ -244,7 +260,8 @@ class PaymentController extends Controller
                     'ticket_code' => $booking->ticket_code,
                     'art_class_id' => $item['art_class_id'],
                     'ticket_number' => $i + 1,
-                    'total_qty' => $qty,
+                    'total_bookings' => $totalBookings,
+                    'ticket_type' => $item['ticket_type_name'] ?? 'standard',
                 ]);
             }
         }
@@ -297,6 +314,25 @@ class PaymentController extends Controller
             } catch (\Throwable $e) {
                 Log::error('Failed to send booking confirmation email for multi-class order', [
                     'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Send admin notification for first booking (one notification per order)
+        if (!empty($bookings)) {
+            try {
+                $firstBooking = $bookings[0];
+                $firstBooking->load('artClass', 'user');
+                $adminEmail = config('mail.admin_address', config('mail.from.address'));
+                Mail::to($adminEmail)->send(new AdminBookingNotification($firstBooking));
+                Log::info('Admin booking notification email sent for multi-class order', [
+                    'order_id' => $order->id,
+                    'booking_count' => count($bookings),
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('Failed to send admin booking notification for multi-class order', [
+                    'order_id' => $order->id,
                     'error' => $e->getMessage(),
                 ]);
             }

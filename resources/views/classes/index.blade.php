@@ -101,7 +101,13 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <span class="text-2xl font-bold text-purple-600 dark:text-purple-400">{{ $class->formatted_price }}</span>
+                            <span class="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                @if($class->has_ticket_types)
+                                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400">From</span> {{ $class->formatted_starting_price }}
+                                @else
+                                    {{ $class->formatted_price }}
+                                @endif
+                            </span>
                             <a href="{{ route('classes.show', $class->slug) }}" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition font-semibold">
                                 View Details
                             </a>

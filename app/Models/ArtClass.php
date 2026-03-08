@@ -33,6 +33,7 @@ class ArtClass extends Model
         'large_party_size',
         'additional_guest_price_cents',
         'max_party_size',
+        'ticket_types',
         'party_addons',
         'created_by',
     ];
@@ -49,6 +50,7 @@ class ArtClass extends Model
         'large_party_size' => 'integer',
         'additional_guest_price_cents' => 'integer',
         'max_party_size' => 'integer',
+        'ticket_types' => 'array',
         'party_addons' => 'array',
     ];
 
@@ -150,6 +152,37 @@ class ArtClass extends Model
     {
         return $query->published()
             ->upcoming();
+    }
+
+    /**
+     * Check if this class has ticket types configured.
+     */
+    public function getHasTicketTypesAttribute(): bool
+    {
+        $types = $this->ticket_types ?? [];
+        return !empty($types) && count($types) > 0;
+    }
+
+    /**
+     * Get the starting (lowest) price across all ticket types.
+     */
+    public function getStartingPriceAttribute(): int
+    {
+        if (!$this->has_ticket_types) {
+            return $this->price_cents;
+        }
+
+        $types = $this->ticket_types;
+        $prices = array_column($types, 'price_cents');
+        return !empty($prices) ? min($prices) : $this->price_cents;
+    }
+
+    /**
+     * Get formatted starting price for display.
+     */
+    public function getFormattedStartingPriceAttribute(): string
+    {
+        return '$' . number_format($this->starting_price / 100, 2);
     }
 
     // Party pricing methods

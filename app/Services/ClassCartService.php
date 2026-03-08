@@ -14,7 +14,7 @@ class ClassCartService
     /**
      * Add class to cart with quantity support
      */
-    public function add($artClassId, $quantity = 1)
+    public function add($artClassId, $quantity = 1, $ticketTypeIndex = null)
     {
         $quantity = max(1, (int) $quantity);
 
@@ -31,8 +31,22 @@ class ClassCartService
             throw new \Exception('This class has already occurred.');
         }
 
-        // Check spots available for requested quantity
-        if ($artClass->spots_available < $quantity) {
+        // Determine pricing based on ticket type
+        $priceCents = $artClass->price_cents;
+        $spotsPerTicket = 1;
+        $ticketTypeName = null;
+        $ticketTypes = $artClass->ticket_types ?? [];
+
+        if ($ticketTypeIndex !== null && isset($ticketTypes[$ticketTypeIndex])) {
+            $ticketType = $ticketTypes[$ticketTypeIndex];
+            $priceCents = $ticketType['price_cents'];
+            $spotsPerTicket = max(1, (int) ($ticketType['spots'] ?? 1));
+            $ticketTypeName = $ticketType['name'];
+        }
+
+        // Check spots available (accounting for spots per ticket)
+        $totalSpotsNeeded = $quantity * $spotsPerTicket;
+        if ($artClass->spots_available < $totalSpotsNeeded) {
             throw new \Exception("Only {$artClass->spots_available} spots available.");
         }
 
@@ -40,8 +54,10 @@ class ClassCartService
 
         // If already in cart, update quantity instead of rejecting
         if (isset($cart[$artClassId])) {
+            $existingSpotsPerTicket = $cart[$artClassId]['spots_per_ticket'] ?? 1;
             $newQty = ($cart[$artClassId]['quantity'] ?? 1) + $quantity;
-            if ($artClass->spots_available < $newQty) {
+            $newSpotsNeeded = $newQty * $existingSpotsPerTicket;
+            if ($artClass->spots_available < $newSpotsNeeded) {
                 throw new \Exception("Only {$artClass->spots_available} spots available (you already have " . ($cart[$artClassId]['quantity'] ?? 1) . " in cart).");
             }
             $cart[$artClassId]['quantity'] = $newQty;
@@ -57,9 +73,12 @@ class ClassCartService
             'class_date_formatted' => $artClass->class_date->format('l, M d, Y \a\t g:i A'),
             'duration_minutes' => $artClass->duration_minutes,
             'location' => $artClass->location,
-            'price_cents' => $artClass->price_cents,
+            'price_cents' => $priceCents,
             'image_path' => $artClass->image_path,
             'quantity' => $quantity,
+            'ticket_type_index' => $ticketTypeIndex,
+            'ticket_type_name' => $ticketTypeName,
+            'spots_per_ticket' => $spotsPerTicket,
         ];
 
         Session::put(self::CART_SESSION_KEY, $cart);
@@ -134,8 +153,16 @@ class ClassCartService
                 $artClass = $classes[$classId];
                 $item['art_class'] = $artClass;
 
-                // Update price if it changed
-                $item['price_cents'] = $artClass->price_cents;
+                // Update price - use ticket type price if set, else standard price
+                $ticketTypeIndex = $item['ticket_type_index'] ?? null;
+                $ticketTypes = $artClass->ticket_types ?? [];
+                if ($ticketTypeIndex !== null && isset($ticketTypes[$ticketTypeIndex])) {
+                    $item['price_cents'] = $ticketTypes[$ticketTypeIndex]['price_cents'];
+                    $item['spots_per_ticket'] = max(1, (int) ($ticketTypes[$ticketTypeIndex]['spots'] ?? 1));
+                    $item['ticket_type_name'] = $ticketTypes[$ticketTypeIndex]['name'];
+                } else {
+                    $item['price_cents'] = $artClass->price_cents;
+                }
 
                 // Update date info
                 $item['class_date'] = $artClass->class_date->toIso8601String();

@@ -156,6 +156,80 @@
                         </div>
                     </div>
 
+                    <!-- Ticket Types Section -->
+                    <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg" x-data="{
+                        hasTicketTypes: {{ old('ticket_types') ? 'true' : 'false' }},
+                        ticketTypes: {{ json_encode(old('ticket_types', [])) ?: '[]' }},
+                        addType() {
+                            this.ticketTypes.push({ name: '', price_cents: 0, spots: 1, description: '' });
+                        },
+                        removeType(index) {
+                            this.ticketTypes.splice(index, 1);
+                        }
+                    }">
+                        <div class="flex items-center mb-4">
+                            <input type="checkbox" id="has_ticket_types" x-model="hasTicketTypes"
+                                class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500">
+                            <label for="has_ticket_types" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Enable Ticket Types (e.g., Single, Duo, Group)
+                            </label>
+                        </div>
+
+                        <div x-show="hasTicketTypes" x-cloak class="space-y-4">
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Create different ticket options with individual pricing. Each ticket type can include multiple spots (e.g., a "Duo" ticket uses 2 spots). The regular price above will be used as a fallback if no ticket types are set.
+                            </p>
+
+                            <div class="flex justify-end mb-2">
+                                <button type="button" @click="addType()" class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md">
+                                    + Add Ticket Type
+                                </button>
+                            </div>
+
+                            <template x-for="(type, index) in ticketTypes" :key="index">
+                                <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300" x-text="'Ticket Type #' + (index + 1)"></span>
+                                        <button type="button" @click="removeType(index)" class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Name *</label>
+                                            <input type="text" x-model="type.name" :name="'ticket_types[' + index + '][name]'" placeholder="Single Ticket"
+                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Price (cents) *</label>
+                                            <input type="number" x-model.number="type.price_cents" :name="'ticket_types[' + index + '][price_cents]'" min="0" placeholder="4500"
+                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Spots Used</label>
+                                            <input type="number" x-model.number="type.spots" :name="'ticket_types[' + index + '][spots]'" min="1" placeholder="1"
+                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <p class="text-xs text-gray-400 mt-1">How many class spots this ticket uses</p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Description</label>
+                                            <input type="text" x-model="type.description" :name="'ticket_types[' + index + '][description]'" placeholder="Save $10!"
+                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white text-sm shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4 mt-2 text-xs text-gray-400">
+                                        <span x-show="type.price_cents > 0">
+                                            = $<span x-text="(type.price_cents / 100).toFixed(2)"></span>
+                                            <span x-show="type.spots > 1"> for <span x-text="type.spots"></span> people ($<span x-text="(type.price_cents / type.spots / 100).toFixed(2)"></span>/person)</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div x-show="ticketTypes.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic">
+                                No ticket types configured. Click "+ Add Ticket Type" to create one.
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Party Event Section -->
                     <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg" x-data="{ isParty: {{ old('is_party_event') ? 'true' : 'false' }} }">
                         <div class="flex items-center mb-4">

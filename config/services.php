@@ -47,4 +47,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL').'/auth/google/callback'),
     ],
 
+    'trustpilot' => [
+        'business_unit_id' => env('TRUSTPILOT_BUSINESS_UNIT_ID'),
+    ],
+
 ];

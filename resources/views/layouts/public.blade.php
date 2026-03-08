@@ -19,6 +19,11 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- Trustpilot TrustBox Widget -->
+    @if(config('services.trustpilot.business_unit_id'))
+    <script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
+    @endif
+
     <!-- Additional Head Content -->
     {{ $head ?? '' }}
 

@@ -37,10 +37,15 @@ class ClassCartController extends Controller
         $validated = $request->validate([
             'art_class_id' => 'required|exists:art_classes,id',
             'quantity' => 'sometimes|integer|min:1|max:10',
+            'ticket_type_index' => 'sometimes|nullable|integer|min:0',
         ]);
 
         try {
-            $this->classCartService->add($validated['art_class_id'], $validated['quantity'] ?? 1);
+            $this->classCartService->add(
+                $validated['art_class_id'],
+                $validated['quantity'] ?? 1,
+                $validated['ticket_type_index'] ?? null
+            );
 
             if ($request->wantsJson()) {
                 return response()->json([

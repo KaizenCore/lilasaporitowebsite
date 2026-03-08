@@ -56,6 +56,10 @@ form.addEventListener('submit', async (event) => {
             quantity: window.ticketQuantity || 1
         };
 
+        if (window.ticketTypeIndex !== undefined) {
+            requestBody.ticket_type_index = window.ticketTypeIndex;
+        }
+
         if (window.partyPackage) {
             requestBody.party_package = window.partyPackage;
             requestBody.party_guests = window.partyGuests;

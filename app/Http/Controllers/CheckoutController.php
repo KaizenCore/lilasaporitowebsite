@@ -45,11 +45,28 @@ class CheckoutController extends Controller
         $quantity = max(1, min(10, (int) $request->query('quantity', 1)));
         $quantity = min($quantity, $class->spots_available);
 
+        // Handle ticket type pricing
+        $ticketTypeIndex = $request->query('ticket_type');
+        $ticketTypeName = null;
+        $spotsPerTicket = 1;
+        $unitPriceCents = $class->price_cents;
+
+        $ticketTypes = $class->ticket_types ?? [];
+        if ($ticketTypeIndex !== null && isset($ticketTypes[$ticketTypeIndex])) {
+            $ticketType = $ticketTypes[$ticketTypeIndex];
+            $unitPriceCents = $ticketType['price_cents'];
+            $spotsPerTicket = max(1, (int) ($ticketType['spots'] ?? 1));
+            $ticketTypeName = $ticketType['name'];
+            // Cap quantity based on spots per ticket
+            $maxQty = (int) floor($class->spots_available / $spotsPerTicket);
+            $quantity = min($quantity, $maxQty);
+        }
+
         // Handle party pricing
         $partyPackage = null;
         $partyGuests = null;
         $selectedAddons = [];
-        $totalPriceCents = $class->price_cents * $quantity;
+        $totalPriceCents = $unitPriceCents * $quantity;
 
         if ($class->is_party_event) {
             $quantity = 1; // Party events are always 1 booking
@@ -88,6 +105,9 @@ class CheckoutController extends Controller
             'partyGuests' => $partyGuests,
             'selectedAddons' => $selectedAddons,
             'totalPriceCents' => $totalPriceCents,
+            'ticketTypeIndex' => $ticketTypeIndex,
+            'ticketTypeName' => $ticketTypeName,
+            'spotsPerTicket' => $spotsPerTicket,
         ]);
     }
 
@@ -99,6 +119,7 @@ class CheckoutController extends Controller
         $request->validate([
             'art_class_id' => 'required|exists:art_classes,id',
             'quantity' => 'nullable|integer|min:1|max:10',
+            'ticket_type_index' => 'nullable|integer|min:0',
             'party_package' => 'nullable|in:small,large',
             'party_guests' => 'nullable|integer|min:1|max:50',
             'selected_addons' => 'nullable|array',
@@ -123,8 +144,21 @@ class CheckoutController extends Controller
                 ], 400);
             }
 
+            // Handle ticket type pricing
+            $unitPrice = $class->price_cents;
+            $spotsPerTicket = 1;
+            $ticketTypeName = null;
+            $ticketTypeIndex = $request->ticket_type_index;
+            $ticketTypes = $class->ticket_types ?? [];
+
+            if ($ticketTypeIndex !== null && isset($ticketTypes[$ticketTypeIndex])) {
+                $unitPrice = $ticketTypes[$ticketTypeIndex]['price_cents'];
+                $spotsPerTicket = max(1, (int) ($ticketTypes[$ticketTypeIndex]['spots'] ?? 1));
+                $ticketTypeName = $ticketTypes[$ticketTypeIndex]['name'];
+            }
+
             // Calculate price (handle party events)
-            $priceCents = $class->price_cents * $quantity;
+            $priceCents = $unitPrice * $quantity;
             $metadata = [
                 'art_class_id' => $class->id,
                 'user_id' => Auth::id(),
@@ -132,6 +166,8 @@ class CheckoutController extends Controller
                 'class_title' => $class->title,
                 'class_date' => $class->class_date->toDateTimeString(),
                 'quantity' => $quantity,
+                'spots_per_ticket' => $spotsPerTicket,
+                'ticket_type_name' => $ticketTypeName,
             ];
 
             if ($class->is_party_event && $request->party_package) {
@@ -218,6 +254,8 @@ class CheckoutController extends Controller
 
             $class = ArtClass::findOrFail($request->art_class_id);
             $quantity = max(1, (int) ($paymentIntent->metadata->quantity ?? 1));
+            $spotsPerTicket = max(1, (int) ($paymentIntent->metadata->spots_per_ticket ?? 1));
+            $totalBookings = $quantity * $spotsPerTicket;
 
             // Prevent duplicate processing of same payment intent
             $existingPayment = \App\Models\Payment::where('stripe_payment_intent_id', $paymentIntent->id)->first();
@@ -230,9 +268,9 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            // Create bookings (one per ticket)
+            // Create bookings (one per spot consumed)
             $bookings = [];
-            for ($i = 0; $i < $quantity; $i++) {
+            for ($i = 0; $i < $totalBookings; $i++) {
                 $bookings[] = Booking::create([
                     'user_id' => Auth::id(),
                     'art_class_id' => $class->id,

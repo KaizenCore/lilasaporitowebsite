@@ -30,6 +30,7 @@
                         <span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ $totalCartCount > 9 ? '9+' : $totalCartCount }}</span>
                     @endif
                 </a>
+                <a href="{{ route('gallery') }}" class="{{ request()->routeIs('gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Gallery</a>
                 <a href="{{ route('parties.index') }}" class="{{ request()->routeIs('parties.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Book a Party</a>
                 <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">About</a>
                 @auth
@@ -88,6 +89,7 @@
                     <span class="bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">{{ $totalCartCount }}</span>
                 @endif
             </a>
+            <a href="{{ route('gallery') }}" class="block py-2 {{ request()->routeIs('gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Gallery</a>
             <a href="{{ route('parties.index') }}" class="block py-2 {{ request()->routeIs('parties.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Book a Party</a>
             <a href="{{ route('about') }}" class="block py-2 {{ request()->routeIs('about') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">About</a>
             @auth

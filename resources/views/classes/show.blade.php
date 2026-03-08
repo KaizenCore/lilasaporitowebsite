@@ -316,6 +316,158 @@
 
                     <p class="text-sm text-purple-100 mt-4 text-center">All materials included</p>
                 </div>
+                @elseif($class->has_ticket_types)
+                <!-- Ticket Type Selection -->
+                @php
+                    $ticketTypes = $class->ticket_types;
+                @endphp
+                <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white"
+                     x-data="{
+                         ticketTypes: {{ json_encode($ticketTypes) }},
+                         selectedType: 0,
+                         quantity: 1,
+                         spotsAvailable: {{ $class->spots_available }},
+                         get currentType() { return this.ticketTypes[this.selectedType]; },
+                         get spotsPerTicket() { return this.currentType?.spots || 1; },
+                         get maxQty() { return Math.min(10, Math.floor(this.spotsAvailable / this.spotsPerTicket)); },
+                         get unitPrice() { return this.currentType?.price_cents || 0; },
+                         get total() { return (this.quantity * this.unitPrice / 100).toFixed(2); },
+                         get formattedUnit() { return '$' + (this.unitPrice / 100).toFixed(2); },
+                         get bookUrl() {
+                             return '{{ route('checkout.show', $class->slug) }}?ticket_type=' + this.selectedType + '&quantity=' + this.quantity;
+                         },
+                         selectType(index) {
+                             this.selectedType = index;
+                             if (this.quantity > this.maxQty) this.quantity = Math.max(1, this.maxQty);
+                         }
+                     }">
+
+                    <p class="text-purple-100 mb-4 text-center font-medium">Choose Your Ticket</p>
+
+                    <!-- Ticket Type Cards -->
+                    <div class="space-y-3 mb-6">
+                        @foreach($ticketTypes as $index => $type)
+                        <button type="button"
+                                @click="selectType({{ $index }})"
+                                :class="selectedType === {{ $index }} ? 'bg-white text-purple-600 shadow-lg' : 'bg-white/20 text-white hover:bg-white/30'"
+                                class="w-full p-4 rounded-lg transition text-left">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="font-bold text-lg">{{ $type['name'] }}</span>
+                                    @if(!empty($type['description']))
+                                    <span class="block text-sm opacity-80">{{ $type['description'] }}</span>
+                                    @endif
+                                    @if(($type['spots'] ?? 1) > 1)
+                                    <span class="block text-xs opacity-70 mt-1">Includes {{ $type['spots'] }} spots</span>
+                                    @endif
+                                </div>
+                                <span class="text-2xl font-bold">${{ number_format($type['price_cents'] / 100, 2) }}</span>
+                            </div>
+                        </button>
+                        @endforeach
+                    </div>
+
+                    @if($class->is_full)
+                    <button disabled class="w-full bg-gray-400 text-white px-8 py-4 rounded-lg text-lg font-semibold cursor-not-allowed">
+                        Class is Full
+                    </button>
+                    @else
+                    @auth
+                    <!-- Quantity Selector -->
+                    <div class="mb-4" x-show="maxQty > 0">
+                        <label class="block text-purple-100 mb-2 text-sm font-medium">Quantity</label>
+                        <div class="flex items-center gap-3">
+                            <button type="button"
+                                    @click="if(quantity > 1) quantity--"
+                                    :disabled="quantity <= 1"
+                                    class="bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold transition">
+                                -
+                            </button>
+                            <input type="number" x-model.number="quantity" min="1" :max="maxQty"
+                                   @change="quantity = Math.max(1, Math.min(maxQty, quantity))"
+                                   class="flex-1 bg-white/20 border-0 rounded-lg text-center text-2xl font-bold py-3 text-white placeholder-white/50 focus:ring-2 focus:ring-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            <button type="button"
+                                    @click="if(quantity < maxQty) quantity++"
+                                    :disabled="quantity >= maxQty"
+                                    class="bg-white/20 hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-12 h-12 rounded-lg flex items-center justify-center text-2xl font-bold transition">
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="text-center mb-4 py-3 bg-white/10 rounded-lg">
+                        <p class="text-purple-100 text-sm">
+                            <span x-text="quantity"></span> x <span x-text="currentType?.name"></span> @ <span x-text="formattedUnit"></span>
+                        </p>
+                        <p class="text-3xl font-bold">$<span x-text="total"></span></p>
+                    </div>
+
+                    <div class="space-y-3" x-data="{ adding: false, added: false, error: '' }">
+                        <a :href="bookUrl" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
+                            Book Now - $<span x-text="total"></span>
+                        </a>
+                        <button
+                            x-show="!added"
+                            @click="
+                                adding = true;
+                                error = '';
+                                fetch('{{ route('class-cart.add') }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || '{{ csrf_token() }}',
+                                        'Accept': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        art_class_id: {{ $class->id }},
+                                        quantity: quantity,
+                                        ticket_type_index: selectedType
+                                    })
+                                })
+                                .then(async response => {
+                                    adding = false;
+                                    if (response.redirected) { window.location.href = response.url; return; }
+                                    const data = await response.json();
+                                    if (response.ok && data.success) { added = true; }
+                                    else { error = data.message || 'Unable to add to cart'; }
+                                })
+                                .catch((e) => { adding = false; error = 'Unable to add to cart: ' + (e.message || 'network error'); });
+                            "
+                            :disabled="adding"
+                            class="w-full bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white/10 transition text-center disabled:opacity-50"
+                        >
+                            <span x-show="!adding">Add to Cart</span>
+                            <span x-show="adding" class="inline-flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Adding...
+                            </span>
+                        </button>
+                        <template x-if="added">
+                            <div class="text-center space-y-2">
+                                <p class="text-white flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Added to cart!
+                                </p>
+                                <a href="{{ route('class-cart.index') }}" class="inline-block text-purple-200 hover:text-white underline text-sm">View Cart</a>
+                            </div>
+                        </template>
+                        <p x-show="error" x-text="error" class="text-red-200 text-sm text-center"></p>
+                    </div>
+                    @else
+                    <a href="{{ route('login') }}" class="block w-full bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition text-center shadow-lg">
+                        Login to Book
+                    </a>
+                    @endauth
+                    @endif
+
+                    <p class="text-sm text-purple-100 mt-4 text-center">All materials included</p>
+                </div>
                 @else
                 <!-- Standard Class Pricing -->
                 <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-xl p-8 text-white"

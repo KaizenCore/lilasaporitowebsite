@@ -63,6 +63,10 @@ INI
 ###############################################################################
 # LARAVEL STARTUP SEQUENCE
 ###############################################################################
+echo "[start.sh] Clearing caches..."
+$PHPEXT artisan view:clear
+$PHPEXT artisan route:clear
+
 echo "[start.sh] Discovering packages..."
 $PHPEXT artisan package:discover --ansi
 

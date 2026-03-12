@@ -47,6 +47,9 @@
                                 <a href="{{ route('admin.calendar.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Calendar
                                 </a>
+                                <a href="{{ route('admin.gallery.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.gallery.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
+                                    Gallery
+                                </a>
                                 <a href="{{ route('admin.reviews.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.reviews.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Reviews
                                     @if(($pendingReviews = \App\Models\Review::pending()->count()) > 0)
@@ -125,6 +128,9 @@
                         </a>
                         <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-600 hover:border-purple-300' }} text-base font-medium">
                             Calendar
+                        </a>
+                        <a href="{{ route('admin.gallery.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.gallery.*') ? 'border-white bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-600 hover:border-purple-300' }} text-base font-medium">
+                            Gallery
                         </a>
                         <a href="{{ route('admin.reviews.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.reviews.*') ? 'border-white bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-600 hover:border-purple-300' }} text-base font-medium">
                             Reviews

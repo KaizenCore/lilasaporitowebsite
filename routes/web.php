@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductCategoryController;
 use App\Http\Controllers\Admin\SiteSettingsController;
+use App\Http\Controllers\Admin\GalleryController as AdminGalleryController;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\Auth\AdminLoginController;
@@ -206,6 +207,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reports/bookings', [ReportsController::class, 'bookings'])->name('reports.bookings');
     Route::get('/reports/bookings/export', [ReportsController::class, 'exportBookings'])->name('reports.bookings.export');
     Route::get('/reports/attendance', [ReportsController::class, 'attendance'])->name('reports.attendance');
+
+    // Gallery Management
+    Route::get('/gallery', [AdminGalleryController::class, 'index'])->name('gallery.index');
+    Route::post('/gallery/{class}/upload', [AdminGalleryController::class, 'upload'])->name('gallery.upload');
+    Route::delete('/gallery/{class}/remove', [AdminGalleryController::class, 'removeImage'])->name('gallery.remove');
 
     // Review Management
     Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');

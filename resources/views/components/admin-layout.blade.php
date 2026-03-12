@@ -35,18 +35,25 @@
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                            <div class="hidden space-x-4 sm:-my-px sm:ml-10 sm:flex">
                                 <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.dashboard') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Dashboard
                                 </a>
-                                <a href="{{ route('admin.classes.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.classes.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
-                                    Classes
-                                </a>
+                                <div class="relative" x-data="{ open: false }">
+                                    <button @click="open = !open" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.classes.*', 'admin.gallery.*', 'admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
+                                        Classes
+                                        <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <div x-show="open" @click.away="open = false" x-cloak class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
+                                        <a href="{{ route('admin.classes.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Manage Classes</a>
+                                        <a href="{{ route('admin.gallery.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Gallery Photos</a>
+                                        <a href="{{ route('admin.calendar.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700">Calendar</a>
+                                    </div>
+                                </div>
                                 <a href="{{ route('admin.bookings.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.bookings.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Bookings
-                                </a>
-                                <a href="{{ route('admin.calendar.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.calendar.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
-                                    Calendar
                                 </a>
                                 <a href="{{ route('admin.reviews.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 {{ request()->routeIs('admin.reviews.*') ? 'border-white text-white' : 'border-transparent text-purple-100 hover:text-white hover:border-purple-300' }} text-sm font-medium">
                                     Reviews
@@ -116,14 +123,16 @@
                         <a href="{{ route('admin.dashboard') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.dashboard') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Dashboard
                         </a>
-                        <a href="{{ route('admin.classes.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.classes.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
-                            Classes
-                        </a>
+                        <div class="pl-3 pr-4 py-2 {{ request()->routeIs('admin.classes.*', 'admin.gallery.*', 'admin.calendar.*') ? 'bg-purple-700 dark:bg-purple-800' : '' }}">
+                            <span class="text-purple-100 font-medium">Classes</span>
+                            <div class="pl-4 mt-1 space-y-1">
+                                <a href="{{ route('admin.classes.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.classes.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Manage Classes</a>
+                                <a href="{{ route('admin.gallery.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.gallery.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Gallery Photos</a>
+                                <a href="{{ route('admin.calendar.index') }}" class="block py-1 text-sm {{ request()->routeIs('admin.calendar.*') ? 'text-white font-semibold' : 'text-purple-200 hover:text-white' }}">Calendar</a>
+                            </div>
+                        </div>
                         <a href="{{ route('admin.bookings.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.bookings.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Bookings
-                        </a>
-                        <a href="{{ route('admin.calendar.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.calendar.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
-                            Calendar
                         </a>
                         <a href="{{ route('admin.reviews.index') }}" class="block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('admin.reviews.*') ? 'border-white bg-purple-700 dark:bg-purple-800 text-white' : 'border-transparent text-purple-100 hover:text-white hover:bg-purple-500 hover:border-purple-300' }} text-base font-medium">
                             Reviews

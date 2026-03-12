@@ -10,7 +10,18 @@
             <!-- Desktop Navigation -->
             <div class="hidden sm:flex items-center space-x-8">
                 <a href="/" class="{{ request()->routeIs('home') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Home</a>
-                <a href="{{ route('classes.index') }}" class="{{ request()->routeIs('classes.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Classes</a>
+                <div class="relative" x-data="{ classesOpen: false }">
+                    <button @click="classesOpen = !classesOpen" @click.away="classesOpen = false" class="{{ request()->routeIs('classes.*', 'gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition flex items-center">
+                        Classes
+                        <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <div x-show="classesOpen" x-cloak class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg dark:shadow-gray-900/50 py-2 z-50">
+                        <a href="{{ route('classes.index') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400">Upcoming Classes</a>
+                        <a href="{{ route('gallery') }}" class="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-gray-700 hover:text-purple-600 dark:hover:text-purple-400">Past Class Gallery</a>
+                    </div>
+                </div>
                 <a href="{{ route('store.index') }}" class="{{ request()->routeIs('store.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Store</a>
                 @php
                     $productCartCount = array_sum(array_column(session('shopping_cart', []), 'quantity'));
@@ -30,7 +41,6 @@
                         <span class="absolute -top-2 -right-2 bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">{{ $totalCartCount > 9 ? '9+' : $totalCartCount }}</span>
                     @endif
                 </a>
-                <a href="{{ route('gallery') }}" class="{{ request()->routeIs('gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Gallery</a>
                 <a href="{{ route('parties.index') }}" class="{{ request()->routeIs('parties.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">Book a Party</a>
                 <a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400' }} font-medium transition">About</a>
                 @auth
@@ -81,7 +91,18 @@
     <div :class="{'block': open, 'hidden': !open}" class="hidden sm:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-100 dark:border-gray-800">
         <div class="px-4 py-3 space-y-2">
             <a href="/" class="block py-2 {{ request()->routeIs('home') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Home</a>
-            <a href="{{ route('classes.index') }}" class="block py-2 {{ request()->routeIs('classes.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Classes</a>
+            <div x-data="{ classesOpen: false }">
+                <button @click="classesOpen = !classesOpen" class="flex items-center justify-between w-full py-2 {{ request()->routeIs('classes.*', 'gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
+                    Classes
+                    <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': classesOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <div x-show="classesOpen" x-cloak class="pl-4 space-y-1">
+                    <a href="{{ route('classes.index') }}" class="block py-1.5 {{ request()->routeIs('classes.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">Upcoming Classes</a>
+                    <a href="{{ route('gallery') }}" class="block py-1.5 {{ request()->routeIs('gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">Past Class Gallery</a>
+                </div>
+            </div>
             <a href="{{ route('store.index') }}" class="block py-2 {{ request()->routeIs('store.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Store</a>
             <a href="{{ $cartUrl }}" class="flex items-center gap-2 py-2 {{ request()->routeIs('cart.*', 'class-cart.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">
                 Cart
@@ -89,7 +110,6 @@
                     <span class="bg-pink-600 text-white text-xs font-bold rounded-full px-2 py-0.5">{{ $totalCartCount }}</span>
                 @endif
             </a>
-            <a href="{{ route('gallery') }}" class="block py-2 {{ request()->routeIs('gallery') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Gallery</a>
             <a href="{{ route('parties.index') }}" class="block py-2 {{ request()->routeIs('parties.*') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">Book a Party</a>
             <a href="{{ route('about') }}" class="block py-2 {{ request()->routeIs('about') ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-700 dark:text-gray-300' }}">About</a>
             @auth

@@ -27,8 +27,9 @@ class GoogleAuthController extends Controller
             $googleUser = Socialite::driver('google')->user();
 
             // Find or create user
+            $email = Str::lower($googleUser->getEmail());
             $user = User::where('google_id', $googleUser->getId())
-                ->orWhere('email', $googleUser->getEmail())
+                ->orWhere('email', $email)
                 ->first();
 
             if ($user) {
@@ -43,7 +44,7 @@ class GoogleAuthController extends Controller
                 // Create new user
                 $user = User::create([
                     'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
+                    'email' => $email,
                     'google_id' => $googleUser->getId(),
                     'avatar' => $googleUser->getAvatar(),
                     'email_verified_at' => now(),

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 
@@ -64,8 +65,11 @@ class GoogleAuthController extends Controller
             return redirect()->intended('/my-bookings');
 
         } catch (\Exception $e) {
+            Log::error('Google Auth Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
             return redirect()->route('login')
-                ->withErrors(['email' => 'Failed to authenticate with Google. Please try again.']);
+                ->withErrors(['email' => 'Failed to authenticate with Google: ' . $e->getMessage()]);
         }
     }
 }

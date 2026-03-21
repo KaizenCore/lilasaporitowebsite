@@ -53,12 +53,6 @@ class GoogleAuthController extends Controller
                 ]);
             }
 
-            // Check if user is admin - admins cannot login via Google
-            if ($user->isAdmin()) {
-                return redirect()->route('login')
-                    ->withErrors(['email' => 'Admin accounts must use password authentication.']);
-            }
-
             // Login the user
             Auth::login($user, true);
 
